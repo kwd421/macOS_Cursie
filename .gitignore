@@ -9,3 +9,11 @@ tmp/
 __pycache__/
 *.pyc
 
+# Xcode build output (regenerated on build)
+.xcode-derived/
+.xcode-archive/
+
+# Tooling state
+.wrangler/
+.claude/
+
