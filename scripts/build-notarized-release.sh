@@ -76,6 +76,9 @@ hdiutil create \
 
 rm -rf "$DMG_STAGING"
 
+codesign --force --sign "$SIGNING_IDENTITY" --timestamp "$FINAL_DMG"
+codesign --verify --verbose=2 "$FINAL_DMG"
+
 # Notarize the DMG itself
 xcrun notarytool submit "$FINAL_DMG" \
   --keychain-profile "$NOTARY_PROFILE" \
