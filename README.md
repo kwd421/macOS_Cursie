@@ -56,3 +56,8 @@ If your pointer colors look wrong, use `Open Pointer Reset` in the app and press
 Cursie uses implementation knowledge from [Mousecape](https://github.com/alexzielenski/Mousecape)
 by Alex Zielenski and uses [Sparkle](https://sparkle-project.org/) for software updates.
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for license notices.
+
+## License
+
+Cursie is source-available for personal, non-commercial use. See [LICENSE](LICENSE).
+Third-party components and notices are listed separately in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

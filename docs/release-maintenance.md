@@ -41,9 +41,9 @@ Run:
 ```
 
 The script builds the Release app, submits the archive for notarization, staples
-the result, creates `dist/Cursie.zip` and `dist/Cursie.dmg`, copies
-`THIRD_PARTY_NOTICES.md` into the DMG, and prints Sparkle enclosure attributes
-for the appcast.
+the result, creates `dist/Cursie.zip` and `dist/Cursie.dmg`, copies `LICENSE`
+and `THIRD_PARTY_NOTICES.md` into the app bundle and DMG, and prints Sparkle
+enclosure attributes for the appcast.
 
 ## Legacy Names Kept Intentionally
 

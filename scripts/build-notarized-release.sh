@@ -29,6 +29,7 @@ xcodebuild \
   build
 
 SPARKLE_FRAMEWORK="$APP_PATH/Contents/Frameworks/Sparkle.framework/Versions/B"
+cp "$ROOT_DIR/LICENSE" "$APP_PATH/Contents/Resources/"
 cp "$ROOT_DIR/THIRD_PARTY_NOTICES.md" "$APP_PATH/Contents/Resources/"
 codesign --force --sign "$SIGNING_IDENTITY" --timestamp --options runtime "$SPARKLE_FRAMEWORK/Autoupdate"
 codesign --force --sign "$SIGNING_IDENTITY" --timestamp --options runtime "$SPARKLE_FRAMEWORK/XPCServices/Downloader.xpc"
@@ -64,6 +65,7 @@ echo ""
 echo "Creating DMG..."
 DMG_STAGING="$(mktemp -d)"
 cp -R "$APP_PATH" "$DMG_STAGING/"
+cp "$ROOT_DIR/LICENSE" "$DMG_STAGING/"
 cp "$ROOT_DIR/THIRD_PARTY_NOTICES.md" "$DMG_STAGING/"
 ln -s /Applications "$DMG_STAGING/Applications"
 

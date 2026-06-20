@@ -56,3 +56,8 @@ Cursie는 선택한 커서 세트를 macOS 시스템 커서에 직접 적용합�
 Cursie는 Alex Zielenski의 [Mousecape](https://github.com/alexzielenski/Mousecape)
 구현 지식을 참고하며, 소프트웨어 업데이트에는 [Sparkle](https://sparkle-project.org/)을 사용합니다.
 라이선스 고지는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)를 참고하세요.
+
+## 라이선스
+
+Cursie는 개인적, 비상업적 사용을 위해 소스가 공개되어 있습니다. 자세한 내용은 [LICENSE](LICENSE)를 참고하세요.
+서드파티 구성요소와 고지는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)에 별도로 정리되어 있습니다.
