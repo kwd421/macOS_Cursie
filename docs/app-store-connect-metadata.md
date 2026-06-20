@@ -1,4 +1,4 @@
-# Cape Forge App Store Connect Metadata
+# Cursie Legacy App Store Connect Metadata
 
 > Legacy note: this metadata describes the old export-only App Store direction.
 > Current direct system cursor builds use private cursor APIs, run outside the
@@ -6,22 +6,22 @@
 
 ## Existing URLs
 
-- Support URL: `https://kwd421.github.io/mac_mouse_cursor/`
-- Privacy Policy URL: `https://kwd421.github.io/mac_mouse_cursor/privacy.html`
-- Korean Support URL: `https://kwd421.github.io/mac_mouse_cursor/ko/`
-- Korean Privacy Policy URL: `https://kwd421.github.io/mac_mouse_cursor/ko/privacy.html`
+- Support URL: `https://kwd421.github.io/macOS_Cursie/`
+- Privacy Policy URL: `https://kwd421.github.io/macOS_Cursie/privacy.html`
+- Korean Support URL: `https://kwd421.github.io/macOS_Cursie/ko/`
+- Korean Privacy Policy URL: `https://kwd421.github.io/macOS_Cursie/ko/privacy.html`
 
 ## App Name
 
-- Cape Forge
+- Cursie
 
 ## Recommended Final Metadata
 
-- App Name: `Cape Forge`
+- App Name: `Cursie`
 - Subtitle: `Convert CUR and ANI to CAPE`
 - Keywords: `cursor,cape,mousecape,ani,cur,converter,export,theme,macos,windows`
-- Support URL: `https://kwd421.github.io/mac_mouse_cursor/`
-- Privacy Policy URL: `https://kwd421.github.io/mac_mouse_cursor/privacy.html`
+- Support URL: `https://kwd421.github.io/macOS_Cursie/`
+- Privacy Policy URL: `https://kwd421.github.io/macOS_Cursie/privacy.html`
 
 ## Subtitle Candidates
 
@@ -41,11 +41,11 @@ Alternative keyword set:
 
 ## Final English Description
 
-Cape Forge is a macOS utility that converts Windows cursor files and cursor packs into `.cape` files.
+Cursie is a macOS utility that converts Windows cursor files and cursor packs into `.cape` files.
 
 Choose a folder that contains `.ani` or `.cur` files, review the mapped cursor roles, adjust individual roles if needed, and export a Mousecape-compatible CAPE file.
 
-Cape Forge reads only the folders and files you choose. It does not require network access and exports only to the location you select.
+Cursie reads only the folders and files you choose. It does not require network access and exports only to the location you select.
 
 Key features:
 
@@ -57,11 +57,11 @@ Key features:
 
 ## Final Korean Description
 
-Cape Forge는 Windows 커서 파일과 커서팩을 macOS용 `.cape` 파일로 변환하는 유틸리티입니다.
+Cursie는 Windows 커서 파일과 커서팩을 macOS용 `.cape` 파일로 변환하는 유틸리티입니다.
 
 `.ani` 또는 `.cur` 파일이 들어 있는 폴더를 선택하면, 앱이 역할별로 자동 매핑을 시도하고 미리보기를 보여줍니다. 필요하면 특정 역할의 커서를 직접 바꾼 뒤 Mousecape 호환 CAPE 파일로 내보낼 수 있습니다.
 
-Cape Forge는 사용자가 직접 선택한 폴더와 파일만 읽습니다. 네트워크 접근이 필요하지 않으며, 내보내기도 사용자가 지정한 위치에만 수행합니다.
+Cursie는 사용자가 직접 선택한 폴더와 파일만 읽습니다. 네트워크 접근이 필요하지 않으며, 내보내기도 사용자가 지정한 위치에만 수행합니다.
 
 주요 기능:
 

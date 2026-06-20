@@ -1,6 +1,6 @@
-# Cape Forge 1.0.1
+# Cursie 1.0.1
 
-Cape Forge 1.0.1 improves Mousecape compatibility for long animated cursor files.
+Cursie 1.0.1 improves Mousecape compatibility for long animated cursor files.
 
 ## Highlights
 
@@ -14,4 +14,4 @@ Cape Forge 1.0.1 improves Mousecape compatibility for long animated cursor files
 
 - This release is especially relevant for cursor packs that include long animated `.ani` files.
 - Existing `.cur` import and preview behavior is unchanged.
-- If a source animated cursor has more than 24 frames, Cape Forge now exports a balanced 24-frame version that preserves the overall duration as closely as possible.
+- If a source animated cursor has more than 24 frames, Cursie now exports a balanced 24-frame version that preserves the overall duration as closely as possible.

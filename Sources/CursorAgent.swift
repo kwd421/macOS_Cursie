@@ -17,6 +17,8 @@ protocol CursorApplyConflictChecking {
 }
 
 struct CursorAgentManager {
+    // Keep the original CapeForge launchd label so existing installs update in
+    // place instead of leaving an orphaned login agent behind.
     static let label = "com.seinel.capeforge.cursor-agent"
     private static let activeStatus = "active"
     private static let failedStatusPrefix = "failed:"

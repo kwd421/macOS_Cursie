@@ -1,6 +1,6 @@
-# Cape Forge 1.0.0
+# Cursie 1.0.0
 
-Cape Forge converts Windows cursor packs (`.cur`, `.ani`) into Mousecape-compatible `.cape` files on macOS.
+Cursie converts Windows cursor packs (`.cur`, `.ani`) into Mousecape-compatible `.cape` files on macOS.
 
 ## Highlights
 
@@ -17,9 +17,9 @@ Cape Forge converts Windows cursor packs (`.cur`, `.ani`) into Mousecape-compati
 
 ## Notes
 
-- Cape Forge creates `.cape` files. It does not apply system cursors directly.
+- Cursie creates `.cape` files. It does not apply system cursors directly.
 - For best results, use a cursor pack folder that contains standard Windows cursor files such as `Normal.cur`, `Text.cur`, `Link.cur`, `Busy.ani`, and related resize cursors.
-- Some cursor packs combine multiple roles into one file; Cape Forge will map those where possible and fall back to similar roles when needed.
+- Some cursor packs combine multiple roles into one file; Cursie will map those where possible and fall back to similar roles when needed.
 - Additional cursor slots stay on the macOS default cursor unless you manually assign them.
 
 ## System Requirements

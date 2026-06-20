@@ -50,3 +50,9 @@ If your pointer colors look wrong, use `Open Pointer Reset` in the app and press
 
 - macOS Sequoia 15.6 or later
 - Direct-distribution build. The direct cursor apply feature is not App Store-sandbox compatible.
+
+## Third-Party Notices
+
+Cursie uses implementation knowledge from [Mousecape](https://github.com/alexzielenski/Mousecape)
+by Alex Zielenski and uses [Sparkle](https://sparkle-project.org/) for software updates.
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for license notices.

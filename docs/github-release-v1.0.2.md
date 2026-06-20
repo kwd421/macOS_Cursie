@@ -1,6 +1,6 @@
-# Cape Forge 1.0.2
+# Cursie 1.0.2
 
-Cape Forge 1.0.2 improves the built-in default cursor preview alignment.
+Cursie 1.0.2 improves the built-in default cursor preview alignment.
 
 ## Highlights
 

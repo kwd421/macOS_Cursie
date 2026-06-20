@@ -20,10 +20,12 @@ The profile stores Apple notarization credentials in the local macOS Keychain.
 - Sparkle public key location: `CapeForgeApp/Info.plist` as `SUPublicEDKey`
 - Sparkle private key storage: local macOS Keychain
 - Sparkle keychain account: `seinel-capeforge`
+- The keychain account name is legacy from the pre-Cursie name. Keep it unless
+  you intentionally rotate the Sparkle signing key and update `SUPublicEDKey`.
 - Sign updates with:
 
 ```bash
-.build/artifacts/sparkle/Sparkle/bin/sign_update --account seinel-capeforge dist/CapeForge.zip
+.build/artifacts/sparkle/Sparkle/bin/sign_update --account seinel-capeforge dist/Cursie.zip
 ```
 
 The private key is intentionally not stored in this repository. The release
@@ -39,5 +41,14 @@ Run:
 ```
 
 The script builds the Release app, submits the archive for notarization, staples
-the result, creates `dist/CapeForge.zip`, and prints Sparkle enclosure
-attributes for the appcast.
+the result, creates `dist/Cursie.zip` and `dist/Cursie.dmg`, copies
+`THIRD_PARTY_NOTICES.md` into the DMG, and prints Sparkle enclosure attributes
+for the appcast.
+
+## Legacy Names Kept Intentionally
+
+- `CapeForgeApp/` and `CapeForge.xcodeproj` are source tree names only.
+- `com.seinel.capeforge.cursor-agent` remains the LaunchAgent label so existing
+  installs do not leave an orphaned helper behind.
+- `seinel-capeforge` remains the Sparkle keychain account unless the update
+  signing key is intentionally rotated.

@@ -984,6 +984,8 @@ final class PrivateSystemCursorBridge: SystemCursorBridge {
     }
 
     private func backupIdentifier(for identifier: String) -> String {
+        // The backup namespace predates the Cursie rename; keep it stable so
+        // existing registered cursor backups can still be found and removed.
         "com.seinel.capeforge.backup.\(identifier)"
     }
 

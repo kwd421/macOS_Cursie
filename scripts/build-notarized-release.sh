@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DERIVED_DATA="${DERIVED_DATA:-/tmp/CapeForgeNotaryDerivedData}"
+DERIVED_DATA="${DERIVED_DATA:-/tmp/CursieNotaryDerivedData}"
 DIST_DIR="${DIST_DIR:-$ROOT_DIR/dist}"
 APP_NAME="Cursie.app"
 APP_PATH="$DERIVED_DATA/Build/Products/Release/$APP_NAME"
@@ -29,6 +29,7 @@ xcodebuild \
   build
 
 SPARKLE_FRAMEWORK="$APP_PATH/Contents/Frameworks/Sparkle.framework/Versions/B"
+cp "$ROOT_DIR/THIRD_PARTY_NOTICES.md" "$APP_PATH/Contents/Resources/"
 codesign --force --sign "$SIGNING_IDENTITY" --timestamp --options runtime "$SPARKLE_FRAMEWORK/Autoupdate"
 codesign --force --sign "$SIGNING_IDENTITY" --timestamp --options runtime "$SPARKLE_FRAMEWORK/XPCServices/Downloader.xpc"
 codesign --force --sign "$SIGNING_IDENTITY" --timestamp --options runtime "$SPARKLE_FRAMEWORK/XPCServices/Installer.xpc"
@@ -63,6 +64,7 @@ echo ""
 echo "Creating DMG..."
 DMG_STAGING="$(mktemp -d)"
 cp -R "$APP_PATH" "$DMG_STAGING/"
+cp "$ROOT_DIR/THIRD_PARTY_NOTICES.md" "$DMG_STAGING/"
 ln -s /Applications "$DMG_STAGING/Applications"
 
 hdiutil create \
