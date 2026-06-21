@@ -65,8 +65,6 @@ echo ""
 echo "Creating DMG..."
 DMG_STAGING="$(mktemp -d)"
 cp -R "$APP_PATH" "$DMG_STAGING/"
-cp "$ROOT_DIR/LICENSE" "$DMG_STAGING/"
-cp "$ROOT_DIR/THIRD_PARTY_NOTICES.md" "$DMG_STAGING/"
 ln -s /Applications "$DMG_STAGING/Applications"
 
 hdiutil create \
