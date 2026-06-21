@@ -43,7 +43,8 @@ Run:
 The script builds the Release app, submits the archive for notarization, staples
 the result, creates `dist/Cursie.zip` and `dist/Cursie.dmg`, copies `LICENSE`
 and `THIRD_PARTY_NOTICES.md` into the app bundle, and prints Sparkle enclosure
-attributes for the appcast.
+attributes for the appcast. It runs `swift test` before building release
+artifacts.
 
 The DMG root contains only `Cursie.app` and the `Applications` symlink. During
 DMG creation the script writes a Finder layout with 128 px icons so the install

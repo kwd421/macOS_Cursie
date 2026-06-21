@@ -605,7 +605,7 @@ struct CursorRoleDetailView: View {
                         subtitle: assignment.sourceURL?.lastPathComponent ?? Localized.string("app.automaticallyMatchedFromFolder"),
                         animation: appliedPreview,
                         exportSizeMultiplier: controller.exportSizeMultiplier,
-                        largePreviewScale: 1.0
+                        largePreviewScale: largePreviewScale
                     ) {
                         Button(Localized.string("app.changeCursorFile")) {
                             controller.chooseOverride(for: assignment.role)

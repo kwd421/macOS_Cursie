@@ -49,6 +49,9 @@ APPLESCRIPT
 rm -rf "$DERIVED_DATA" "$DIST_DIR"
 mkdir -p "$DIST_DIR"
 
+echo "Running Swift tests..."
+swift test
+
 xcodebuild \
   -project CapeForge.xcodeproj \
   -scheme Cursie \

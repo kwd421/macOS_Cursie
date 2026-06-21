@@ -4,7 +4,7 @@
 
 Cursie is a macOS app that loads Windows cursor files and cursor packs (`.cur`, `.ani`), previews them, and applies them directly as a macOS system cursor theme.
 
-![Cursie preview](docs/assets/capeforge-preview.png)
+![Cursie preview](docs/assets/cursie-preview.png)
 
 The screenshot above is an example of Cursie with a custom cursor pack loaded. Special thanks to **blz** for creating the wonderful pixel cursor artwork used in this example. Source: [BLZ_pixel on X](https://x.com/BLZ_pixel/status/1873630058981835066)
 
@@ -18,7 +18,7 @@ If your pointer colors look wrong, use `Open Pointer Reset` in the app and press
 
 - Loads `.cur` and `.ani` cursor files from a folder
 - Automatically maps common cursor roles
-- Lets you preview each cursor before export, including animated cursors
+- Lets you preview each cursor before applying, including animated cursors
 - Lets you replace individual cursor roles manually
 - Lets you adjust the applied cursor size
 - Supports drag and drop for both cursor folders and individual cursor files
@@ -41,7 +41,7 @@ If your pointer colors look wrong, use `Open Pointer Reset` in the app and press
 
 - Cursor packs with common names like `Normal`, `Text`, `Link`, `Busy`, and resize cursors tend to map best.
 - Additional cursors are optional. By default they stay on the macOS default cursor unless you assign them yourself.
-- Animated `.ani` cursors play in the preview so you can check motion before exporting.
+- Animated `.ani` cursors play in the preview so you can check motion before applying.
 - You can drag and drop a cursor folder into the app to load it.
 - You can also drag and drop a single `.cur` or `.ani` file onto the app to replace the currently selected cursor role.
 - Animated cursors with more than 24 frames are applied as balanced 24-frame versions to avoid cursor registration issues.
@@ -50,6 +50,17 @@ If your pointer colors look wrong, use `Open Pointer Reset` in the app and press
 
 - macOS Sequoia 15.6 or later
 - Direct-distribution build. The direct cursor apply feature is not App Store-sandbox compatible.
+
+## Install
+
+Download the signed DMG from the latest release:
+[github.com/kwd421/macOS_Cursie/releases/latest](https://github.com/kwd421/macOS_Cursie/releases/latest)
+
+Open `Cursie.dmg` and drag `Cursie.app` into `Applications`.
+
+## Updates
+
+Cursie uses Sparkle to check for updates and install new versions inside the app.
 
 ## Third-Party Notices
 

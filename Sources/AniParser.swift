@@ -24,7 +24,9 @@ struct AniParser {
             throw CursorError.invalidANI(Localized.string("error.invalidRiffAconHeader"))
         }
 
-        var jiffies = 6
+        var defaultJiffies = 6
+        var rateJiffies: [Int] = []
+        var sequence: [Int] = []
         var cursorChunks: [Data] = []
         var offset = 12
 
@@ -38,22 +40,29 @@ struct AniParser {
             }
 
             if chunkID == "anih", chunkSize >= 36 {
-                jiffies = Int(readUInt32LE(data, chunkDataStart + 28))
+                defaultJiffies = Int(readUInt32LE(data, chunkDataStart + 28))
             } else if chunkID == "LIST", chunkSize >= 4 {
                 let listType = fourCC(data, chunkDataStart)
                 if listType == "fram" {
                     cursorChunks.append(contentsOf: try extractIconChunks(from: Data(data[chunkDataStart + 4..<chunkDataEnd])))
                 }
             } else if chunkID == "rate", chunkSize >= 4 {
-                jiffies = Int(readUInt32LE(data, chunkDataStart))
+                rateJiffies = readUInt32List(data, start: chunkDataStart, byteCount: chunkSize).map(Int.init)
+            } else if chunkID == "seq ", chunkSize >= 4 {
+                sequence = readUInt32List(data, start: chunkDataStart, byteCount: chunkSize).map(Int.init)
             }
 
             offset = chunkDataEnd + (chunkSize & 1)
         }
 
-        let frames = try cursorChunks.map { chunk in
-            try autoreleasepool {
-                try decodeFrame(from: chunk, defaultDelay: TimeInterval(max(jiffies, 1)) / 60.0)
+        let stepFrameIndices = sequence.isEmpty ? Array(cursorChunks.indices) : sequence
+        let frames = try stepFrameIndices.enumerated().map { stepIndex, frameIndex in
+            guard cursorChunks.indices.contains(frameIndex) else {
+                throw CursorError.invalidANI("Invalid ANI sequence index.")
+            }
+            let frameJiffies = rateJiffies.indices.contains(stepIndex) ? rateJiffies[stepIndex] : defaultJiffies
+            return try autoreleasepool {
+                try decodeFrame(from: cursorChunks[frameIndex], defaultDelay: TimeInterval(max(frameJiffies, 1)) / 60.0)
             }
         }
         guard let first = frames.first else {
@@ -153,5 +162,10 @@ struct AniParser {
             let base = rawBuffer.baseAddress!.advanced(by: range.lowerBound)
             return base.loadUnaligned(as: UInt32.self).littleEndian
         }
+    }
+
+    private func readUInt32List(_ data: Data, start: Int, byteCount: Int) -> [UInt32] {
+        let count = byteCount / 4
+        return (0..<count).map { readUInt32LE(data, start + ($0 * 4)) }
     }
 }

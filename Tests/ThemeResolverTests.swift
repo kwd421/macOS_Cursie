@@ -438,6 +438,32 @@ struct ThemeResolverTests {
         #expect(resolved.filesByRole[.verticalResize]?.lastPathComponent == "Normal.ani")
     }
 
+    @MainActor
+    @Test
+    func aniParserUsesPerStepRatesAndSequenceOrder() throws {
+        let parser = AniParser()
+        let aniData = try makeANIData(
+            cursorFrames: [
+                makeCursorData(color: .red, size: 16),
+                makeCursorData(color: .green, size: 16),
+                makeCursorData(color: .blue, size: 16)
+            ],
+            defaultJiffies: 60,
+            rates: [6, 12, 18],
+            sequence: [2, 0, 1]
+        )
+
+        let animation = try parser.parseANI(data: aniData)
+
+        #expect(animation.frames.count == 3)
+        #expect(isMostlyBlue(dominantColor(in: animation.frames[0].image)))
+        #expect(isMostlyRed(dominantColor(in: animation.frames[1].image)))
+        #expect(isMostlyGreen(dominantColor(in: animation.frames[2].image)))
+        #expect(abs(animation.frames[0].delay - 0.1) < 0.000_001)
+        #expect(abs(animation.frames[1].delay - 0.2) < 0.000_001)
+        #expect(abs(animation.frames[2].delay - 0.3) < 0.000_001)
+    }
+
     private func makeTemporaryDirectory() throws -> URL {
         let base = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
         let directory = base.appendingPathComponent(UUID().uuidString, isDirectory: true)
@@ -446,6 +472,10 @@ struct ThemeResolverTests {
     }
 
     private func makeCursorFile(color: NSColor, size: Int, at url: URL) throws {
+        try makeCursorData(color: color, size: size).write(to: url)
+    }
+
+    private func makeCursorData(color: NSColor, size: Int) throws -> Data {
         let image = NSImage(size: NSSize(width: size, height: size))
         image.lockFocus()
         color.setFill()
@@ -477,7 +507,56 @@ struct ThemeResolverTests {
         data.append(contentsOf: withUnsafeBytes(of: imageOffset.littleEndian, Array.init))
         data.append(pngData)
 
-        try data.write(to: url)
+        return data
+    }
+
+    private func makeANIData(
+        cursorFrames: [Data],
+        defaultJiffies: UInt32,
+        rates: [UInt32],
+        sequence: [UInt32]
+    ) -> Data {
+        var aconData = Data()
+
+        var anih = Data()
+        appendUInt32LE(36, to: &anih)
+        appendUInt32LE(UInt32(cursorFrames.count), to: &anih)
+        appendUInt32LE(UInt32(sequence.isEmpty ? cursorFrames.count : sequence.count), to: &anih)
+        appendUInt32LE(0, to: &anih)
+        appendUInt32LE(0, to: &anih)
+        appendUInt32LE(0, to: &anih)
+        appendUInt32LE(0, to: &anih)
+        appendUInt32LE(defaultJiffies, to: &anih)
+        appendUInt32LE(1, to: &anih)
+        appendChunk(id: "anih", payload: anih, to: &aconData)
+
+        var frameList = Data("fram".utf8)
+        for frame in cursorFrames {
+            appendChunk(id: "icon", payload: frame, to: &frameList)
+        }
+        appendChunk(id: "LIST", payload: frameList, to: &aconData)
+
+        if !rates.isEmpty {
+            var ratePayload = Data()
+            for rate in rates {
+                appendUInt32LE(rate, to: &ratePayload)
+            }
+            appendChunk(id: "rate", payload: ratePayload, to: &aconData)
+        }
+
+        if !sequence.isEmpty {
+            var sequencePayload = Data()
+            for frameIndex in sequence {
+                appendUInt32LE(frameIndex, to: &sequencePayload)
+            }
+            appendChunk(id: "seq ", payload: sequencePayload, to: &aconData)
+        }
+
+        var data = Data("RIFF".utf8)
+        appendUInt32LE(UInt32(aconData.count + 4), to: &data)
+        data.append(Data("ACON".utf8))
+        data.append(aconData)
+        return data
     }
 }
 
@@ -1262,6 +1341,44 @@ private func solidImage(_ color: NSColor) -> NSImage {
     NSBezierPath(rect: NSRect(x: 0, y: 0, width: 16, height: 16)).fill()
     image.unlockFocus()
     return image
+}
+
+private func appendChunk(id: String, payload: Data, to data: inout Data) {
+    data.append(Data(id.utf8))
+    appendUInt32LE(UInt32(payload.count), to: &data)
+    data.append(payload)
+    if payload.count % 2 == 1 {
+        data.append(0)
+    }
+}
+
+private func appendUInt32LE(_ value: UInt32, to data: inout Data) {
+    data.append(contentsOf: withUnsafeBytes(of: value.littleEndian, Array.init))
+}
+
+private func dominantColor(in image: NSImage) -> NSColor? {
+    guard
+        let tiff = image.tiffRepresentation,
+        let rep = NSBitmapImageRep(data: tiff)
+    else {
+        return nil
+    }
+    return rep.colorAt(x: rep.pixelsWide / 2, y: rep.pixelsHigh / 2)?.usingColorSpace(.deviceRGB)
+}
+
+private func isMostlyRed(_ color: NSColor?) -> Bool {
+    guard let color else { return false }
+    return color.redComponent > 0.8 && color.redComponent > color.greenComponent && color.redComponent > color.blueComponent
+}
+
+private func isMostlyGreen(_ color: NSColor?) -> Bool {
+    guard let color else { return false }
+    return color.greenComponent > 0.8 && color.greenComponent > color.redComponent && color.greenComponent > color.blueComponent
+}
+
+private func isMostlyBlue(_ color: NSColor?) -> Bool {
+    guard let color else { return false }
+    return color.blueComponent > 0.8 && color.blueComponent > color.redComponent && color.blueComponent > color.greenComponent
 }
 
 private struct StubCurrentCursorPreviewLoader: CurrentCursorPreviewLoading {
