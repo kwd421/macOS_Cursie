@@ -1,6 +1,6 @@
 # Cursie
 
-<img width="1254" height="1254" alt="image" src="https://github.com/user-attachments/assets/4782489d-d680-4fc7-9c22-40a5a2827ee9" />
+<img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/4782489d-d680-4fc7-9c22-40a5a2827ee9" />
 
 [한국어 README](README.ko.md)
 
