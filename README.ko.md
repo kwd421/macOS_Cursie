@@ -1,5 +1,6 @@
 # Cursie
 [English README](README.md)
+
 <img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/b48fd0fc-34e6-442b-9c6b-e9f2440d2111" />
 
 Cursie는 Windows 커서 파일과 커서팩(`.cur`, `.ani`)을 불러와 미리보고, macOS 시스템 커서 테마로 직접 적용하는 앱입니다.
