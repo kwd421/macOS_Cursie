@@ -1,4 +1,6 @@
 # Cursie
+<img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/b48fd0fc-34e6-442b-9c6b-e9f2440d2111" />
+
 
 [English README](README.md)
 
