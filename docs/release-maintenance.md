@@ -45,6 +45,10 @@ the result, creates `dist/Cursie.zip` and `dist/Cursie.dmg`, copies `LICENSE`
 and `THIRD_PARTY_NOTICES.md` into the app bundle, and prints Sparkle enclosure
 attributes for the appcast.
 
+The DMG root contains only `Cursie.app` and the `Applications` symlink. During
+DMG creation the script writes a Finder layout with 128 px icons so the install
+window opens with larger app and Applications icons.
+
 ## Legacy Names Kept Intentionally
 
 - `CapeForgeApp/` and `CapeForge.xcodeproj` are source tree names only.

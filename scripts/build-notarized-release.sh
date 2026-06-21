@@ -16,6 +16,36 @@ SIGNING_IDENTITY="${SIGNING_IDENTITY:-Developer ID Application: Wondong Ko (DRUF
 
 cd "$ROOT_DIR"
 
+configure_dmg_layout() {
+  local staging_path="$1"
+
+  echo "Configuring DMG Finder layout..."
+  /usr/bin/osascript <<APPLESCRIPT
+tell application "Finder"
+  set dmgFolder to POSIX file "$staging_path" as alias
+  open dmgFolder
+  delay 0.2
+  set dmgWindow to container window of dmgFolder
+  set current view of dmgWindow to icon view
+  set toolbar visible of dmgWindow to false
+  set statusbar visible of dmgWindow to false
+  set bounds of dmgWindow to {220, 160, 740, 460}
+
+  set viewOptions to icon view options of dmgWindow
+  set arrangement of viewOptions to not arranged
+  set icon size of viewOptions to 128
+  set text size of viewOptions to 13
+
+  set position of item "Cursie.app" of dmgFolder to {150, 150}
+  set position of item "Applications" of dmgFolder to {380, 150}
+
+  update dmgFolder without registering applications
+  delay 0.2
+  close dmgWindow
+end tell
+APPLESCRIPT
+}
+
 rm -rf "$DERIVED_DATA" "$DIST_DIR"
 mkdir -p "$DIST_DIR"
 
@@ -66,6 +96,7 @@ echo "Creating DMG..."
 DMG_STAGING="$(mktemp -d)"
 cp -R "$APP_PATH" "$DMG_STAGING/"
 ln -s /Applications "$DMG_STAGING/Applications"
+configure_dmg_layout "$DMG_STAGING"
 
 hdiutil create \
   -volname "Cursie" \
