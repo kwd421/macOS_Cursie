@@ -59,83 +59,110 @@ struct ContentView: View {
 
 struct SettingsView: View {
     @ObservedObject var controller: CursorController
+    @ObservedObject private var sparkleUpdateState: SparkleUpdateState
     @ObservedObject private var localization = LocalizationController.shared
+    private let sparkleUpdater: SparkleUpdaterController
     @State private var selection: SidebarCursorItem? = .primary(.arrow)
     @State private var isSupplementalExpanded = false
     @State private var keyMonitor: Any?
     @State private var hasShownAdditionalCursorHintThisLaunch = false
 
+    init(controller: CursorController, sparkleUpdater: SparkleUpdaterController = .shared) {
+        self.controller = controller
+        self.sparkleUpdater = sparkleUpdater
+        _sparkleUpdateState = ObservedObject(wrappedValue: sparkleUpdater.updateState)
+    }
+
     var body: some View {
         let _ = localization.selectedLanguage
+        let sidebarTopPadding: CGFloat = sparkleUpdateState.hasAvailableUpdate ? 38 : 26
         ZStack {
             VStack(spacing: 8) {
                 HStack(spacing: 8) {
                     ScrollViewReader { proxy in
-                        List(selection: $selection) {
-                            ForEach(CursorRole.allCases) { role in
-                                if let assignment = controller.assignment(for: role) {
-                                    CursorRoleRow(
-                                        assignment: assignment,
-                                        hasSelectedFolder: controller.selectedFolderIsValid
-                                    )
-                                        .tag(SidebarCursorItem.primary(role))
-                                        .id(SidebarCursorItem.primary(role))
-                                        .contentShape(Rectangle())
-                                }
-                            }
-
-                            Section {
-                                Button {
-                                    isSupplementalExpanded.toggle()
-                                    if isSupplementalExpanded && !hasShownAdditionalCursorHintThisLaunch {
-                                        hasShownAdditionalCursorHintThisLaunch = true
-                                        controller.activeAlert = UserFacingAlert(
-                                            title: Localized.string("app.additionalCursors"),
-                                            message: Localized.string("app.additionalCursorHint")
+                        ZStack(alignment: .topTrailing) {
+                            List(selection: $selection) {
+                                ForEach(CursorRole.allCases) { role in
+                                    if let assignment = controller.assignment(for: role) {
+                                        CursorRoleRow(
+                                            assignment: assignment,
+                                            hasSelectedFolder: controller.selectedFolderIsValid
                                         )
+                                            .tag(SidebarCursorItem.primary(role))
+                                            .id(SidebarCursorItem.primary(role))
+                                            .contentShape(Rectangle())
                                     }
-                                    if !isSupplementalExpanded {
-                                        if case .supplemental = selection {
-                                            selection = .primary(.arrow)
+                                }
+
+                                Section {
+                                    Button {
+                                        isSupplementalExpanded.toggle()
+                                        if isSupplementalExpanded && !hasShownAdditionalCursorHintThisLaunch {
+                                            hasShownAdditionalCursorHintThisLaunch = true
+                                            controller.activeAlert = UserFacingAlert(
+                                                title: Localized.string("app.additionalCursors"),
+                                                message: Localized.string("app.additionalCursorHint")
+                                            )
+                                        }
+                                        if !isSupplementalExpanded {
+                                            if case .supplemental = selection {
+                                                selection = .primary(.arrow)
+                                            }
+                                        }
+                                    } label: {
+                                        AdditionalCursorsHeader(isExpanded: isSupplementalExpanded)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .focusable(false)
+
+                                    if isSupplementalExpanded {
+                                        ForEach(SupplementalCursorRole.allCases) { role in
+                                            SupplementalCursorRoleRow(assignment: controller.supplementalAssignment(for: role))
+                                                .contentShape(Rectangle())
+                                                .tag(SidebarCursorItem.supplemental(role))
+                                                .id(SidebarCursorItem.supplemental(role))
                                         }
                                     }
-                                } label: {
-                                    AdditionalCursorsHeader(isExpanded: isSupplementalExpanded)
                                 }
-                                .buttonStyle(.plain)
-                                .focusable(false)
+                            }
+                            .listStyle(.sidebar)
+                            .scrollContentBackground(.hidden)
+                            // Clear the traffic lights, which float over the top of this card.
+                            .padding(.top, sidebarTopPadding)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .fill(Color.primary.opacity(0.05))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+                                    )
+                            )
+                            .onSelectionChange(of: selection) { newValue in
+                                guard let newValue else { return }
+                                scrollSidebar(to: newValue, proxy: proxy)
+                            }
+                            .onAppear {
+                                if let selection {
+                                    scrollSidebar(to: selection, proxy: proxy)
+                                }
+                            }
 
-                                if isSupplementalExpanded {
-                                    ForEach(SupplementalCursorRole.allCases) { role in
-                                        SupplementalCursorRoleRow(assignment: controller.supplementalAssignment(for: role))
-                                            .contentShape(Rectangle())
-                                            .tag(SidebarCursorItem.supplemental(role))
-                                            .id(SidebarCursorItem.supplemental(role))
-                                    }
+                            if sparkleUpdateState.hasAvailableUpdate {
+                                Button {
+                                    sparkleUpdater.showAvailableUpdate()
+                                } label: {
+                                    Label(Localized.string("update.available"), systemImage: "arrow.down.circle.fill")
                                 }
+                                .font(.caption.weight(.semibold))
+                                .buttonStyle(.borderedProminent)
+                                .controlSize(.small)
+                                .focusable(false)
+                                .padding(.top, 8)
+                                .padding(.trailing, 14)
+                                .transition(.opacity.combined(with: .scale(scale: 0.96, anchor: .topTrailing)))
                             }
                         }
-                        .listStyle(.sidebar)
-                        .scrollContentBackground(.hidden)
-                        // Clear the traffic lights, which float over the top of this card.
-                        .padding(.top, 26)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .fill(Color.primary.opacity(0.05))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                        .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
-                                )
-                        )
-                        .onSelectionChange(of: selection) { newValue in
-                            guard let newValue else { return }
-                            scrollSidebar(to: newValue, proxy: proxy)
-                        }
-                        .onAppear {
-                            if let selection {
-                                scrollSidebar(to: selection, proxy: proxy)
-                            }
-                        }
+                        .animation(.easeInOut(duration: 0.16), value: sparkleUpdateState.hasAvailableUpdate)
                     }
                     .frame(width: 250)
 
@@ -178,6 +205,7 @@ struct SettingsView: View {
         }
         .onAppear {
             installKeyMonitorIfNeeded()
+            sparkleUpdater.checkForAvailableUpdateOnce()
         }
         .onDisappear {
             removeKeyMonitor()
