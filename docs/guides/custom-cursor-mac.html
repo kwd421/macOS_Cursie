@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to Change Your Mac Cursor | Custom .cur and .ani Cursors on macOS — Cursie</title>
+  <meta name="description" content="Learn how to use custom cursors on a Mac. Cursie imports Windows .cur and .ani cursor packs, previews every role, and applies them to macOS system cursors.">
+  <link rel="canonical" href="https://cursie-appcast.pages.dev/guides/custom-cursor-mac">
+  <link rel="alternate" hreflang="en" href="https://cursie-appcast.pages.dev/guides/custom-cursor-mac">
+  <link rel="alternate" hreflang="ko" href="https://cursie-appcast.pages.dev/ko/mac-custom-cursor">
+  <link rel="alternate" hreflang="x-default" href="https://cursie-appcast.pages.dev/guides/custom-cursor-mac">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="How to change your Mac cursor — Cursie">
+  <meta property="og:description" content="Use Windows .cur and .ani cursor packs as custom macOS system cursors.">
+  <meta property="og:url" content="https://cursie-appcast.pages.dev/guides/custom-cursor-mac">
+  <meta property="og:image" content="https://cursie-appcast.pages.dev/assets/cursie-preview.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to change your Mac cursor with custom .cur and .ani files",
+    "description": "Use Cursie to apply Windows cursor packs to macOS system cursors.",
+    "image": "https://cursie-appcast.pages.dev/assets/cursie-preview.png",
+    "tool": [{"@type": "HowToTool", "name": "Cursie"}],
+    "step": [
+      {"@type": "HowToStep", "name": "Install Cursie", "text": "Download Cursie and move it to Applications."},
+      {"@type": "HowToStep", "name": "Import a cursor pack", "text": "Choose or drag in a folder containing Windows .cur or .ani files."},
+      {"@type": "HowToStep", "name": "Preview each role", "text": "Review the arrow, text, link, busy, and resize cursor mappings."},
+      {"@type": "HowToStep", "name": "Apply to macOS", "text": "Apply the approved set to your Mac system cursors."}
+    ]
+  }
+  </script>
+  <style>
+    :root { --ink:#3a3550; --soft:#6f6890; --grape:#7c3aed; --paper:#fff; --line:rgba(124,58,237,.16); }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:linear-gradient(180deg,#f8effa 0,#fff 320px); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif; }
+    a { color:var(--grape); }
+    .wrap { width:min(820px,calc(100% - 40px)); margin:0 auto; }
+    nav { display:flex; align-items:center; justify-content:space-between; padding:22px 0; font-size:.9rem; }
+    .brand { display:flex; align-items:center; gap:9px; color:var(--ink); font-weight:800; text-decoration:none; }
+    .brand img { width:30px; height:30px; border-radius:8px; }
+    nav a:not(.brand) { text-decoration:none; font-weight:700; }
+    header { padding:68px 0 44px; text-align:center; }
+    .eyebrow { margin:0 0 14px; color:var(--grape); font-size:.78rem; font-weight:800; letter-spacing:.12em; }
+    h1 { max-width:760px; margin:0 auto 20px; font-size:clamp(2.2rem,6vw,4.3rem); line-height:1.08; letter-spacing:-.045em; }
+    .lede { max-width:660px; margin:0 auto; color:var(--soft); font-size:1.1rem; line-height:1.75; }
+    .actions { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin:30px 0 42px; }
+    .button { display:inline-block; padding:13px 20px; border-radius:999px; text-decoration:none; font-weight:800; }
+    .primary { color:#fff; background:linear-gradient(135deg,var(--grape),#b06ff0); box-shadow:0 8px 24px rgba(124,58,237,.25); }
+    .secondary { color:var(--grape); border:1px solid rgba(124,58,237,.25); background:rgba(255,255,255,.74); }
+    .shot { display:block; width:100%; border-radius:22px; box-shadow:0 20px 55px rgba(71,48,112,.18); }
+    main { padding:52px 0 76px; }
+    section { margin:0 0 52px; }
+    h2 { margin:0 0 16px; font-size:clamp(1.55rem,3vw,2.15rem); letter-spacing:-.035em; }
+    h3 { margin:0 0 8px; font-size:1.1rem; }
+    p, li { color:var(--soft); font-size:1rem; line-height:1.8; }
+    .intro { font-size:1.06rem; }
+    .steps { display:grid; gap:14px; padding:0; list-style:none; counter-reset:steps; }
+    .steps li { position:relative; padding:23px 24px 22px 74px; border:1px solid var(--line); border-radius:18px; background:var(--paper); }
+    .steps li::before { counter-increment:steps; content:counter(steps); position:absolute; left:23px; top:22px; display:grid; place-items:center; width:31px; height:31px; border-radius:50%; color:#fff; background:var(--grape); font-size:.88rem; font-weight:800; }
+    .steps p { margin:0; }
+    .note { padding:21px 24px; border-radius:17px; background:#f4edff; color:var(--ink); }
+    .faq { border-top:1px solid var(--line); }
+    .faq div { padding:20px 0; border-bottom:1px solid var(--line); }
+    .faq p { margin:0; }
+    footer { padding:28px 0 42px; border-top:1px solid var(--line); color:var(--soft); font-size:.85rem; text-align:center; }
+    @media (max-width:600px) { header { padding-top:42px; } .wrap { width:min(100% - 32px,820px); } .steps li { padding-left:68px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="/"><img src="../assets/app-icon.png" alt="Cursie"> Cursie</a>
+      <a href="/ko/mac-custom-cursor">한국어 가이드</a>
+    </nav>
+    <header>
+      <p class="eyebrow">MACOS CUSTOM CURSOR GUIDE</p>
+      <h1>How to change your<br>Mac cursor.</h1>
+      <p class="lede">Import Windows <code>.cur</code> and <code>.ani</code> cursor packs, preview every role, and apply a custom system cursor set to macOS with Cursie.</p>
+      <div class="actions">
+        <a class="button primary" href="https://github.com/kwd421/macOS_Cursie/releases/latest">Download Cursie free</a>
+        <a class="button secondary" href="/">Meet Cursie</a>
+      </div>
+      <img class="shot" src="../assets/cursie-preview.png" alt="Cursie previewing a Windows cursor pack before it is applied to macOS">
+    </header>
+    <main>
+      <section>
+        <h2>Use custom cursors on macOS</h2>
+        <p class="intro">macOS lets you adjust the pointer size and color, but applying a full custom cursor theme needs a cursor manager. Cursie imports the Windows <code>.cur</code> and animated <code>.ani</code> formats so you can use an existing cursor pack on your Mac.</p>
+      </section>
+      <section>
+        <h2>Change your Mac cursor in four steps</h2>
+        <ol class="steps">
+          <li><h3>Install Cursie</h3><p>Download the latest Cursie DMG and move the app to Applications. It supports Apple Silicon and Intel Macs.</p></li>
+          <li><h3>Import your cursor files</h3><p>Choose a folder containing <code>.cur</code> or <code>.ani</code> files, or drag a folder or single file onto Cursie.</p></li>
+          <li><h3>Preview the cursor roles</h3><p>Check the arrow, text, link, busy, and resize cursor mappings before you make any system-wide change. Animated cursors can be previewed too.</p></li>
+          <li><h3>Apply the custom cursor set</h3><p>Apply the reviewed set to macOS. You can replace individual roles manually when a pack uses unusual file names.</p></li>
+        </ol>
+      </section>
+      <section>
+        <h2>Restore the default Mac cursor</h2>
+        <p>When you want the standard pointer back, open Cursie’s pointer-reset guidance and use the macOS Pointer settings to reset the pointer colors. Preview a new pack before applying it so the arrow and text cursor are always the ones you expect.</p>
+        <p class="note"><strong>Compatibility tip:</strong> Packs with role names such as Normal, Text, Link, and Busy map most reliably. Very long animated cursors are balanced for dependable system registration.</p>
+      </section>
+      <section>
+        <h2>Custom Mac cursor FAQ</h2>
+        <div class="faq">
+          <div><h3>Can a Mac use Windows cursor files?</h3><p>Yes. Cursie imports Windows <code>.cur</code> and <code>.ani</code> files, maps them to macOS cursor roles, and lets you apply the result system-wide.</p></div>
+          <div><h3>Does this work with a MacBook trackpad?</h3><p>Yes. It changes the macOS system pointer shown when you use either a trackpad or an external mouse.</p></div>
+          <div><h3>Can I use animated custom cursors on a Mac?</h3><p>Yes. Cursie previews animated <code>.ani</code> files and supports applying them as part of a cursor set.</p></div>
+        </div>
+      </section>
+    </main>
+    <footer>© Cursie · <a href="/">Official website</a> · <a href="https://github.com/kwd421/macOS_Cursie">GitHub</a></footer>
+  </div>
+</body>
+</html>

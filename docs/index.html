@@ -91,13 +91,12 @@
     .nav-lang:hover { color: var(--grape); }
     .nav-dl {
       padding: 7px 17px;
-      background: linear-gradient(135deg, var(--grape), #b06ff0);
+      background: var(--grape-deep);
       color: #fff; font-size: 0.8rem; font-weight: 600;
       border-radius: 980px; text-decoration: none;
-      box-shadow: 0 4px 14px rgba(124,58,237,0.28);
-      transition: transform 120ms, box-shadow 120ms;
+      transition: background 120ms;
     }
-    .nav-dl:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,58,237,0.36); }
+    .nav-dl:hover { background: #6d28d9; }
 
     /* ── HERO ── */
     .hero {
@@ -106,29 +105,15 @@
       display: flex; flex-direction: column;
       align-items: center; text-align: center;
       padding: 132px max(24px, calc((100vw - 820px) / 2)) 0;
-      background:
-        radial-gradient(120% 80% at 50% 0%, #fbe6f3 0%, #e9ddfb 38%, #dcecfd 70%, #ffffff 100%);
+      background: linear-gradient(180deg, #f7f3fb 0%, #fff 72%);
       overflow: hidden;
     }
-    /* soft floating blobs */
-    .hero::before, .hero::after {
-      content: ''; position: absolute; border-radius: 50%;
-      filter: blur(60px); opacity: 0.55; z-index: 0; pointer-events: none;
-    }
-    .hero::before { width: 420px; height: 420px; background: #ffc8dd; top: -80px; left: -120px; }
-    .hero::after  { width: 460px; height: 460px; background: #bde0fe; top: 40px; right: -160px; }
-
     .hero > * { position: relative; z-index: 1; }
 
     .hero-icon {
-      width: 132px; height: 132px; border-radius: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 18px 50px rgba(124,58,237,0.30), 0 4px 12px rgba(124,58,237,0.16);
-      animation: float 5.5s ease-in-out infinite;
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      width: 112px; height: 112px; border-radius: 26px;
+      margin-bottom: 32px;
+      box-shadow: 0 12px 32px rgba(72,52,112,0.16);
     }
 
     .hero h1 {
@@ -137,8 +122,7 @@
       margin-bottom: 22px;
     }
     .hero h1 .grad {
-      background: linear-gradient(120deg, #c264e8 0%, #ff8fb8 50%, #6aa8ff 100%);
-      -webkit-background-clip: text; background-clip: text; color: transparent;
+      color: var(--grape-deep);
     }
     .hero-sub {
       font-size: clamp(1rem, 1.7vw, 1.25rem);
@@ -163,13 +147,12 @@
     .btn-gh:hover { background: rgba(255,255,255,0.92); border-color: rgba(140,120,200,0.5); }
     .btn-dl {
       display: inline-block; padding: 15px 34px;
-      background: linear-gradient(135deg, var(--grape), #b06ff0);
+      background: var(--grape-deep);
       color: #fff; font-size: 1.02rem; font-weight: 600;
       border-radius: 980px; text-decoration: none;
-      box-shadow: 0 8px 26px rgba(124,58,237,0.34);
-      transition: transform 130ms, box-shadow 130ms;
+      transition: background 130ms;
     }
-    .btn-dl:hover { transform: translateY(-2px); box-shadow: 0 12px 34px rgba(124,58,237,0.42); }
+    .btn-dl:hover { background: #6d28d9; }
     .hero-fine { font-size: 0.74rem; color: var(--ink-soft); opacity: 0.85; }
 
     .hero-shot {
@@ -183,10 +166,10 @@
 
     /* ── FEATURES ── */
     .features {
-      background: linear-gradient(180deg, #ffffff 0%, #faf6ff 100%);
+      background: #fff;
       padding: 110px max(24px, calc((100vw - 960px) / 2));
     }
-    .feat-head { text-align: center; margin-bottom: 64px; }
+    .feat-head { max-width: 680px; margin-bottom: 52px; }
     .feat-eyebrow {
       font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
       text-transform: uppercase; color: var(--grape); margin-bottom: 14px;
@@ -200,16 +183,17 @@
     }
     .feat-card {
       background: #fff;
-      border: 1px solid rgba(140,120,200,0.14);
-      border-radius: 24px;
-      padding: 40px 40px;
-      box-shadow: 0 10px 30px rgba(140,120,200,0.10);
+      border-top: 1px solid rgba(58,53,80,0.16);
+      padding: 28px 8px 24px 0;
     }
     .feat-card h3 {
       font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em;
       color: var(--ink); margin-bottom: 9px;
     }
     .feat-card p { font-size: 0.96rem; color: var(--ink-soft); line-height: 1.7; }
+    .guide-link { margin-top: 26px; }
+    .guide-link a { color: var(--grape-deep); font-size: 0.92rem; font-weight: 700; text-decoration: none; }
+    .guide-link a:hover { text-decoration: underline; }
 
     /* ── CREDITS ── */
     .credits {
@@ -278,9 +262,9 @@
   <!-- HERO -->
   <section class="hero">
     <img class="hero-icon" src="./assets/app-icon.png" alt="Cursie app icon">
-    <h1>Custom cursors<br><span class="grad">for macOS.</span></h1>
+    <h1>Windows cursor packs,<br><span class="grad">now on your Mac.</span></h1>
     <p class="hero-sub">
-      Load Windows <code>.cur</code> and <code>.ani</code> cursor packs and apply them straight to your Mac system cursors.
+      Bring in the <code>.cur</code> and <code>.ani</code> files you already have, check the mappings, and apply them to macOS.
     </p>
     <div class="hero-cta">
       <a class="btn-dl" href="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.8/Cursie.dmg">Download Cursie</a>
@@ -299,26 +283,27 @@
   <section class="features">
     <div class="feat-head">
       <p class="feat-eyebrow">Features</p>
-      <h2>Everything you need,<br>nothing you don't.</h2>
+      <h2>Import, check, and apply.</h2>
     </div>
     <div class="feat-grid">
       <div class="feat-card">
-        <h3>Live preview</h3>
-        <p>Every role mapped and visible before you apply — actual size and zoomed, side by side.</p>
+        <h3>Preview before applying</h3>
+        <p>Check the arrow, text, link, and other cursor roles at actual size and zoomed in.</p>
       </div>
       <div class="feat-card">
-        <h3>One-click apply</h3>
-        <p>Replaces your system cursors instantly. To revert, Cursie opens the right System Settings screen.</p>
+        <h3>Automatic role mapping</h3>
+        <p>Cursie matches files to cursor roles by name. If it gets one wrong, you can replace that role yourself.</p>
       </div>
       <div class="feat-card">
-        <h3>Drag &amp; drop</h3>
-        <p>Drop a folder or file straight onto the app. Swap individual roles without starting over.</p>
+        <h3>Import a whole folder</h3>
+        <p>Choose a cursor-pack folder or drop it onto the app. Individual files work too.</p>
       </div>
       <div class="feat-card">
-        <h3>Auto-update</h3>
-        <p>New versions download and install inside the app. No manual trips to GitHub.</p>
+        <h3>Updates inside the app</h3>
+        <p>When a new version is available, Cursie can download and install it for you.</p>
       </div>
     </div>
+    <p class="guide-link"><a href="/guides/custom-cursor-mac">New to Cursie? Read the setup guide →</a></p>
   </section>
 
   <!-- CREDITS -->

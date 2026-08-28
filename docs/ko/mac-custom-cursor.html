@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>맥 커스텀 커서 변경 방법 | .cur·.ani 커서팩을 macOS에 적용하는 법 — Cursie</title>
+  <meta name="description" content="맥 커스텀 커서를 바꾸는 방법을 안내합니다. Cursie로 Windows .cur·.ani 커서팩을 불러와 macOS 시스템 마우스 포인터에 적용하고 원래 커서로 되돌리는 방법까지 확인하세요.">
+  <link rel="canonical" href="https://cursie-appcast.pages.dev/ko/mac-custom-cursor">
+  <link rel="alternate" hreflang="en" href="https://cursie-appcast.pages.dev/guides/custom-cursor-mac">
+  <link rel="alternate" hreflang="ko" href="https://cursie-appcast.pages.dev/ko/mac-custom-cursor">
+  <link rel="alternate" hreflang="x-default" href="https://cursie-appcast.pages.dev/guides/custom-cursor-mac">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="맥 커스텀 커서 변경 방법 — Cursie">
+  <meta property="og:description" content="Windows .cur·.ani 커서팩을 macOS 시스템 커서에 적용하는 방법입니다.">
+  <meta property="og:url" content="https://cursie-appcast.pages.dev/ko/mac-custom-cursor">
+  <meta property="og:image" content="https://cursie-appcast.pages.dev/assets/ko-preview.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "맥 커스텀 커서 변경 방법",
+    "description": "Cursie로 Windows .cur 및 .ani 커서팩을 macOS 시스템 커서에 적용하는 방법",
+    "image": "https://cursie-appcast.pages.dev/assets/ko-preview.png",
+    "tool": [{"@type": "HowToTool", "name": "Cursie"}],
+    "step": [
+      {"@type": "HowToStep", "name": "Cursie 설치", "text": "Cursie를 다운로드해 Applications 폴더로 옮깁니다."},
+      {"@type": "HowToStep", "name": "커서팩 불러오기", "text": "Windows .cur 또는 .ani 파일이 있는 폴더를 선택하거나 앱에 드래그합니다."},
+      {"@type": "HowToStep", "name": "미리보기와 적용", "text": "매핑된 커서 역할을 확인하고 시스템 커서에 적용합니다."},
+      {"@type": "HowToStep", "name": "기본 커서로 되돌리기", "text": "Cursie의 포인터 재설정 안내를 열어 macOS 포인터 설정에서 기본값으로 되돌립니다."}
+    ]
+  }
+  </script>
+  <style>
+    :root { --ink:#3a3550; --soft:#6f6890; --grape:#7c3aed; --paper:#fff; --wash:#faf6ff; --line:rgba(124,58,237,.16); }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:linear-gradient(180deg,#f8effa 0,#fff 320px); font-family:"Apple SD Gothic Neo",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif; word-break:keep-all; }
+    a { color:var(--grape); }
+    .wrap { width:min(820px,calc(100% - 40px)); margin:0 auto; }
+    nav { display:flex; align-items:center; justify-content:space-between; padding:22px 0; font-size:.9rem; }
+    .brand { display:flex; align-items:center; gap:9px; color:var(--ink); font-weight:800; text-decoration:none; }
+    .brand img { width:30px; height:30px; border-radius:8px; }
+    nav a:not(.brand) { text-decoration:none; font-weight:700; }
+    header { padding:68px 0 44px; text-align:center; }
+    .eyebrow { margin:0 0 14px; color:var(--grape); font-size:.78rem; font-weight:800; letter-spacing:.12em; }
+    h1 { max-width:760px; margin:0 auto 20px; font-size:clamp(2.2rem,6vw,4.3rem); line-height:1.08; letter-spacing:-.045em; }
+    .lede { max-width:660px; margin:0 auto; color:var(--soft); font-size:1.1rem; line-height:1.75; }
+    .actions { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin:30px 0 42px; }
+    .button { display:inline-block; padding:13px 20px; border-radius:999px; text-decoration:none; font-weight:800; }
+    .primary { color:#fff; background:linear-gradient(135deg,var(--grape),#b06ff0); box-shadow:0 8px 24px rgba(124,58,237,.25); }
+    .secondary { color:var(--grape); border:1px solid rgba(124,58,237,.25); background:rgba(255,255,255,.74); }
+    .shot { display:block; width:100%; border-radius:22px; box-shadow:0 20px 55px rgba(71,48,112,.18); }
+    main { padding:52px 0 76px; }
+    section { margin:0 0 52px; }
+    h2 { margin:0 0 16px; font-size:clamp(1.55rem,3vw,2.15rem); letter-spacing:-.035em; }
+    h3 { margin:0 0 8px; font-size:1.1rem; }
+    p, li { color:var(--soft); font-size:1rem; line-height:1.8; }
+    .intro { font-size:1.06rem; }
+    .steps { display:grid; gap:14px; padding:0; list-style:none; counter-reset:steps; }
+    .steps li { position:relative; padding:23px 24px 22px 74px; border:1px solid var(--line); border-radius:18px; background:var(--paper); }
+    .steps li::before { counter-increment:steps; content:counter(steps); position:absolute; left:23px; top:22px; display:grid; place-items:center; width:31px; height:31px; border-radius:50%; color:#fff; background:var(--grape); font-size:.88rem; font-weight:800; }
+    .steps p { margin:0; }
+    .note { padding:21px 24px; border-radius:17px; background:#f4edff; color:var(--ink); }
+    .faq { border-top:1px solid var(--line); }
+    .faq div { padding:20px 0; border-bottom:1px solid var(--line); }
+    .faq p { margin:0; }
+    footer { padding:28px 0 42px; border-top:1px solid var(--line); color:var(--soft); font-size:.85rem; text-align:center; }
+    @media (max-width:600px) { header { padding-top:42px; } .wrap { width:min(100% - 32px,820px); } .steps li { padding-left:68px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="/ko/"><img src="../assets/app-icon.png" alt="Cursie"> Cursie</a>
+      <a href="/guides/custom-cursor-mac">English guide</a>
+    </nav>
+    <header>
+      <p class="eyebrow">MACOS CUSTOM CURSOR GUIDE</p>
+      <h1>맥 커스텀 커서,<br>직접 바꾸는 방법.</h1>
+      <p class="lede">Windows <code>.cur</code>·<code>.ani</code> 커서팩을 불러와 macOS 시스템 마우스 포인터에 적용하는 방법입니다. Cursie에서는 파일 매핑과 미리보기를 먼저 확인할 수 있습니다.</p>
+      <div class="actions">
+        <a class="button primary" href="https://github.com/kwd421/macOS_Cursie/releases/latest">Cursie 무료 다운로드</a>
+        <a class="button secondary" href="/ko/">Cursie 소개 보기</a>
+      </div>
+      <img class="shot" src="../assets/ko-preview.png" alt="Windows 커서팩을 불러와 macOS 시스템 커서 역할별로 미리보는 Cursie 화면">
+    </header>
+    <main>
+      <section>
+        <h2>맥에서 커스텀 커서를 쓰려면</h2>
+        <p class="intro">macOS 기본 설정에서는 포인터 크기와 색상 정도만 조절할 수 있습니다. 별도의 커서 테마를 적용하려면 커서 역할별 이미지를 다루는 앱이 필요합니다. Cursie는 Windows에서 널리 쓰이는 <code>.cur</code>, 애니메이션 <code>.ani</code> 커서 파일을 macOS용 시스템 커서로 적용하도록 돕습니다.</p>
+      </section>
+      <section>
+        <h2>맥 커서 변경 4단계</h2>
+        <ol class="steps">
+          <li><h3>Cursie를 설치합니다</h3><p>최신 Cursie DMG를 열고 앱을 Applications 폴더로 옮깁니다. Apple Silicon과 Intel Mac에서 사용할 수 있습니다.</p></li>
+          <li><h3>커서팩 폴더를 불러옵니다</h3><p><code>.cur</code> 또는 <code>.ani</code> 파일이 들어 있는 폴더를 선택합니다. 폴더나 개별 파일을 앱으로 드래그해도 됩니다.</p></li>
+          <li><h3>커서 역할과 움직임을 미리 봅니다</h3><p>화살표, 텍스트, 링크, 대기 등 역할별 매핑을 확인합니다. 애니메이션 커서는 적용 전에 움직임을 미리 볼 수 있습니다.</p></li>
+          <li><h3>시스템 커서에 적용합니다</h3><p>확인 후 적용하면 Mac 전반의 시스템 마우스 커서가 바뀝니다. 일부 역할은 필요에 따라 개별 파일로 교체할 수 있습니다.</p></li>
+        </ol>
+      </section>
+      <section>
+        <h2>기본 맥 커서로 되돌리는 법</h2>
+        <p>원래 포인터로 돌아가고 싶다면 Cursie에서 포인터 재설정 안내를 열고 macOS 포인터 설정의 색상 재설정을 사용하세요. 커서팩을 바꾸기 전에는 항상 미리보기로 화살표와 텍스트 커서가 원하는 모양인지 확인하는 편이 좋습니다.</p>
+        <p class="note"><strong>호환성 팁:</strong> 파일 이름이 Normal, Text, Link, Busy처럼 일반적인 역할명일수록 자동 매핑이 잘 됩니다. 긴 애니메이션 커서는 시스템 적용을 위해 균형 잡힌 프레임 수로 처리됩니다.</p>
+      </section>
+      <section>
+        <h2>자주 묻는 질문</h2>
+        <div class="faq">
+          <div><h3>Windows 커서팩을 맥에서 바로 쓸 수 있나요?</h3><p>네. Cursie는 Windows <code>.cur</code>·<code>.ani</code> 파일과 폴더를 불러와 커서 역할별로 매핑하고 적용할 수 있습니다.</p></div>
+          <div><h3>맥북 마우스 커서도 바뀌나요?</h3><p>네. 외장 마우스와 트랙패드 모두에서 보이는 macOS 시스템 포인터를 대상으로 합니다.</p></div>
+          <div><h3>애니메이션 커서도 가능한가요?</h3><p>가능합니다. <code>.ani</code> 파일은 Cursie 안에서 움직임을 확인한 뒤 적용할 수 있습니다.</p></div>
+        </div>
+      </section>
+    </main>
+    <footer>© Cursie · <a href="/ko/">공식 홈페이지</a> · <a href="https://github.com/kwd421/macOS_Cursie">GitHub</a></footer>
+  </div>
+</body>
+</html>
