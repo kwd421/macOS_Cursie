@@ -110,12 +110,68 @@ struct ThemeResolver {
 
     private func fuzzyScore(for role: CursorRole, candidate: URL) -> Int {
         let name = canonicalStem(candidate)
+        let words = Self.normalizedWords(candidate.deletingPathExtension().lastPathComponent)
         return Self.fuzzyKeywords[role, default: []].reduce(into: 0) { score, keyword in
-            if name.contains(Self.normalizedKeyword(keyword)) {
+            let normalized = Self.normalizedKeyword(keyword)
+            guard !normalized.isEmpty else { return }
+
+            if Self.isSafeFuzzyMatch(
+                normalizedKeyword: normalized,
+                originalKeyword: keyword,
+                candidateStem: name,
+                candidateWords: words
+            ) {
                 score += 1
             }
         }
     }
+
+    private static func isSafeFuzzyMatch(
+        normalizedKeyword: String,
+        originalKeyword: String,
+        candidateStem: String,
+        candidateWords: [String]
+    ) -> Bool {
+        let keywordWords = normalizedWords(originalKeyword)
+        if !keywordWords.isEmpty, containsSequence(keywordWords, in: candidateWords) {
+            return true
+        }
+
+        // Some established cursor names are compounds written without separators.
+        // Restrict substring matching to those explicit compounds so short names such
+        // as `loc` and `pen` cannot accidentally match Blocked or OpenHand.
+        if compoundSubstringKeywords.contains(normalizedKeyword) {
+            return candidateStem.contains(normalizedKeyword)
+        }
+
+        // CJK cursor packs commonly use unseparated compound names. Matching their
+        // complete keyword remains useful and does not create the ASCII word-fragment
+        // collisions that prompted the stricter rule above.
+        if normalizedKeyword.unicodeScalars.contains(where: { !$0.isASCII }) {
+            return candidateStem.contains(normalizedKeyword)
+        }
+
+        return false
+    }
+
+    private static func containsSequence(_ needle: [String], in haystack: [String]) -> Bool {
+        guard !needle.isEmpty, needle.count <= haystack.count else { return false }
+        if needle.count == 1 {
+            return haystack.contains(needle[0])
+        }
+        for start in 0...(haystack.count - needle.count) {
+            if Array(haystack[start..<(start + needle.count)]) == needle {
+                return true
+            }
+        }
+        return false
+    }
+
+    private static let compoundSubstringKeywords: Set<String> = [
+        "pointinghand", "openhand", "closedhand", "questionmark", "notallowed", "noaccess",
+        "leftright", "updown", "diagonal1", "diagonal2", "dgn1", "dgn2", "nwse", "nesw",
+        "segundoplano", "arriereplan", "nichtverfugbar"
+    ]
 
     private static let exactAliases: [CursorRole: [String]] = [
         .arrow: ["일반선택", "일반", "기본선택", "arrow", "normal", "pointer", "default"],
@@ -394,6 +450,19 @@ struct ThemeResolver {
             .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: Locale(identifier: "en_US_POSIX"))
             .components(separatedBy: CharacterSet.alphanumerics.inverted)
             .joined()
+    }
+
+    private static func normalizedWords(_ value: String) -> [String] {
+        let camelCaseSeparated = value.replacingOccurrences(
+            of: "([a-z0-9])([A-Z])",
+            with: "$1 $2",
+            options: .regularExpression
+        )
+        return camelCaseSeparated
+            .precomposedStringWithCanonicalMapping
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: Locale(identifier: "en_US_POSIX"))
+            .components(separatedBy: CharacterSet.alphanumerics.inverted)
+            .filter { !$0.isEmpty }
     }
 
     private func canonicalFileName(_ value: String) -> String {

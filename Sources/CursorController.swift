@@ -156,6 +156,87 @@ struct CursorTheme: @unchecked Sendable {
     }
 }
 
+private struct CursorThemeLoadRequest: @unchecked Sendable {
+    let baseDirectory: URL?
+    let primaryOverrides: [CursorRole: URL]
+    let supplementalOverrides: [SupplementalCursorRole: URL]
+}
+
+private struct CursorThemeLoadResult: @unchecked Sendable {
+    let theme: CursorTheme
+    let filesByRole: [CursorRole: URL]
+    let fallbackRoles: Set<CursorRole>
+    let missingSupplementalOverrides: [URL]
+}
+
+private struct CursorThemeLoader {
+    static func load(_ request: CursorThemeLoadRequest) throws -> CursorThemeLoadResult {
+        let parser = AniParser()
+        var animations: [CursorRole: CursorAnimation] = [:]
+        var supplementalAnimations: [SupplementalCursorRole: CursorAnimation] = [:]
+        var parsedAnimationsByURL: [URL: CursorAnimation] = [:]
+        var resolvedFiles: [CursorRole: URL] = [:]
+        var fallbackRoles = Set<CursorRole>()
+        var missingSupplementalOverrides: [URL] = []
+
+        if let baseDirectory = request.baseDirectory {
+            let resolvedTheme = try ThemeResolver().resolveTheme(in: baseDirectory)
+            resolvedFiles = resolvedTheme.filesByRole
+            fallbackRoles = resolvedTheme.fallbackRoles
+        } else if request.primaryOverrides.isEmpty && request.supplementalOverrides.isEmpty {
+            throw CursorError.missingTheme(Localized.string("error.noThemeFolderSelected"))
+        }
+
+        func parsedAnimation(for url: URL) throws -> CursorAnimation {
+            try Task.checkCancellation()
+            let normalizedURL = url.standardizedFileURL
+            if let cached = parsedAnimationsByURL[normalizedURL] {
+                return cached
+            }
+            let parsed = try autoreleasepool {
+                try parser.parseCursorFile(at: url)
+            }
+            parsedAnimationsByURL[normalizedURL] = parsed
+            return parsed
+        }
+
+        for role in CursorRole.allCases {
+            try Task.checkCancellation()
+            if let override = request.primaryOverrides[role], FileManager.default.fileExists(atPath: override.path) {
+                animations[role] = try parsedAnimation(for: override)
+                resolvedFiles[role] = override
+                continue
+            }
+            guard let url = resolvedFiles[role] else { continue }
+            animations[role] = try parsedAnimation(for: url)
+        }
+
+        for role in SupplementalCursorRole.allCases {
+            try Task.checkCancellation()
+            guard let override = request.supplementalOverrides[role] else { continue }
+            if FileManager.default.fileExists(atPath: override.path) {
+                supplementalAnimations[role] = try parsedAnimation(for: override)
+            } else {
+                missingSupplementalOverrides.append(override)
+            }
+        }
+
+        if let baseDirectory = request.baseDirectory, animations[.arrow] == nil {
+            throw CursorError.missingTheme(baseDirectory.path)
+        }
+        guard !animations.isEmpty || !supplementalAnimations.isEmpty else {
+            throw CursorError.missingTheme(Localized.string("error.noThemeFolderSelected"))
+        }
+
+        return CursorThemeLoadResult(
+            theme: CursorTheme(animations: animations, supplementalAnimations: supplementalAnimations),
+            filesByRole: resolvedFiles,
+            fallbackRoles: fallbackRoles,
+            missingSupplementalOverrides: missingSupplementalOverrides
+        )
+    }
+}
+
 enum SupplementalCursorRole: String, CaseIterable, Identifiable {
     case contextualMenu
     case contextMenuLegacy
@@ -312,6 +393,11 @@ struct SystemApplyProgress: Sendable {
         detailKey: "systemApply.progressAgent",
         fraction: 0.90
     )
+    static let restoring = SystemApplyProgress(
+        titleKey: "systemApply.restoreProgressTitle",
+        detailKey: "systemApply.restoreProgressDetail",
+        fraction: 0.65
+    )
 }
 
 struct CurrentCursorPreviews {
@@ -412,6 +498,8 @@ final class CursorController: ObservableObject {
         case systemApplySuccess
         case systemApplyWarning(String)
         case systemApplyFailure(String)
+        case systemRestoreSuccess
+        case systemRestoreFailure(String)
         case loaded(folderName: String, resolvedRoleCount: Int, totalRoleCount: Int)
         case loadFailure(String)
     }
@@ -422,6 +510,7 @@ final class CursorController: ObservableObject {
     @Published private(set) var assignments: [CursorAssignment] = []
     @Published private(set) var statusText = Localized.string("status.startingUp")
     @Published private(set) var isApplyingSystemCursors = false
+    @Published private(set) var isLoadingTheme = false
     @Published private(set) var systemApplyProgress = SystemApplyProgress.preparing
     @Published var activeAlert: UserFacingAlert?
     @Published var exportAuthorName: String {
@@ -443,11 +532,9 @@ final class CursorController: ObservableObject {
         }
     }
 
-    private let parser = AniParser()
     private let capeExporter = CapeExporter()
     private let cursorSystemApplyService: CursorSystemApplyService
     private let currentCursorPreviewLoader: CurrentCursorPreviewLoading
-    private let themeResolver = ThemeResolver()
     private let defaults: UserDefaults
     private var overrideURLs: [CursorRole: URL] = [:]
     private var supplementalOverrideURLs: [SupplementalCursorRole: URL] = [:]
@@ -456,6 +543,8 @@ final class CursorController: ObservableObject {
     private var currentSupplementalPreviews: [SupplementalCursorRole: CursorAnimation] = [:]
     private var statusState: StatusState = .startingUp
     private var securityScopedURLs: [URL: URL] = [:]
+    private var reloadGeneration: UInt = 0
+    private var reloadTask: Task<Void, Never>?
 
     var hasMenuStatusWarning: Bool {
         if case .loadFailure = statusState {
@@ -497,6 +586,7 @@ final class CursorController: ObservableObject {
     }
 
     deinit {
+        reloadTask?.cancel()
         for url in securityScopedURLs.values {
             url.stopAccessingSecurityScopedResource()
         }
@@ -601,7 +691,9 @@ final class CursorController: ObservableObject {
 
     func exportMousecapeCape(authorName: String) {
         do {
-            let resolution = try loadTheme()
+            guard !isLoadingTheme, !currentTheme.animations.isEmpty || !currentTheme.supplementalAnimations.isEmpty else {
+                throw CursorError.missingTheme(Localized.string("error.noThemeFolderSelected"))
+            }
             let trimmedAuthor = authorName.trimmingCharacters(in: .whitespacesAndNewlines)
             let author: String
             if trimmedAuthor.isEmpty {
@@ -635,7 +727,7 @@ final class CursorController: ObservableObject {
                 name: exportName,
                 author: author,
                 identifier: "local.\(Bundle.main.bundleIdentifier ?? "capeforge").\(UUID().uuidString.lowercased())",
-                theme: resolution.theme,
+                theme: currentTheme,
                 sizeMultiplier: exportSizeMultiplier,
                 to: url
             )
@@ -647,7 +739,7 @@ final class CursorController: ObservableObject {
     }
 
     func applyToSystemCursors() {
-        guard !isApplyingSystemCursors else { return }
+        guard !isApplyingSystemCursors, !isLoadingTheme else { return }
         isApplyingSystemCursors = true
         systemApplyProgress = .preparing
 
@@ -656,10 +748,11 @@ final class CursorController: ObservableObject {
         // background task. The expensive work — image rendering in prepareApply and
         // the Mousecape `ps` conflict check — must NOT run on the main thread, or
         // the UI freezes for the duration of the apply.
-        let resolution: (theme: CursorTheme, filesByRole: [CursorRole: URL], fallbackRoles: Set<CursorRole>)
         let executableURL: URL
         do {
-            resolution = try loadTheme()
+            guard !currentTheme.animations.isEmpty || !currentTheme.supplementalAnimations.isEmpty else {
+                throw CursorError.missingTheme(Localized.string("error.noThemeFolderSelected"))
+            }
             guard let executable = Bundle.main.executableURL else {
                 throw CursorError.systemCursorApplyFailed(Localized.string("error.systemApplyExecutableMissing"))
             }
@@ -672,7 +765,7 @@ final class CursorController: ObservableObject {
         }
 
         let service = cursorSystemApplyService
-        let theme = resolution.theme
+        let theme = currentTheme
         let sizeMultiplier = exportSizeMultiplier
         let author = defaultAuthorName()
         let bundleIdentifier = Bundle.main.bundleIdentifier
@@ -716,46 +809,92 @@ final class CursorController: ObservableObject {
         }
     }
 
-    func openPointerSettings() {
-        let candidates = [
-            "x-apple.systempreferences:com.apple.Accessibility-Settings.extension?Seeing_Cursor",
-            "x-apple.systempreferences:com.apple.preference.universalaccess?Seeing_Cursor"
-        ]
-        for candidate in candidates {
-            guard let url = URL(string: candidate), NSWorkspace.shared.open(url) else {
-                continue
+    func restoreSystemCursors() {
+        guard !isApplyingSystemCursors else { return }
+        isApplyingSystemCursors = true
+        systemApplyProgress = .restoring
+        let service = cursorSystemApplyService
+
+        Task.detached {
+            do {
+                try service.restoreDefaults()
+                await MainActor.run {
+                    self.isApplyingSystemCursors = false
+                    self.setStatus(.systemRestoreSuccess)
+                }
+            } catch {
+                await MainActor.run {
+                    self.isApplyingSystemCursors = false
+                    self.setStatus(.systemRestoreFailure(error.localizedDescription))
+                    self.presentError(error.localizedDescription)
+                }
             }
-            return
         }
-        NSWorkspace.shared.open(URL(fileURLWithPath: "/System/Applications/System Settings.app"))
     }
 
     func reload() {
-        do {
-            let resolution = try loadTheme()
-            currentTheme = resolution.theme
-            assignments = makeAssignments(
-                from: resolution.theme,
-                resolvedFiles: resolution.filesByRole,
-                fallbackRoles: resolution.fallbackRoles
-            )
-            resolvedRoleCount = assignments.filter(\.isResolved).count
-            selectedFolderIsValid = selectedFolderURL != nil
-            if let folderURL = selectedFolderURL {
-                setStatus(.loaded(folderName: folderURL.lastPathComponent, resolvedRoleCount: resolvedRoleCount, totalRoleCount: CursorRole.allCases.count))
-            } else {
-                setStatus(.chooseCursorFolder)
+        reloadGeneration &+= 1
+        let generation = reloadGeneration
+        reloadTask?.cancel()
+        isLoadingTheme = true
+        let request = CursorThemeLoadRequest(
+            baseDirectory: selectedFolderURL,
+            primaryOverrides: overrideURLs,
+            supplementalOverrides: supplementalOverrideURLs
+        )
+
+        reloadTask = Task { [weak self] in
+            let worker = Task.detached(priority: .userInitiated) {
+                try CursorThemeLoader.load(request)
             }
-        } catch {
-            currentTheme = CursorTheme(animations: [:], supplementalAnimations: [:])
-            assignments = unresolvedAssignments()
-            resolvedRoleCount = 0
-            selectedFolderIsValid = false
-            setStatus(.loadFailure(error.localizedDescription))
-            if selectedFolderURL != nil {
-                presentError(error.localizedDescription)
+            let result: Result<CursorThemeLoadResult, Error>
+            do {
+                result = .success(try await withTaskCancellationHandler {
+                    try await worker.value
+                } onCancel: {
+                    worker.cancel()
+                })
+            } catch {
+                result = .failure(error)
+            }
+
+            guard let self, !Task.isCancelled, generation == self.reloadGeneration else { return }
+            self.isLoadingTheme = false
+            switch result {
+            case .success(let resolution):
+                for url in resolution.missingSupplementalOverrides {
+                    self.releaseSecurityScopedAccess(for: [url])
+                    self.supplementalOverrideURLs = self.supplementalOverrideURLs.filter { $0.value.standardizedFileURL != url.standardizedFileURL }
+                }
+                self.currentTheme = resolution.theme
+                self.assignments = self.makeAssignments(
+                    from: resolution.theme,
+                    resolvedFiles: resolution.filesByRole,
+                    fallbackRoles: resolution.fallbackRoles
+                )
+                self.resolvedRoleCount = self.assignments.filter(\.isResolved).count
+                self.selectedFolderIsValid = self.selectedFolderURL != nil
+                if let folderURL = self.selectedFolderURL {
+                    self.setStatus(.loaded(folderName: folderURL.lastPathComponent, resolvedRoleCount: self.resolvedRoleCount, totalRoleCount: CursorRole.allCases.count))
+                } else {
+                    self.setStatus(.chooseCursorFolder)
+                }
+            case .failure(let error):
+                guard !(error is CancellationError) else { return }
+                self.currentTheme = CursorTheme(animations: [:], supplementalAnimations: [:])
+                self.assignments = self.unresolvedAssignments()
+                self.resolvedRoleCount = 0
+                self.selectedFolderIsValid = false
+                self.setStatus(.loadFailure(error.localizedDescription))
+                if self.selectedFolderURL != nil {
+                    self.presentError(error.localizedDescription)
+                }
             }
         }
+    }
+
+    func waitForPendingReload() async {
+        await reloadTask?.value
     }
 
     func assignment(for role: CursorRole) -> CursorAssignment? {
@@ -772,65 +911,6 @@ final class CursorController: ObservableObject {
             isOverride: overrideURL != nil,
             isResolved: currentTheme[role] != nil
         )
-    }
-
-    private func loadTheme() throws -> (theme: CursorTheme, filesByRole: [CursorRole: URL], fallbackRoles: Set<CursorRole>) {
-        var animations: [CursorRole: CursorAnimation] = [:]
-        var supplementalAnimations: [SupplementalCursorRole: CursorAnimation] = [:]
-        var parsedAnimationsByURL: [URL: CursorAnimation] = [:]
-        var resolvedFiles: [CursorRole: URL] = [:]
-        var fallbackRoles = Set<CursorRole>()
-
-        if let baseDirectory = selectedFolderURL {
-            let resolvedTheme = try themeResolver.resolveTheme(in: baseDirectory)
-            resolvedFiles = resolvedTheme.filesByRole
-            fallbackRoles = resolvedTheme.fallbackRoles
-        } else if overrideURLs.isEmpty && supplementalOverrideURLs.isEmpty {
-            throw CursorError.missingTheme(Localized.string("error.noThemeFolderSelected"))
-        }
-
-        func parsedAnimation(for url: URL) throws -> CursorAnimation {
-            let normalizedURL = url.standardizedFileURL
-            if let cached = parsedAnimationsByURL[normalizedURL] {
-                return cached
-            }
-            let parsed = try autoreleasepool {
-                try parser.parseCursorFile(at: url)
-            }
-            parsedAnimationsByURL[normalizedURL] = parsed
-            return parsed
-        }
-
-        for role in CursorRole.allCases {
-            if let override = overrideURLs[role], FileManager.default.fileExists(atPath: override.path) {
-                animations[role] = try parsedAnimation(for: override)
-                resolvedFiles[role] = override
-                continue
-            }
-            guard let url = resolvedFiles[role] else { continue }
-            animations[role] = try parsedAnimation(for: url)
-        }
-
-        for role in SupplementalCursorRole.allCases {
-            if let override = supplementalOverrideURLs[role] {
-                if FileManager.default.fileExists(atPath: override.path) {
-                    supplementalAnimations[role] = try parsedAnimation(for: override)
-                } else {
-                    releaseSecurityScopedAccess(for: [override])
-                    supplementalOverrideURLs.removeValue(forKey: role)
-                }
-            }
-        }
-
-        if let baseDirectory = selectedFolderURL, animations[.arrow] == nil {
-            throw CursorError.missingTheme(baseDirectory.path)
-        }
-
-        guard !animations.isEmpty || !supplementalAnimations.isEmpty else {
-            throw CursorError.missingTheme(Localized.string("error.noThemeFolderSelected"))
-        }
-
-        return (CursorTheme(animations: animations, supplementalAnimations: supplementalAnimations), resolvedFiles, fallbackRoles)
     }
 
     var exportSizePercentageText: String {
@@ -1035,6 +1115,10 @@ final class CursorController: ObservableObject {
             return Localized.string("status.systemApplyWarning", message)
         case .systemApplyFailure(let message):
             return Localized.string("status.systemApplyFailure", message)
+        case .systemRestoreSuccess:
+            return Localized.string("status.systemRestoreSuccess")
+        case .systemRestoreFailure(let message):
+            return Localized.string("status.systemRestoreFailure", message)
         case .loaded(let folderName, let resolvedRoleCount, let totalRoleCount):
             let displayFolder = folderName.isEmpty ? Localized.string("app.noFolderSelected") : folderName
             return Localized.string("status.loaded", displayFolder, resolvedRoleCount, totalRoleCount)

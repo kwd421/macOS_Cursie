@@ -173,6 +173,12 @@ enum SystemCursorFrameLimit {
     }
 }
 
+enum CursorRenderLimit {
+    static let maximumSourceDimension = 512
+    static let maximumRepresentationDimension = 4_096
+    static let maximumStackedPixelCount = 64 * 1_024 * 1_024
+}
+
 struct CursorApplyPlan: Equatable, Sendable {
     let cursors: [CursorRegistration]
 
@@ -274,15 +280,44 @@ struct CursorPayloadRenderer {
     }
 
     private func animationForExport(_ animation: CursorAnimation) -> CursorAnimation {
-        guard animation.frames.count > SystemCursorFrameLimit.maximumRegisteredFrameCount else {
+        guard animation.frames.count > 1 else {
             return animation
         }
 
-        return downsampleAnimation(animation, maxFrames: SystemCursorFrameLimit.maximumRegisteredFrameCount)
+        let positiveDelays = animation.frames.map(\.delay).filter { $0 > 0 }
+        guard let shortestDelay = positiveDelays.min() else {
+            return resampleAnimationByIndex(
+                animation,
+                frameCount: min(animation.frames.count, SystemCursorFrameLimit.maximumRegisteredFrameCount)
+            )
+        }
+
+        let firstDelay = animation.frames[0].delay
+        let hasUniformTiming = animation.frames.allSatisfy { abs($0.delay - firstDelay) < 0.000_001 }
+        if hasUniformTiming, animation.frames.count <= SystemCursorFrameLimit.maximumRegisteredFrameCount {
+            return animation
+        }
+
+        let totalDuration = animation.frames.reduce(0.0) { $0 + max($1.delay, 0) }
+        guard totalDuration > 0 else {
+            return resampleAnimationByIndex(
+                animation,
+                frameCount: min(animation.frames.count, SystemCursorFrameLimit.maximumRegisteredFrameCount)
+            )
+        }
+
+        let timelineFrameCount = max(
+            animation.frames.count,
+            Int((totalDuration / shortestDelay).rounded())
+        )
+        return resampleAnimation(
+            animation,
+            frameCount: min(timelineFrameCount, SystemCursorFrameLimit.maximumRegisteredFrameCount)
+        )
     }
 
-    private func downsampleAnimation(_ animation: CursorAnimation, maxFrames: Int) -> CursorAnimation {
-        guard animation.frames.count > maxFrames, maxFrames > 0 else {
+    private func resampleAnimation(_ animation: CursorAnimation, frameCount: Int) -> CursorAnimation {
+        guard frameCount > 0 else {
             return animation
         }
 
@@ -290,15 +325,15 @@ struct CursorPayloadRenderer {
         let sourceDurations = sourceFrames.map { max($0.delay, 0) }
         let totalDuration = sourceDurations.reduce(0.0, +)
         guard totalDuration > 0 else {
-            return downsampleAnimationByIndex(animation, maxFrames: maxFrames)
+            return resampleAnimationByIndex(animation, frameCount: frameCount)
         }
-        let targetDelay = totalDuration / Double(maxFrames)
+        let targetDelay = totalDuration / Double(frameCount)
         var reducedFrames: [CursorFrame] = []
-        reducedFrames.reserveCapacity(maxFrames)
+        reducedFrames.reserveCapacity(frameCount)
         var sourceIndex = 0
         var sourceFrameEndTime = sourceDurations.first ?? 0
 
-        for bucket in 0..<maxFrames {
+        for bucket in 0..<frameCount {
             let sampleTime = (Double(bucket) + 0.5) * targetDelay
             while sourceIndex < sourceFrames.count - 1, sampleTime >= sourceFrameEndTime {
                 sourceIndex += 1
@@ -320,15 +355,16 @@ struct CursorPayloadRenderer {
         )
     }
 
-    private func downsampleAnimationByIndex(_ animation: CursorAnimation, maxFrames: Int) -> CursorAnimation {
+    private func resampleAnimationByIndex(_ animation: CursorAnimation, frameCount: Int) -> CursorAnimation {
         let sourceFrames = animation.frames
         let sourceCount = sourceFrames.count
+        guard sourceCount > 0, frameCount > 0 else { return animation }
         var reducedFrames: [CursorFrame] = []
-        reducedFrames.reserveCapacity(maxFrames)
+        reducedFrames.reserveCapacity(frameCount)
 
-        for bucket in 0..<maxFrames {
-            let startIndex = Int((Double(bucket) * Double(sourceCount)) / Double(maxFrames))
-            let endIndex = Int((Double(bucket + 1) * Double(sourceCount)) / Double(maxFrames))
+        for bucket in 0..<frameCount {
+            let startIndex = Int((Double(bucket) * Double(sourceCount)) / Double(frameCount))
+            let endIndex = Int((Double(bucket + 1) * Double(sourceCount)) / Double(frameCount))
             let clampedEnd = max(endIndex, startIndex + 1)
             let range = startIndex..<min(clampedEnd, sourceCount)
             let representativeIndex = min(startIndex + range.count / 2, sourceCount - 1)
@@ -345,6 +381,12 @@ struct CursorPayloadRenderer {
     private func bitmapRep(for image: NSImage, canvasSize: CGSize) throws -> NSBitmapImageRep {
         let pixelWidth = max(Int(canvasSize.width.rounded(.up)), 1)
         let pixelHeight = max(Int(canvasSize.height.rounded(.up)), 1)
+        guard pixelWidth <= CursorRenderLimit.maximumSourceDimension,
+              pixelHeight <= CursorRenderLimit.maximumSourceDimension else {
+            throw CursorError.invalidThemeSelection(
+                Localized.string("error.cursorDimensionsTooLarge", CursorRenderLimit.maximumSourceDimension)
+            )
+        }
         guard
             let rep = NSBitmapImageRep(
                 bitmapDataPlanes: nil,
@@ -382,6 +424,12 @@ struct CursorPayloadRenderer {
     }
 
     private func scaledBitmapRep(for source: NSBitmapImageRep, width: Int, height: Int) throws -> NSBitmapImageRep {
+        guard width <= CursorRenderLimit.maximumRepresentationDimension,
+              height <= CursorRenderLimit.maximumRepresentationDimension else {
+            throw CursorError.invalidThemeSelection(
+                Localized.string("error.cursorRenderedDimensionsTooLarge", CursorRenderLimit.maximumRepresentationDimension)
+            )
+        }
         guard source.pixelsWide == width, source.pixelsHigh == height else {
             guard
                 let rep = NSBitmapImageRep(
@@ -423,11 +471,18 @@ struct CursorPayloadRenderer {
     }
 
     private func stack(frames: [NSBitmapImageRep], width: Int, height: Int) throws -> NSBitmapImageRep {
+        let (stackedHeight, heightOverflow) = height.multipliedReportingOverflow(by: frames.count)
+        let (pixelCount, pixelOverflow) = width.multipliedReportingOverflow(by: stackedHeight)
+        guard !heightOverflow, !pixelOverflow,
+              stackedHeight <= CursorRenderLimit.maximumRepresentationDimension * SystemCursorFrameLimit.maximumRegisteredFrameCount,
+              pixelCount <= CursorRenderLimit.maximumStackedPixelCount else {
+            throw CursorError.invalidThemeSelection(Localized.string("error.cursorRenderedPayloadTooLarge"))
+        }
         guard
             let rep = NSBitmapImageRep(
                 bitmapDataPlanes: nil,
                 pixelsWide: width,
-                pixelsHigh: height * frames.count,
+                pixelsHigh: stackedHeight,
                 bitsPerSample: 8,
                 samplesPerPixel: 4,
                 hasAlpha: true,
@@ -638,7 +693,20 @@ final class SystemCursorApplicator {
     }
 
     func restoreDefaults() throws {
-        try bridge.resetAllCursors()
+        var failures: [String] = []
+        do {
+            try bridge.resetAllCursors()
+        } catch {
+            failures.append(error.localizedDescription)
+        }
+        do {
+            try bridge.setDockCursorOverride(false)
+        } catch {
+            failures.append(error.localizedDescription)
+        }
+        guard failures.isEmpty else {
+            throw CursorError.systemCursorApplyFailed(failures.joined(separator: "\n"))
+        }
     }
 }
 

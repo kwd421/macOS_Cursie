@@ -445,15 +445,15 @@ struct SystemApplySection: View {
         HStack(alignment: .center, spacing: 12) {
                 VStack(alignment: .leading, spacing: 10) {
                     Button {
-                        controller.openPointerSettings()
+                        controller.restoreSystemCursors()
                     } label: {
-                        Label(Localized.string("systemApply.openPointerSettings"), systemImage: "gearshape")
+                        Label(Localized.string("systemApply.restore"), systemImage: "arrow.counterclockwise")
                     }
                     .buttonStyle(.bordered)
                     .focusable(false)
                     .disabled(controller.isApplyingSystemCursors)
 
-                    Text(Localized.string("systemApply.pointerSettingsHint"))
+                    Text(Localized.string("systemApply.restoreHint"))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -469,7 +469,7 @@ struct SystemApplySection: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .focusable(false)
-                .disabled(controller.isApplyingSystemCursors)
+                .disabled(controller.isApplyingSystemCursors || controller.isLoadingTheme)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)

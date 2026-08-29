@@ -1,13 +1,19 @@
 import AppKit
 import Foundation
+import ImageIO
 
 struct AniParser {
+    static let maximumFileSize = 32 * 1_024 * 1_024
+    static let maximumSourceFrameCount = 512
+    static let maximumCursorRepresentationCount = 64
+    static let maximumFrameDimension = 512
+
     func parseCursorFile(at url: URL) throws -> CursorAnimation {
         switch url.pathExtension.lowercased() {
         case "ani":
             return try parseANI(at: url)
         case "cur":
-            let data = try Data(contentsOf: url)
+            let data = try readCursorData(at: url)
             return try parseCUR(data: data)
         default:
             throw CursorError.invalidANI(Localized.string("error.unsupportedExtension", url.pathExtension))
@@ -15,11 +21,12 @@ struct AniParser {
     }
 
     func parseANI(at url: URL) throws -> CursorAnimation {
-        let data = try Data(contentsOf: url)
+        let data = try readCursorData(at: url)
         return try parseANI(data: data)
     }
 
     func parseANI(data: Data) throws -> CursorAnimation {
+        try validateFileSize(data.count)
         guard data.count >= 12, data[0..<4] == Data("RIFF".utf8), data[8..<12] == Data("ACON".utf8) else {
             throw CursorError.invalidANI(Localized.string("error.invalidRiffAconHeader"))
         }
@@ -47,8 +54,14 @@ struct AniParser {
                     cursorChunks.append(contentsOf: try extractIconChunks(from: Data(data[chunkDataStart + 4..<chunkDataEnd])))
                 }
             } else if chunkID == "rate", chunkSize >= 4 {
+                guard chunkSize / 4 <= Self.maximumSourceFrameCount else {
+                    throw CursorError.invalidANI(Localized.string("error.cursorTooManyFrames", Self.maximumSourceFrameCount))
+                }
                 rateJiffies = readUInt32List(data, start: chunkDataStart, byteCount: chunkSize).map(Int.init)
             } else if chunkID == "seq ", chunkSize >= 4 {
+                guard chunkSize / 4 <= Self.maximumSourceFrameCount else {
+                    throw CursorError.invalidANI(Localized.string("error.cursorTooManyFrames", Self.maximumSourceFrameCount))
+                }
                 sequence = readUInt32List(data, start: chunkDataStart, byteCount: chunkSize).map(Int.init)
             }
 
@@ -56,6 +69,9 @@ struct AniParser {
         }
 
         let stepFrameIndices = sequence.isEmpty ? Array(cursorChunks.indices) : sequence
+        guard stepFrameIndices.count <= Self.maximumSourceFrameCount else {
+            throw CursorError.invalidANI(Localized.string("error.cursorTooManyFrames", Self.maximumSourceFrameCount))
+        }
         let frames = try stepFrameIndices.enumerated().map { stepIndex, frameIndex in
             guard cursorChunks.indices.contains(frameIndex) else {
                 throw CursorError.invalidANI("Invalid ANI sequence index.")
@@ -77,6 +93,7 @@ struct AniParser {
     }
 
     func parseCUR(data: Data) throws -> CursorAnimation {
+        try validateFileSize(data.count)
         let frame = try decodeFrame(from: data, defaultDelay: 1.0)
         return CursorAnimation(
             frames: [CursorFrame(image: frame.image, delay: 1.0)],
@@ -98,6 +115,9 @@ struct AniParser {
             }
             if chunkID == "icon" {
                 chunks.append(data[start..<end])
+                guard chunks.count <= Self.maximumSourceFrameCount else {
+                    throw CursorError.invalidANI(Localized.string("error.cursorTooManyFrames", Self.maximumSourceFrameCount))
+                }
             }
             offset = end + (chunkSize & 1)
         }
@@ -110,38 +130,122 @@ struct AniParser {
             throw CursorError.invalidANI(Localized.string("error.curTooShort"))
         }
         let type = readUInt16LE(data, 2)
-        let count = readUInt16LE(data, 4)
+        let count = Int(readUInt16LE(data, 4))
         guard type == 2, count >= 1 else {
             throw CursorError.invalidANI(Localized.string("error.invalidCurHeader"))
         }
 
-        let widthByte = Int(data[6])
-        let heightByte = Int(data[7])
-        let hotspotX = Int(readUInt16LE(data, 10))
-        let hotspotY = Int(readUInt16LE(data, 12))
-        let imageBytes = Int(readUInt32LE(data, 14))
-        let imageOffset = Int(readUInt32LE(data, 18))
-        guard imageOffset + imageBytes <= data.count else {
-            throw CursorError.invalidANI(Localized.string("error.invalidCurEmbeddedRange"))
+        guard count <= Self.maximumCursorRepresentationCount, 6 + (count * 16) <= data.count else {
+            throw CursorError.invalidANI(Localized.string("error.invalidCurHeader"))
         }
 
-        let imagePayload = Data(data[imageOffset..<(imageOffset + imageBytes)])
-        guard let image = NSImage(data: data) ?? NSImage(data: imagePayload) else {
+        let entries = try (0..<count).map { index in
+            try cursorEntry(in: data, at: 6 + (index * 16))
+        }
+        guard let selectedEntry = entries.max(by: { lhs, rhs in
+            let lhsArea = lhs.width * lhs.height
+            let rhsArea = rhs.width * rhs.height
+            if lhsArea == rhsArea {
+                return lhs.imageBytes < rhs.imageBytes
+            }
+            return lhsArea < rhsArea
+        }) else {
+            throw CursorError.invalidANI(Localized.string("error.invalidCurHeader"))
+        }
+
+        let imagePayload = Data(data[selectedEntry.imageOffset..<(selectedEntry.imageOffset + selectedEntry.imageBytes)])
+        try validateEncodedImageDimensions(imagePayload)
+        let selectedCursorData = singleEntryCursorData(entry: selectedEntry, payload: imagePayload)
+        guard let image = NSImage(data: selectedCursorData) ?? NSImage(data: imagePayload) else {
             throw CursorError.unsupportedCursorPayload
         }
 
         let rep = image.representations.compactMap { $0 as? NSBitmapImageRep }.max {
             ($0.pixelsWide * $0.pixelsHigh) < ($1.pixelsWide * $1.pixelsHigh)
         }
-        let width = rep?.pixelsWide ?? max(widthByte, 32)
-        let height = rep?.pixelsHigh ?? max(heightByte, 32)
+        let width = rep?.pixelsWide ?? selectedEntry.width
+        let height = rep?.pixelsHigh ?? selectedEntry.height
+        guard width <= Self.maximumFrameDimension, height <= Self.maximumFrameDimension else {
+            throw CursorError.invalidANI(Localized.string("error.cursorDimensionsTooLarge", Self.maximumFrameDimension))
+        }
 
         return (
             image: image,
-            hotspot: CGPoint(x: hotspotX, y: hotspotY),
+            hotspot: CGPoint(x: selectedEntry.hotspotX, y: selectedEntry.hotspotY),
             size: CGSize(width: width, height: height),
             delay: defaultDelay
         )
+    }
+
+    private struct CursorEntry {
+        let directoryData: Data
+        let width: Int
+        let height: Int
+        let hotspotX: Int
+        let hotspotY: Int
+        let imageBytes: Int
+        let imageOffset: Int
+    }
+
+    private func cursorEntry(in data: Data, at offset: Int) throws -> CursorEntry {
+        let width = data[offset] == 0 ? 256 : Int(data[offset])
+        let height = data[offset + 1] == 0 ? 256 : Int(data[offset + 1])
+        let imageBytes = Int(readUInt32LE(data, offset + 8))
+        let imageOffset = Int(readUInt32LE(data, offset + 12))
+        guard imageBytes > 0, imageOffset >= 0, imageOffset + imageBytes <= data.count else {
+            throw CursorError.invalidANI(Localized.string("error.invalidCurEmbeddedRange"))
+        }
+        guard width <= Self.maximumFrameDimension, height <= Self.maximumFrameDimension else {
+            throw CursorError.invalidANI(Localized.string("error.cursorDimensionsTooLarge", Self.maximumFrameDimension))
+        }
+        return CursorEntry(
+            directoryData: Data(data[offset..<(offset + 16)]),
+            width: width,
+            height: height,
+            hotspotX: Int(readUInt16LE(data, offset + 4)),
+            hotspotY: Int(readUInt16LE(data, offset + 6)),
+            imageBytes: imageBytes,
+            imageOffset: imageOffset
+        )
+    }
+
+    private func singleEntryCursorData(entry: CursorEntry, payload: Data) -> Data {
+        var data = Data([0x00, 0x00, 0x02, 0x00, 0x01, 0x00])
+        var directoryData = entry.directoryData
+        let offset = UInt32(22).littleEndian
+        directoryData.replaceSubrange(12..<16, with: withUnsafeBytes(of: offset, Array.init))
+        data.append(directoryData)
+        data.append(payload)
+        return data
+    }
+
+    private func readCursorData(at url: URL) throws -> Data {
+        if let fileSize = try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize {
+            try validateFileSize(fileSize)
+        }
+        let data = try Data(contentsOf: url, options: [.mappedIfSafe])
+        try validateFileSize(data.count)
+        return data
+    }
+
+    private func validateFileSize(_ byteCount: Int) throws {
+        guard byteCount <= Self.maximumFileSize else {
+            throw CursorError.invalidANI(Localized.string("error.cursorFileTooLarge", Self.maximumFileSize / 1_024 / 1_024))
+        }
+    }
+
+    private func validateEncodedImageDimensions(_ data: Data) throws {
+        guard
+            let source = CGImageSourceCreateWithData(data as CFData, nil),
+            let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any]
+        else {
+            return
+        }
+        let width = properties[kCGImagePropertyPixelWidth] as? Int ?? 0
+        let height = properties[kCGImagePropertyPixelHeight] as? Int ?? 0
+        guard width <= Self.maximumFrameDimension, height <= Self.maximumFrameDimension else {
+            throw CursorError.invalidANI(Localized.string("error.cursorDimensionsTooLarge", Self.maximumFrameDimension))
+        }
     }
 
     private func fourCC(_ data: Data, _ offset: Int) -> String {

@@ -4,7 +4,7 @@ import Foundation
 protocol CursorAgentManaging {
     func saveAppliedCape(_ cape: [String: Any]) throws
     func loadAppliedCape() throws -> [String: Any]?
-    func installLaunchAgent(executableURL: URL) throws
+    func installLaunchAgent(bundleIdentifier: String) throws
     func verifyLaunchAgentReady(timeout: TimeInterval) throws
     func stopLaunchAgent() throws
     func removeLaunchAgentPlist() throws
@@ -66,21 +66,14 @@ struct CursorAgentManager {
         return try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any]
     }
 
-    func installLaunchAgent(executableURL: URL) throws {
+    func installLaunchAgent(bundleIdentifier: String) throws {
         try fileManager.createDirectory(at: applicationSupportDirectory, withIntermediateDirectories: true)
         try fileManager.createDirectory(at: launchAgentURL.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? removeAgentStatus()
-        let plist: [String: Any] = [
-            "Label": Self.label,
-            "ProgramArguments": [
-                executableURL.path,
-                "--cursor-agent"
-            ],
-            "RunAtLoad": true,
-            "KeepAlive": false,
-            "StandardOutPath": agentLogURL.path,
-            "StandardErrorPath": agentLogURL.path
-        ]
+        let plist = Self.launchAgentPropertyList(
+            bundleIdentifier: bundleIdentifier,
+            logPath: agentLogURL.path
+        )
         let data = try PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
         try data.write(to: launchAgentURL, options: .atomic)
 
@@ -91,6 +84,25 @@ struct CursorAgentManager {
         // Dock icon and reads as "running in the background." The agent just needs to
         // run at the NEXT login, which RunAtLoad handles when launchd loads this plist.
         try? stopLaunchAgent()
+    }
+
+    static func launchAgentPropertyList(bundleIdentifier: String, logPath: String) -> [String: Any] {
+        [
+            "Label": Self.label,
+            "ProgramArguments": [
+                "/usr/bin/open",
+                "-gj",
+                "-n",
+                "-b",
+                bundleIdentifier,
+                "--args",
+                "--cursor-agent"
+            ],
+            "RunAtLoad": true,
+            "KeepAlive": false,
+            "StandardOutPath": logPath,
+            "StandardErrorPath": logPath
+        ]
     }
 
     func verifyLaunchAgentReady(timeout: TimeInterval) throws {
@@ -307,7 +319,7 @@ struct CursorSystemApplyService: @unchecked Sendable {
     struct PreparedApply: @unchecked Sendable {
         let plan: CursorApplyPlan
         let cape: [String: Any]
-        let executableURL: URL
+        let bundleIdentifier: String
     }
 
     struct ApplyResult: Sendable {
@@ -360,7 +372,11 @@ struct CursorSystemApplyService: @unchecked Sendable {
             throw CursorError.systemCursorApplyFailed(Localized.string("error.mousecapeConflict", conflict))
         }
 
-        let identifier = "local.\(bundleIdentifier ?? "capeforge").system.\(UUID().uuidString.lowercased())"
+        try CursorAgentExecutableLocation.validate(executableURL)
+        guard let bundleIdentifier, !bundleIdentifier.isEmpty else {
+            throw CursorError.systemCursorApplyFailed(Localized.string("error.systemApplyBundleIdentifierMissing"))
+        }
+        let identifier = "local.\(bundleIdentifier).system.\(UUID().uuidString.lowercased())"
         let plan = try capeBuilder.makePlan(theme: theme, sizeMultiplier: sizeMultiplier)
         let cape = try capeBuilder.makeCape(
             name: "Cursie Applied",
@@ -368,7 +384,7 @@ struct CursorSystemApplyService: @unchecked Sendable {
             identifier: identifier,
             plan: plan
         )
-        return PreparedApply(plan: plan, cape: cape, executableURL: executableURL)
+        return PreparedApply(plan: plan, cape: cape, bundleIdentifier: bundleIdentifier)
     }
 
     func applyPrepared(
@@ -385,7 +401,7 @@ struct CursorSystemApplyService: @unchecked Sendable {
             foregroundApplySucceeded = true
             progress?(.agent)
             try agentManager.saveAppliedCape(prepared.cape)
-            try agentManager.installLaunchAgent(executableURL: prepared.executableURL)
+            try agentManager.installLaunchAgent(bundleIdentifier: prepared.bundleIdentifier)
         } catch {
             try? agentManager.stopLaunchAgent()
             try? agentManager.removePersistedState()
@@ -398,6 +414,41 @@ struct CursorSystemApplyService: @unchecked Sendable {
         return ApplyResult(agentReady: agentWarning == nil, agentWarning: agentWarning)
     }
 
+    func restoreDefaults() throws {
+        var failures: [String] = []
+
+        do {
+            try agentManager.stopLaunchAgent()
+        } catch {
+            failures.append(error.localizedDescription)
+        }
+
+        do {
+            try agentManager.removePersistedState()
+        } catch {
+            failures.append(error.localizedDescription)
+        }
+
+        do {
+            try makeApplicator().restoreDefaults()
+        } catch {
+            failures.append(error.localizedDescription)
+        }
+
+        guard failures.isEmpty else {
+            throw CursorError.systemCursorApplyFailed(failures.joined(separator: "\n"))
+        }
+    }
+
+}
+
+enum CursorAgentExecutableLocation {
+    static func validate(_ executableURL: URL) throws {
+        let path = executableURL.standardizedFileURL.path
+        guard !path.hasPrefix("/Volumes/"), !path.contains("/AppTranslocation/") else {
+            throw CursorError.systemCursorApplyFailed(Localized.string("error.installCursieBeforeApplying"))
+        }
+    }
 }
 
 @MainActor

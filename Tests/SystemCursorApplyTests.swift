@@ -185,6 +185,44 @@ struct CursorPayloadRendererTests {
 
     @MainActor
     @Test
+    func animatedPayloadResamplesVariableFrameTiming() throws {
+        let animation = CursorAnimation(
+            frames: [
+                CursorFrame(image: solidImage(.red), delay: 0.1),
+                CursorFrame(image: solidImage(.blue), delay: 0.2),
+                CursorFrame(image: solidImage(.green), delay: 0.3)
+            ],
+            hotspot: CGPoint(x: 2, y: 3),
+            canvasSize: CGSize(width: 16, height: 16)
+        )
+
+        let payload = try CursorPayloadRenderer().render(animation, sizeMultiplier: 1.0)
+
+        #expect(payload.frameCount == 6)
+        #expect(abs(payload.frameDuration - 0.1) < 0.000_001)
+        #expect(abs((Double(payload.frameCount) * payload.frameDuration) - 0.6) < 0.000_001)
+        #expect(redFrameCount(in: payload) == 1)
+    }
+
+    @MainActor
+    @Test
+    func rejectsCursorCanvasAboveRenderLimitBeforeAllocation() {
+        let animation = CursorAnimation(
+            frames: [CursorFrame(image: solidImage(.red), delay: 0.1)],
+            hotspot: .zero,
+            canvasSize: CGSize(
+                width: CursorRenderLimit.maximumSourceDimension + 1,
+                height: CursorRenderLimit.maximumSourceDimension + 1
+            )
+        )
+
+        #expect(throws: CursorError.self) {
+            try CursorPayloadRenderer().render(animation, sizeMultiplier: 1.0)
+        }
+    }
+
+    @MainActor
+    @Test
     func animatedPayloadDownsamplesAboveTwentyFourFramesAndPreservesDuration() throws {
         let image = solidImage(.blue)
         let frames = (0..<72).map { _ in
@@ -252,7 +290,36 @@ struct CursorAgentRuntimeTests {
     }
 }
 
+struct CursorAgentManagerTests {
+    @Test
+    func launchAgentFindsInstalledAppByBundleIdentifier() throws {
+        let plist = CursorAgentManager.launchAgentPropertyList(
+            bundleIdentifier: "com.example.Cursie",
+            logPath: "/tmp/Cursie.log"
+        )
+        let arguments = try #require(plist["ProgramArguments"] as? [String])
+
+        #expect(arguments == [
+            "/usr/bin/open", "-gj", "-n", "-b", "com.example.Cursie", "--args", "--cursor-agent"
+        ])
+        #expect(!arguments.contains(where: { $0.hasSuffix(".app/Contents/MacOS/Cursie") }))
+    }
+}
+
 struct SystemCursorApplicatorTests {
+    @Test
+    func restoreDefaultsAlsoClearsDockCursorOverride() throws {
+        let bridge = RecordingCursorBridge()
+        let applicator = SystemCursorApplicator(bridge: bridge)
+
+        try applicator.restoreDefaults()
+
+        #expect(bridge.events == [
+            .resetAllCursors,
+            .setDockCursorOverride(false)
+        ])
+    }
+
     @Test
     func applyContinuesWhenAtLeastOneDiscoveredSynonymRegisters() throws {
         let payload = RenderedCursorPayload(
@@ -506,6 +573,45 @@ struct CursorSystemApplyServiceTests {
             .saveAppliedCape,
             .installLaunchAgent
         ])
+    }
+
+    @Test
+    func restoreDefaultsRemovesLoginReapplyBeforeResettingCursors() throws {
+        let recorder = CursorSystemApplyRecorder()
+        let manager = RecordingAgentManager(recorder: recorder)
+        let applicator = RecordingSystemCursorApplying(recorder: recorder)
+        let service = CursorSystemApplyService(
+            agentManager: manager,
+            conflictChecker: RecordingConflictChecker(),
+            makeApplicator: { applicator }
+        )
+
+        try service.restoreDefaults()
+
+        #expect(recorder.events == [
+            .stopLaunchAgent,
+            .removePersistedState,
+            .restoreDefaults
+        ])
+    }
+
+    @Test
+    func rejectsExecutableRunningFromDiskImageOrAppTranslocation() {
+        #expect(throws: CursorError.self) {
+            try CursorAgentExecutableLocation.validate(
+                URL(fileURLWithPath: "/Volumes/Cursie/Cursie.app/Contents/MacOS/Cursie")
+            )
+        }
+        #expect(throws: CursorError.self) {
+            try CursorAgentExecutableLocation.validate(
+                URL(fileURLWithPath: "/private/var/folders/x/AppTranslocation/ABC/Cursie.app/Contents/MacOS/Cursie")
+            )
+        }
+        #expect(throws: Never.self) {
+            try CursorAgentExecutableLocation.validate(
+                URL(fileURLWithPath: "/Applications/Cursie.app/Contents/MacOS/Cursie")
+            )
+        }
     }
 
     @MainActor
@@ -778,7 +884,7 @@ private final class RecordingAgentManager: CursorAgentManaging {
         nil
     }
 
-    func installLaunchAgent(executableURL: URL) throws {
+    func installLaunchAgent(bundleIdentifier: String) throws {
         recorder.events.append(.installLaunchAgent)
         if let installError {
             throw installError

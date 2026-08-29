@@ -7,6 +7,9 @@ Do not commit exported private keys or Apple passwords.
 
 - `notarytool` keychain profile: `seinel-notary`
 - Team ID: `DRUFU8Q688`
+- Release signing identity: `A9141ADBA79975DC26BFC317B89E0AFBDB478A44`
+  (the long-lived Developer ID certificate; use its SHA-1 because another
+  certificate in the login keychain has the same display name)
 - Create or refresh the profile with:
 
 ```bash

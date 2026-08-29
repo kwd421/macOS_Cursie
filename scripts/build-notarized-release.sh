@@ -12,7 +12,10 @@ FINAL_DMG="$DIST_DIR/Cursie.dmg"
 NOTARY_PROFILE="${NOTARY_PROFILE:-seinel-notary}"
 SPARKLE_ACCOUNT="${SPARKLE_ACCOUNT:-seinel-capeforge}"
 SPARKLE_SIGN_UPDATE="${SPARKLE_SIGN_UPDATE:-$ROOT_DIR/.build/artifacts/sparkle/Sparkle/bin/sign_update}"
-SIGNING_IDENTITY="${SIGNING_IDENTITY:-Developer ID Application: Wondong Ko (DRUFU8Q688)}"
+# Pin the current long-lived Developer ID certificate by SHA-1. The system and
+# login keychains both contain certificates with the same display name, which
+# makes codesign reject the name as ambiguous.
+SIGNING_IDENTITY="${SIGNING_IDENTITY:-A9141ADBA79975DC26BFC317B89E0AFBDB478A44}"
 
 cd "$ROOT_DIR"
 

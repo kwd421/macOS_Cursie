@@ -26,7 +26,7 @@ struct ThemeResolverTests {
 
     @MainActor
     @Test
-    func droppedFolderSelectsThemeFolder() throws {
+    func droppedFolderSelectsThemeFolder() async throws {
         let tempDirectory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: tempDirectory) }
 
@@ -34,6 +34,7 @@ struct ThemeResolverTests {
         controller.start()
 
         let handled = controller.handleDroppedItem(at: tempDirectory, selection: nil)
+        await controller.waitForPendingReload()
 
         #expect(handled)
         #expect(controller.selectedFolderURL?.standardizedFileURL == tempDirectory.standardizedFileURL)
@@ -41,7 +42,7 @@ struct ThemeResolverTests {
 
     @MainActor
     @Test
-    func startDoesNotReloadLastSelectedThemeFolder() throws {
+    func startDoesNotReloadLastSelectedThemeFolder() async throws {
         let tempDirectory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: tempDirectory) }
         let defaults = try makeIsolatedDefaults()
@@ -54,6 +55,7 @@ struct ThemeResolverTests {
         let firstController = CursorController(defaults: defaults)
         firstController.start()
         firstController.setThemeFolder(folder)
+        await firstController.waitForPendingReload()
 
         let secondController = CursorController(defaults: defaults)
         secondController.start()
@@ -86,7 +88,7 @@ struct ThemeResolverTests {
 
     @MainActor
     @Test
-    func droppedCursorFileImmediatelyUpdatesPreviewForSelectedRole() throws {
+    func droppedCursorFileImmediatelyUpdatesPreviewForSelectedRole() async throws {
         let tempDirectory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: tempDirectory) }
 
@@ -102,11 +104,13 @@ struct ThemeResolverTests {
         let controller = CursorController(defaults: try makeIsolatedDefaults())
         controller.start()
         controller.setThemeFolder(folder)
+        await controller.waitForPendingReload()
 
         #expect(controller.assignment(for: .arrow)?.appliedPreview != nil)
         #expect(controller.assignment(for: .text)?.appliedPreview != nil)
 
         let handled = controller.handleDroppedItem(at: textURL, selection: .primary(.text))
+        await controller.waitForPendingReload()
 
         #expect(handled)
         #expect(controller.assignment(for: .text)?.sourceURL?.standardizedFileURL == textURL.standardizedFileURL)
@@ -115,7 +119,7 @@ struct ThemeResolverTests {
 
     @MainActor
     @Test
-    func droppedCursorFileUpdatesPreviewWithoutSelectedFolder() throws {
+    func droppedCursorFileUpdatesPreviewWithoutSelectedFolder() async throws {
         let tempDirectory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: tempDirectory) }
 
@@ -126,6 +130,7 @@ struct ThemeResolverTests {
         controller.start()
 
         let handled = controller.handleDroppedItem(at: textURL, selection: .primary(.text))
+        await controller.waitForPendingReload()
 
         #expect(handled)
         #expect(controller.selectedFolderURL == nil)
@@ -438,6 +443,44 @@ struct ThemeResolverTests {
         #expect(resolved.filesByRole[.verticalResize]?.lastPathComponent == "Normal.ani")
     }
 
+    @Test
+    func shortKeywordsDoNotMatchInsideUnrelatedCursorNames() throws {
+        let tempDirectory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: tempDirectory) }
+
+        let folder = tempDirectory.appendingPathComponent("Collision", isDirectory: true)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        for file in ["Normal.ani", "Blocked.ani", "OpenHand.ani"] {
+            FileManager.default.createFile(atPath: folder.appendingPathComponent(file).path, contents: Data("x".utf8))
+        }
+
+        let resolved = try ThemeResolver().resolveTheme(in: folder)
+
+        #expect(resolved.filesByRole[.unavailable]?.lastPathComponent == "Blocked.ani")
+        #expect(resolved.filesByRole[.move]?.lastPathComponent == "OpenHand.ani")
+        #expect(resolved.filesByRole[.location]?.lastPathComponent == "Normal.ani")
+        #expect(resolved.filesByRole[.handwriting]?.lastPathComponent == "Normal.ani")
+        #expect(resolved.fallbackRoles.contains(.location))
+        #expect(resolved.fallbackRoles.contains(.handwriting))
+    }
+
+    @Test
+    func recognizesExplicitCompoundInsideDescriptiveFileName() throws {
+        let tempDirectory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: tempDirectory) }
+
+        let folder = tempDirectory.appendingPathComponent("Compound", isDirectory: true)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        for file in ["Normal.ani", "BlueOpenHandCursor.ani"] {
+            FileManager.default.createFile(atPath: folder.appendingPathComponent(file).path, contents: Data("x".utf8))
+        }
+
+        let resolved = try ThemeResolver().resolveTheme(in: folder)
+
+        #expect(resolved.filesByRole[.move]?.lastPathComponent == "BlueOpenHandCursor.ani")
+        #expect(resolved.filesByRole[.handwriting]?.lastPathComponent == "Normal.ani")
+    }
+
     @MainActor
     @Test
     func aniParserUsesPerStepRatesAndSequenceOrder() throws {
@@ -462,6 +505,46 @@ struct ThemeResolverTests {
         #expect(abs(animation.frames[0].delay - 0.1) < 0.000_001)
         #expect(abs(animation.frames[1].delay - 0.2) < 0.000_001)
         #expect(abs(animation.frames[2].delay - 0.3) < 0.000_001)
+    }
+
+    @MainActor
+    @Test
+    func curParserUsesHotspotFromLargestRepresentation() throws {
+        let data = try makeMultiRepresentationCursorData()
+
+        let animation = try AniParser().parseCUR(data: data)
+
+        #expect(animation.canvasSize == CGSize(width: 64, height: 64))
+        #expect(animation.hotspot == CGPoint(x: 12, y: 14))
+        #expect(isMostlyBlue(dominantColor(in: animation.frames[0].image)))
+    }
+
+    @MainActor
+    @Test
+    func aniParserRejectsExcessiveAnimationSteps() throws {
+        let data = try makeANIData(
+            cursorFrames: [makeCursorData(color: .red, size: 16)],
+            defaultJiffies: 6,
+            rates: [],
+            sequence: Array(repeating: 0, count: AniParser.maximumSourceFrameCount + 1)
+        )
+
+        #expect(throws: CursorError.self) {
+            try AniParser().parseANI(data: data)
+        }
+    }
+
+    @MainActor
+    @Test
+    func curParserRejectsExcessiveRepresentationCount() {
+        let count = AniParser.maximumCursorRepresentationCount + 1
+        var data = Data([0x00, 0x00, 0x02, 0x00])
+        data.append(contentsOf: withUnsafeBytes(of: UInt16(count).littleEndian, Array.init))
+        data.append(Data(repeating: 0, count: count * 16))
+
+        #expect(throws: CursorError.self) {
+            try AniParser().parseCUR(data: data)
+        }
     }
 
     private func makeTemporaryDirectory() throws -> URL {
@@ -508,6 +591,67 @@ struct ThemeResolverTests {
         data.append(pngData)
 
         return data
+    }
+
+    private func makeMultiRepresentationCursorData() throws -> Data {
+        func pngData(color: NSColor, size: Int) throws -> Data {
+            guard let rep = NSBitmapImageRep(
+                bitmapDataPlanes: nil,
+                pixelsWide: size,
+                pixelsHigh: size,
+                bitsPerSample: 8,
+                samplesPerPixel: 4,
+                hasAlpha: true,
+                isPlanar: false,
+                colorSpaceName: .deviceRGB,
+                bytesPerRow: 0,
+                bitsPerPixel: 0
+            ), let context = NSGraphicsContext(bitmapImageRep: rep) else {
+                throw CocoaError(.fileWriteUnknown)
+            }
+
+            NSGraphicsContext.saveGraphicsState()
+            NSGraphicsContext.current = context
+            color.setFill()
+            NSBezierPath(rect: NSRect(x: 0, y: 0, width: size, height: size)).fill()
+            context.flushGraphics()
+            NSGraphicsContext.restoreGraphicsState()
+
+            guard let png = rep.representation(using: .png, properties: [:]) else {
+                throw CocoaError(.fileWriteUnknown)
+            }
+            return png
+        }
+
+        let small = try pngData(color: .red, size: 32)
+        let large = try pngData(color: .blue, size: 64)
+        let directorySize = 6 + (2 * 16)
+        let smallOffset = directorySize
+        let largeOffset = smallOffset + small.count
+
+        var data = Data([0x00, 0x00, 0x02, 0x00, 0x02, 0x00])
+        appendCursorEntry(size: 32, hotspotX: 3, hotspotY: 4, byteCount: small.count, imageOffset: smallOffset, to: &data)
+        appendCursorEntry(size: 64, hotspotX: 12, hotspotY: 14, byteCount: large.count, imageOffset: largeOffset, to: &data)
+        data.append(small)
+        data.append(large)
+        return data
+    }
+
+    private func appendCursorEntry(
+        size: Int,
+        hotspotX: UInt16,
+        hotspotY: UInt16,
+        byteCount: Int,
+        imageOffset: Int,
+        to data: inout Data
+    ) {
+        data.append(UInt8(size == 256 ? 0 : size))
+        data.append(UInt8(size == 256 ? 0 : size))
+        data.append(contentsOf: [0x00, 0x00])
+        data.append(contentsOf: withUnsafeBytes(of: hotspotX.littleEndian, Array.init))
+        data.append(contentsOf: withUnsafeBytes(of: hotspotY.littleEndian, Array.init))
+        appendUInt32LE(UInt32(byteCount), to: &data)
+        appendUInt32LE(UInt32(imageOffset), to: &data)
     }
 
     private func makeANIData(
@@ -813,7 +957,7 @@ struct CapeExporterTests {
 
     @MainActor
     @Test
-    func supplementalAssignmentsStayEmptyUntilManuallyOverridden() throws {
+    func supplementalAssignmentsStayEmptyUntilManuallyOverridden() async throws {
         func makeTempDirectory() throws -> URL {
             let base = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
             let directory = base.appendingPathComponent(UUID().uuidString, isDirectory: true)
@@ -870,6 +1014,7 @@ struct CapeExporterTests {
         let controller = CursorController(defaults: try makeIsolatedDefaults())
         controller.start()
         controller.setThemeFolder(folder)
+        await controller.waitForPendingReload()
 
         let assignment = controller.supplementalAssignment(for: .dragLink)
         #expect(assignment.appliedPreview == nil)
