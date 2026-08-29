@@ -56,305 +56,578 @@
     html { scroll-behavior: smooth; }
 
     :root {
-      --ink: #3a3550;
-      --ink-soft: #6f6890;
-      --grape: #8b5cf6;
-      --grape-deep: #7c3aed;
+      --bg: #ffffff;
+      --bg-subtle: #f9f9fb;
+      --bg-muted: #f3f3f6;
+      --ink: #111114;
+      --ink-soft: #4a4754;
+      --ink-muted: #797687;
+      --grape: #6d28d9;
+      --grape-hover: #5b21b6;
+      --grape-tint: #f5f3ff;
+      --border: #e4e3ea;
+      --border-subtle: #eeedf2;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     }
 
     body {
-      font-family: "Apple SD Gothic Neo", -apple-system, "Helvetica Neue", Arial, sans-serif;
+      font-family: "Apple SD Gothic Neo", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
       color: var(--ink);
-      background: #fff;
+      background: var(--bg);
       -webkit-font-smoothing: antialiased;
+      line-height: 1.55;
       word-break: keep-all;
     }
 
-    /* ── NAV ── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      height: 52px;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 max(24px, calc((100vw - 1000px) / 2));
-      background: rgba(255,255,255,0.7);
-      backdrop-filter: saturate(180%) blur(20px);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      border-bottom: 1px solid rgba(140,120,200,0.12);
+    a { color: inherit; text-decoration: none; }
+
+    /* ── HEADER / NAV ── */
+    header.site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
     }
-    .nav-brand { display: flex; align-items: center; gap: 9px; text-decoration: none; }
-    .nav-brand img { width: 26px; height: 26px; border-radius: 7px; }
-    .nav-brand span { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
-    .nav-right { display: flex; align-items: center; gap: 18px; }
-    .nav-lang { font-size: 0.8rem; color: var(--ink-soft); text-decoration: none; transition: color 120ms; }
-    .nav-lang:hover { color: var(--grape); }
-    .nav-dl {
-      padding: 7px 17px;
-      background: var(--grape-deep);
-      color: #fff; font-size: 0.8rem; font-weight: 600;
-      border-radius: 980px; text-decoration: none;
+    .nav-container {
+      max-width: 1200px; margin: 0 auto;
+      height: 58px; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.96rem;
+      letter-spacing: -0.01em; color: var(--ink);
+    }
+    .brand img { width: 24px; height: 24px; border-radius: 5px; }
+    .nav-links {
+      display: flex; align-items: center; gap: 20px; font-size: 0.86rem; font-weight: 500;
+    }
+    .nav-links a.nav-item { color: var(--ink-soft); transition: color 120ms; }
+    .nav-links a.nav-item:hover { color: var(--grape); }
+    .nav-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 7px 14px; background: var(--ink); color: #ffffff !important;
+      border-radius: var(--radius-md); font-weight: 600; font-size: 0.82rem;
       transition: background 120ms;
     }
-    .nav-dl:hover { background: #6d28d9; }
+    .nav-btn:hover { background: var(--grape); }
 
-    /* ── HERO ── */
-    .hero {
-      position: relative;
-      min-height: 100svh;
+    /* ── HERO (2-COLUMN ASYMMETRIC) ── */
+    .hero-section {
+      padding: 64px 24px 72px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .hero-container {
+      max-width: 1200px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 56px;
+      align-items: center;
+    }
+    .hero-left {
+      display: flex; flex-direction: column; align-items: flex-start;
+    }
+    .hero-left h1 {
+      font-size: clamp(2.2rem, 3.8vw, 3.3rem);
+      font-weight: 700; letter-spacing: -0.035em; line-height: 1.16;
+      color: var(--ink); margin-bottom: 18px;
+    }
+    .hero-desc {
+      font-size: 1.05rem; color: var(--ink-soft); line-height: 1.65;
+      margin-bottom: 28px;
+    }
+    .hero-desc > span {
+      display: block;
+    }
+    .hero-desc code {
+      font-family: var(--font-mono); font-size: 0.88em;
+      background: var(--bg-muted); padding: 2px 5px; border-radius: var(--radius-sm);
+      color: var(--ink);
+    }
+    .hero-actions {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 22px; background: var(--grape); color: #ffffff;
+      font-size: 0.92rem; font-weight: 600; border-radius: var(--radius-md);
+      transition: background 120ms;
+    }
+    .btn-primary:hover { background: var(--grape-hover); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 18px; background: #ffffff; color: var(--ink);
+      font-size: 0.92rem; font-weight: 600; border-radius: var(--radius-md);
+      border: 1px solid var(--border); transition: border-color 120ms, background 120ms;
+    }
+    .btn-secondary:hover { background: var(--bg-subtle); border-color: var(--ink-muted); }
+    .hero-meta {
+      font-size: 0.78rem; color: var(--ink-muted); margin-bottom: 20px;
+    }
+    .hero-bullets {
+      list-style: none; display: flex; flex-direction: column; gap: 8px;
+      border-top: 1px solid var(--border-subtle); padding-top: 18px; width: 100%;
+    }
+    .hero-bullets li {
+      font-size: 0.84rem; color: var(--ink-soft); display: flex; align-items: center; gap: 8px;
+    }
+    .hero-bullets li svg { color: var(--grape); flex-shrink: 0; }
+
+    .hero-figure {
+      margin: 0;
+    }
+    .hero-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .hero-credit {
+      margin-top: 0;
+      padding-right: 5.4%;
+      box-sizing: border-box;
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+      text-align: right;
+    }
+    .hero-credit a {
+      color: var(--grape);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .hero-credit a:hover {
+      color: var(--grape-hover);
+    }
+
+    /* ── FEATURES (EDITORIAL ROWS / NUMBERED LIST) ── */
+    .section-wrap {
+      max-width: 1200px; margin: 0 auto; padding: 80px 24px;
+    }
+    .section-header {
+      margin-bottom: 32px; max-width: 680px;
+    }
+    .section-header h2 {
+      font-size: clamp(1.7rem, 2.8vw, 2.2rem);
+      font-weight: 700; letter-spacing: -0.025em; color: var(--ink); line-height: 1.25;
+    }
+    .feature-list {
       display: flex; flex-direction: column;
-      align-items: center; text-align: center;
-      padding: 132px max(24px, calc((100vw - 820px) / 2)) 0;
-      background: linear-gradient(180deg, #f7f3fb 0%, #fff 72%);
-      overflow: hidden;
+      border-top: 1px solid var(--border);
     }
-    .hero > * { position: relative; z-index: 1; }
+    .feature-row {
+      display: grid;
+      grid-template-columns: 48px 220px 1fr;
+      gap: 20px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      align-items: baseline;
+    }
+    .feature-num {
+      font-family: var(--font-mono); font-size: 0.95rem; font-weight: 600;
+      color: var(--grape);
+    }
+    .feature-name {
+      font-size: 1.05rem; font-weight: 600; color: var(--ink);
+    }
+    .feature-desc {
+      font-size: 0.92rem; color: var(--ink-soft); line-height: 1.65;
+      max-width: 620px;
+    }
+    .guide-banner {
+      margin-top: 40px; padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      flex-wrap: wrap;
+    }
+    .guide-banner-text { font-size: 0.92rem; color: var(--ink-soft); }
+    .guide-banner-link {
+      font-size: 0.92rem; font-weight: 600; color: var(--grape);
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .guide-banner-link:hover { text-decoration: underline; }
 
-    .hero-icon {
-      width: 112px; height: 112px; border-radius: 26px;
-      margin-bottom: 32px;
-      box-shadow: 0 12px 32px rgba(72,52,112,0.16);
+    /* ── FAQ ── */
+    .faq-section {
+      max-width: 1200px; margin: 0 auto; padding: 80px 24px;
+      border-top: 1px solid var(--border);
     }
-
-    .hero h1 {
-      font-size: clamp(3rem, 7vw, 6rem);
-      font-weight: 800; letter-spacing: -0.04em; line-height: 1.08;
-      margin-bottom: 22px;
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 48px;
     }
-    .hero h1 .grad {
-      color: var(--grape-deep);
+    .faq-intro h2 {
+      font-size: clamp(1.7rem, 2.8vw, 2.2rem);
+      font-weight: 700; letter-spacing: -0.025em; color: var(--ink); line-height: 1.25;
     }
-    .hero-sub {
-      font-size: clamp(1rem, 1.7vw, 1.25rem);
-      color: var(--ink-soft); line-height: 1.7; max-width: 480px; margin-bottom: 40px;
+    .faq-intro p {
+      font-size: 0.92rem; color: var(--ink-muted); margin-top: 10px; line-height: 1.6;
     }
-    .hero-sub code {
-      font-family: monospace; font-size: 0.86em;
-      background: rgba(124,58,237,0.1); padding: 1px 7px; border-radius: 6px;
-      color: var(--grape-deep);
+    .faq-accordion {
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column;
     }
-    .hero-cta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center; margin-bottom: 72px; }
-    .btn-gh {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 15px 28px;
-      background: rgba(255,255,255,0.7);
-      border: 1.5px solid rgba(140,120,200,0.28);
-      color: var(--ink); font-size: 1.02rem; font-weight: 600;
-      border-radius: 980px; text-decoration: none;
-      backdrop-filter: blur(8px);
-      transition: background 130ms, border-color 130ms;
+    .faq-item {
+      border-bottom: 1px solid var(--border-subtle);
     }
-    .btn-gh:hover { background: rgba(255,255,255,0.92); border-color: rgba(140,120,200,0.5); }
-    .btn-dl {
-      display: inline-block; padding: 15px 34px;
-      background: var(--grape-deep);
-      color: #fff; font-size: 1.02rem; font-weight: 600;
-      border-radius: 980px; text-decoration: none;
-      transition: background 130ms;
+    .faq-item summary {
+      padding: 20px 0;
+      font-size: 1.02rem; font-weight: 600; color: var(--ink);
+      cursor: pointer;
+      list-style: none;
+      display: flex; justify-content: space-between; align-items: center; gap: 16px;
     }
-    .btn-dl:hover { background: #6d28d9; }
-    .hero-fine { font-size: 0.74rem; color: var(--ink-soft); opacity: 0.85; }
-
-    .hero-shot { width: 100%; max-width: 860px; position: relative; }
-    .hero-shot img {
-      display: block; width: 100%;
-      border-radius: 18px 18px 0 0;
-      box-shadow: 0 -2px 0 rgba(255,255,255,0.6) inset, 0 24px 60px rgba(120,90,180,0.22);
+    .faq-item summary::-webkit-details-marker {
+      display: none;
     }
-
-    /* ── FEATURES ── */
-    .features {
-      background: #fff;
-      padding: 110px max(24px, calc((100vw - 960px) / 2));
+    .faq-item summary::after {
+      content: "+";
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--ink-muted);
+      flex-shrink: 0;
     }
-    .feat-head { max-width: 680px; margin-bottom: 52px; }
-    .feat-eyebrow {
-      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--grape); margin-bottom: 14px;
+    .faq-item[open] summary::after {
+      content: "−";
     }
-    .feat-head h2 {
-      font-size: clamp(1.9rem, 3.4vw, 2.9rem);
-      font-weight: 800; letter-spacing: -0.035em; color: var(--ink);
+    .faq-answer {
+      padding: 0 0 20px;
+      font-size: 0.92rem; color: var(--ink-soft); line-height: 1.65;
     }
-    .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    .feat-card {
-      background: #fff;
-      border-top: 1px solid rgba(58,53,80,0.16);
-      padding: 28px 8px 24px 0;
+    .faq-answer p > span {
+      display: block;
     }
-    .feat-card h3 {
-      font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em;
-      color: var(--ink); margin-bottom: 9px;
+    .faq-answer code {
+      font-family: var(--font-mono); font-size: 0.88em;
+      background: var(--bg-muted); padding: 2px 5px; border-radius: var(--radius-sm);
+      color: var(--ink);
     }
-    .feat-card p { font-size: 0.96rem; color: var(--ink-soft); line-height: 1.75; }
-    .guide-link { margin-top: 26px; }
-    .guide-link a { color: var(--grape-deep); font-size: 0.92rem; font-weight: 700; text-decoration: none; }
-    .guide-link a:hover { text-decoration: underline; }
 
     /* ── CREDITS ── */
-    .credits {
-      background: #faf6ff;
-      padding: 72px max(24px, calc((100vw - 600px) / 2));
-      text-align: center;
+    .credits-section {
+      background: var(--bg-subtle);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 32px 24px;
     }
-    .credits p { font-size: 0.97rem; line-height: 1.85; color: var(--ink-soft); }
-    .credits a { color: var(--grape); text-decoration: none; font-weight: 600; }
-    .credits a:hover { text-decoration: underline; }
-    .credits code {
-      font-family: monospace; font-size: 0.88em;
-      background: rgba(124,58,237,0.09); padding: 1px 6px; border-radius: 6px; color: var(--grape-deep);
+    .credits-container {
+      max-width: 1200px; margin: 0 auto;
+      font-size: 0.88rem; color: var(--ink-soft); line-height: 1.65;
     }
+    .credits-block strong { color: var(--ink); }
+    .credits-block a { color: var(--grape); text-decoration: underline; text-underline-offset: 2px; }
 
     /* ── CHANGELOG ── */
-    .changelog {
-      background: linear-gradient(180deg, #faf6ff 0%, #f3ecfb 100%);
-      padding: 80px max(24px, calc((100vw - 600px) / 2));
+    .changelog-section {
+      max-width: 1200px; margin: 0 auto; padding: 80px 24px;
     }
-    .changelog h2 {
-      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--grape); margin-bottom: 36px; text-align: center;
+    .cl-table {
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column;
     }
-    .cl-row {
-      display: grid; grid-template-columns: 76px 1fr; gap: 0 26px;
-      padding: 22px 0; border-top: 1px solid rgba(140,120,200,0.16);
+    .cl-item {
+      display: grid;
+      grid-template-columns: 120px 240px 1fr;
+      gap: 24px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      align-items: baseline;
     }
-    .cl-row:first-child { border-top: none; padding-top: 0; }
-    .cl-v { font-size: 0.8rem; font-weight: 700; color: var(--grape); }
-    .cl-d { font-size: 0.68rem; color: var(--ink-soft); opacity: 0.8; margin-top: 4px; }
-    .cl-t { font-weight: 700; font-size: 0.9rem; color: var(--ink); margin-bottom: 5px; }
-    .cl-b { font-size: 0.83rem; color: var(--ink-soft); line-height: 1.65; }
+    .cl-ver {
+      font-family: var(--font-mono); font-size: 0.88rem; font-weight: 600; color: var(--ink);
+    }
+    .cl-date {
+      font-size: 0.76rem; color: var(--ink-muted); margin-top: 2px;
+    }
+    .cl-title {
+      font-size: 0.92rem; font-weight: 600; color: var(--ink);
+    }
+    .cl-body {
+      font-size: 0.86rem; color: var(--ink-soft); line-height: 1.6;
+    }
 
     /* ── FOOTER ── */
-    footer {
-      background: #f3ecfb;
-      padding: 30px max(24px, calc((100vw - 600px) / 2));
-      font-size: 0.74rem; color: var(--ink-soft);
-      text-align: center;
+    footer.site-footer {
+      border-top: 1px solid var(--border);
+      background: var(--bg-subtle);
+      padding: 32px 24px;
+      font-size: 0.82rem; color: var(--ink-muted);
     }
-    footer a { color: var(--ink-soft); text-decoration: none; }
-    footer a:hover { color: var(--grape); }
+    .footer-container {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-links {
+      display: flex; gap: 18px; flex-wrap: wrap;
+    }
+    .footer-links a { color: var(--ink-soft); }
+    .footer-links a:hover { color: var(--grape); }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 680px) {
-      .hero { padding-top: 110px; padding-left: 22px; padding-right: 22px; }
-      .hero-icon { width: 104px; height: 104px; }
-      .hero h1 { font-size: 2.7rem; }
-      .hero-cta { flex-direction: column; gap: 14px; }
-      .feat-grid { grid-template-columns: 1fr; }
-      .feat-card { padding: 32px 28px; }
+    @media (max-width: 900px) {
+      .hero-container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .feature-row {
+        grid-template-columns: 50px 1fr;
+        gap: 8px 16px;
+      }
+      .feature-desc {
+        grid-column: 2 / -1;
+      }
+      .faq-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      .cl-item {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <nav>
-    <a class="nav-brand" href="#"><img src="../assets/app-icon.png" alt="Cursie 아이콘"><span>Cursie</span></a>
-    <div class="nav-right">
-      <a class="nav-lang" href="../index.html">English</a>
-      <a class="nav-dl" href="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.8/Cursie.dmg">다운로드</a>
+  <header class="site-header">
+    <div class="nav-container">
+      <a class="brand" href="./index.html">
+        <img src="../assets/app-icon.png" alt="Cursie 아이콘">
+        <span>Cursie</span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-item" href="./mac-custom-cursor.html">가이드</a>
+        <a class="nav-item" href="#changelog">업데이트 내역</a>
+        <a class="nav-item" href="../index.html">English</a>
+        <a class="nav-btn" href="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.8/Cursie.dmg">다운로드</a>
+      </div>
     </div>
-  </nav>
+  </header>
 
   <!-- HERO -->
-  <section class="hero">
-    <img class="hero-icon" src="../assets/app-icon.png" alt="Cursie 앱 아이콘">
-    <h1>Windows 커서팩을<br><span class="grad">Mac에서도.</span></h1>
-    <p class="hero-sub">
-      갖고 있던 <code>.cur</code>·<code>.ani</code> 파일을 불러와 확인하고, macOS 시스템 커서에 적용하세요.
-    </p>
-    <div class="hero-cta">
-      <a class="btn-dl" href="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.8/Cursie.dmg">무료 다운로드</a>
-      <a class="btn-gh" href="https://github.com/kwd421/macOS_Cursie" target="_blank" rel="noopener">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
-        GitHub
-      </a>
-      <span class="hero-fine">macOS 15 Sequoia 이상 권장 · Apple Silicon &amp; Intel · 무료</span>
-    </div>
-    <div class="hero-shot">
-      <img src="../assets/ko-preview.png" alt="커서 역할이 매핑된 Cursie 앱 화면">
+  <section class="hero-section">
+    <div class="hero-container">
+      <div class="hero-left">
+        <h1>Windows 커서팩을<br>macOS 시스템 커서로.</h1>
+        <p class="hero-desc">
+          <span>Windows <code>.cur</code> 및 <code>.ani</code> 커서 파일을 불러와 모양을 미리 확인합니다.</span>
+          <span>원하는 커서를 골라 macOS 시스템 커서로 적용합니다.</span>
+        </p>
+        <div class="hero-actions">
+          <a class="btn-primary" href="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.8/Cursie.dmg">Cursie 다운로드</a>
+          <a class="btn-secondary" href="https://github.com/kwd421/macOS_Cursie" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
+            GitHub
+          </a>
+        </div>
+        <p class="hero-meta">macOS 15 Sequoia 이상 권장 · Apple Silicon 및 Intel Mac 지원 · 무료</p>
+        <ul class="hero-bullets">
+          <li>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Mac 전체에 커서 적용
+          </li>
+          <li>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            움직이는 .ani 커서 미리보기
+          </li>
+          <li>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            적용한 뒤에는 Cursie를 꺼도 유지
+          </li>
+        </ul>
+      </div>
+
+      <figure class="hero-figure">
+        <img src="../assets/ko-preview.png" alt="Windows 커서팩을 불러와 커서별로 미리보는 Cursie 앱 화면">
+        <figcaption class="hero-credit">
+          커서 디자인: <a href="https://x.com/BLZ_pixel/status/1873630058981835066" target="_blank" rel="noopener">BLZ_pixel</a>
+        </figcaption>
+      </figure>
     </div>
   </section>
 
   <!-- FEATURES -->
-  <section class="features">
-    <div class="feat-head">
-      <p class="feat-eyebrow">기능</p>
-      <h2>불러온 커서를 확인하고 적용합니다.</h2>
+  <section class="section-wrap" id="features">
+    <div class="section-header">
+      <h2>주요 기능</h2>
     </div>
-    <div class="feat-grid">
-      <div class="feat-card">
-        <h3>적용 전에 미리보기</h3>
-        <p>화살표, 텍스트, 링크 등 역할별 커서를 실제 크기와 확대 화면으로 확인합니다.</p>
+    <div class="feature-list">
+      <div class="feature-row">
+        <span class="feature-num">01</span>
+        <h3 class="feature-name">커서팩 불러오기</h3>
+        <p class="feature-desc">커서팩 폴더를 끌어다 놓거나, 원하는 .cur와 .ani 파일만 골라 불러올 수 있습니다.</p>
       </div>
-      <div class="feat-card">
-        <h3>커서 역할 자동 매핑</h3>
-        <p>파일 이름을 보고 각 커서의 역할을 자동으로 연결합니다. 어긋난 항목은 직접 바꿀 수 있습니다.</p>
+      <div class="feature-row">
+        <span class="feature-num">02</span>
+        <h3 class="feature-name">파일 자동 분류</h3>
+        <p class="feature-desc">Cursie가 Normal, Text, Link 같은 이름을 보고 화살표, 텍스트, 링크 커서로 알아서 나눠줍니다.</p>
       </div>
-      <div class="feat-card">
-        <h3>폴더째 불러오기</h3>
-        <p>커서팩 폴더를 선택하거나 앱 위로 끌어놓으세요. 개별 파일도 바로 교체할 수 있습니다.</p>
+      <div class="feature-row">
+        <span class="feature-num">03</span>
+        <h3 class="feature-name">커서 미리보기</h3>
+        <p class="feature-desc">적용하기 전에 커서의 모양과 움직임을 미리 보고, 원하는 커서만 따로 바꿀 수 있습니다.</p>
       </div>
-      <div class="feat-card">
-        <h3>앱 안에서 업데이트</h3>
-        <p>새 버전이 나오면 Cursie 안에서 확인하고 설치할 수 있습니다.</p>
+      <div class="feature-row">
+        <span class="feature-num">04</span>
+        <h3 class="feature-name">Mac에 적용</h3>
+        <p class="feature-desc">적용 버튼을 누르면 Mac의 커서가 바뀝니다. Cursie를 꺼도 커서는 바뀐 상태로 유지됩니다.</p>
       </div>
     </div>
-    <p class="guide-link"><a href="/ko/mac-custom-cursor">처음이라면 적용 방법부터 보기 →</a></p>
+    <div class="guide-banner">
+      <span class="guide-banner-text">설정 방법이나 기본 커서로 되돌리는 방법이 궁금하신가요?</span>
+      <a class="guide-banner-link" href="./mac-custom-cursor.html">맥 커서 변경 가이드 →</a>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-section" id="faq">
+    <div class="faq-grid">
+      <div class="faq-intro">
+        <h2>자주 묻는 질문</h2>
+      </div>
+      <div class="faq-accordion">
+        <details class="faq-item">
+          <summary>Cursie를 계속 켜둬야 하나요?</summary>
+          <div class="faq-answer">
+            <p>
+              <span>아니요. 커서를 적용한 뒤에는 Cursie를 종료해도 됩니다.</span>
+              <span>Mac을 다시 시작하면 로그인할 때 마지막으로 선택한 커서가 다시 적용됩니다.</span>
+            </p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary>Windows용 .cur·.ani 커서팩도 사용할 수 있나요?</summary>
+          <div class="faq-answer">
+            <p>
+              <span>네. Windows <code>.cur</code> 및 <code>.ani</code> 커서 파일을 불러와 각 커서 역할을 확인한 뒤 시스템 커서에 적용할 수 있습니다.</span>
+            </p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary>움직이는 .ani 커서도 적용되나요?</summary>
+          <div class="faq-answer">
+            <p>
+              <span>네. <code>.ani</code> 파일의 움직임을 앱에서 미리 확인하고 시스템 커서에 그대로 적용할 수 있습니다.</span>
+            </p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary>원래 커서로 돌아가려면 어떻게 하나요?</summary>
+          <div class="faq-answer">
+            <p>
+              <span>Cursie의 ‘포인터 기본값 복구 열기’는 macOS 포인터 설정을 여는 버튼입니다.</span>
+              <span>설정 화면이 열리면 ‘색상 재설정(Reset Colors)’을 직접 눌러야 기본 커서로 돌아갑니다.</span>
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
   </section>
 
   <!-- CREDITS -->
-  <section class="credits">
-    <p>
-      Cursie는 Alex Zielenski의 오픈소스 커서 매니저 <a href="https://github.com/alexzielenski/Mousecape" target="_blank" rel="noopener">Mousecape</a>를 바탕으로 만들었습니다.
-      Mousecape가 만든 <code>.cape</code> 형식과 macOS 커서 생태계에 감사드립니다.
-    </p>
-    <p style="margin-top:18px;">
-      스크린샷에 사용된 커서팩은 <a href="https://x.com/BLZ_pixel/status/1873630058981835066" target="_blank" rel="noopener">BLZ_pixel</a>이 만든
-      픽셀아트 커서입니다. 공개 배포를 허락해준 제작자에게 감사드립니다.
-    </p>
+  <section class="credits-section">
+    <div class="credits-container">
+      <div class="credits-block">
+        Cursie는 Alex Zielenski의 오픈소스 커서 도구 <a href="https://github.com/alexzielenski/Mousecape" target="_blank" rel="noopener">Mousecape</a>를 바탕으로 만들어졌습니다.
+      </div>
+    </div>
   </section>
 
   <!-- CHANGELOG -->
-  <section class="changelog">
-    <h2>업데이트 내역</h2>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.8</div><div class="cl-d">2026년 6월</div></div>
-      <div><div class="cl-t">배포 전 정리</div><p class="cl-b">ANI sequence/rate 테이블이 있는 애니메이션 커서 타이밍을 개선하고, Sparkle 고지와 공개 릴리즈 문서를 정리했습니다.</p></div>
+  <section class="changelog-section" id="changelog">
+    <div class="section-header">
+      <h2>업데이트 내역</h2>
     </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.7</div><div class="cl-d">2026년 6월</div></div>
-      <div><div class="cl-t">서드파티 고지 추가</div><p class="cl-b">Mousecape와 Sparkle 라이선스 고지를 추가하고, 앱 번들에 포함했으며 Cursie 릴리즈 문서를 정리했습니다.</p></div>
-    </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.6</div><div class="cl-d">2026년 6월</div></div>
-      <div><div class="cl-t">소프트웨어 업데이트 창 한국어화</div><p class="cl-b">업데이트 창이 항상 영어로 뜨던 문제를 수정했습니다. 이제 시스템 언어를 따라 한국어로 표시됩니다.</p></div>
-    </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.5</div><div class="cl-d">2026년 6월</div></div>
-      <div><div class="cl-t">커서 적용 후 Dock에 남던 백그라운드 아이콘 제거</div><p class="cl-b">커서 적용 후 Dock에 백그라운드 프로세스가 남던 문제를 수정했습니다. 시스템 커서는 즉시 직접 적용되며, 로그인 에이전트는 다음 로그인 때만 실행되어 테마를 복원합니다.</p></div>
-    </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.4</div><div class="cl-d">2026년 6월</div></div>
-      <div><div class="cl-t">창 레이아웃 재설계</div><p class="cl-b">사이드바가 떠 있는 둥근 카드 형태로 변경. 네이티브 타이틀바 제거 — 신호등 버튼이 사이드바 안에 배치. 적용 버튼 영역도 동일한 카드 스타일로 재설계. 다크 모드 타이틀바 색상 수정.</p></div>
-    </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.3</div><div class="cl-d">2026년 6월</div></div>
-      <div><div class="cl-t">앱 이름 Cursie로 변경 · 자동 업데이트 · 새 아이콘</div><p class="cl-b">macOS 시스템 커서 직접 적용, Sparkle 자동 업데이트 추가, 새 앱 아이콘 및 커서 미리보기 개선.</p></div>
-    </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.2</div><div class="cl-d">2026년 5월</div></div>
-      <div><div class="cl-t">기본 커서 미리보기 수정</div><p class="cl-b">기본 화살표 커서가 왼쪽 위로 치우쳐 보이던 문제를 수정했습니다.</p></div>
-    </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.1</div><div class="cl-d">2026년 4월</div></div>
-      <div><div class="cl-t">애니메이션 커서 호환성 개선</div><p class="cl-b">예전 .cape 내보내기 빨간 점 문제 수정. 24프레임 초과 애니메이션 다운샘플링 개선.</p></div>
-    </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.0</div><div class="cl-d">2026년 3월</div></div>
-      <div><div class="cl-t">첫 출시</div><p class="cl-b">레거시 첫 출시: Windows 커서팩 불러오기, 커서 미리보기, Mousecape용 .cape 파일 생성.</p></div>
+    <div class="cl-table">
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.8</div>
+          <div class="cl-date">2026년 6월</div>
+        </div>
+        <div class="cl-title">애니메이션 재생 속도 개선</div>
+        <p class="cl-body">움직이는 커서가 파일에 지정된 속도로 재생되도록 고쳤습니다. 라이선스 안내도 함께 정리했습니다.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.7</div>
+          <div class="cl-date">2026년 6월</div>
+        </div>
+        <div class="cl-title">오픈소스 라이선스 안내 추가</div>
+        <p class="cl-body">사용한 오픈소스 소프트웨어 라이선스 정보를 앱 안내에 추가했습니다.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.6</div>
+          <div class="cl-date">2026년 6월</div>
+        </div>
+        <div class="cl-title">업데이트 창 한국어 지원</div>
+        <p class="cl-body">macOS의 언어 설정에 따라 업데이트 창이 한국어로 표시됩니다.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.5</div>
+          <div class="cl-date">2026년 6월</div>
+        </div>
+        <div class="cl-title">Dock 표시와 재시작 동작 개선</div>
+        <p class="cl-body">커서를 바꾼 뒤 Dock에 Cursie가 남아 있던 문제를 고쳤습니다. Mac을 다시 시작해도 선택한 커서가 유지됩니다.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.4</div>
+          <div class="cl-date">2026년 6월</div>
+        </div>
+        <div class="cl-title">화면 구성 및 다크 모드 개선</div>
+        <p class="cl-body">창 구성을 보기 쉽게 다듬고, 다크 모드에서 색상이 어색하게 보이던 문제를 고쳤습니다.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.3</div>
+          <div class="cl-date">2026년 6월</div>
+        </div>
+        <div class="cl-title">Cursie로 이름 변경 및 앱에서 업데이트 지원</div>
+        <p class="cl-body">앱 이름과 아이콘을 바꾸고, Cursie에서 macOS 커서를 변경하고 새 버전을 확인할 수 있도록 했습니다.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.2</div>
+          <div class="cl-date">2026년 5월</div>
+        </div>
+        <div class="cl-title">화살표 커서 미리보기 위치 보정</div>
+        <p class="cl-body">화살표 커서가 미리보기 창 중심에서 어긋나 보이던 문제를 바로잡았습니다.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.1</div>
+          <div class="cl-date">2026년 4월</div>
+        </div>
+        <div class="cl-title">움직이는 커서 재생 개선</div>
+        <p class="cl-body">일부 .cape 파일에서 빨간 점이 보이던 문제를 고치고, 프레임 수가 많은 .ani 파일도 더 자연스럽게 재생되도록 개선했습니다.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.0</div>
+          <div class="cl-date">2026년 3월</div>
+        </div>
+        <div class="cl-title">첫 버전 출시</div>
+        <p class="cl-body">Windows 커서팩 불러오기 및 커서 미리보기를 지원하는 첫 버전입니다.</p>
+      </div>
     </div>
   </section>
 
-  <footer>
-    <a href="./privacy.html">개인정보 처리방침</a> · <a href="../license.html">라이선스</a> · <a href="../third-party-notices.html">서드파티 고지</a> · © 2026 Cursie
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div>© 2026 Cursie. 무료 오픈소스 소프트웨어.</div>
+      <div class="footer-links">
+        <a href="./privacy.html">개인정보 처리방침</a>
+        <a href="../license.html">라이선스</a>
+        <a href="../third-party-notices.html">서드파티 고지</a>
+        <a href="https://github.com/kwd421/macOS_Cursie" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
   </footer>
 
 </body>

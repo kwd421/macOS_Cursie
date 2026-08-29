@@ -56,311 +56,580 @@
     html { scroll-behavior: smooth; }
 
     :root {
-      --ink: #3a3550;
-      --ink-soft: #6f6890;
-      --lav: #c9b8f0;
-      --pink: #ffc8dd;
-      --sky: #bde0fe;
-      --grape: #8b5cf6;
-      --grape-deep: #7c3aed;
+      --bg: #ffffff;
+      --bg-subtle: #f9f9fb;
+      --bg-muted: #f3f3f6;
+      --ink: #111114;
+      --ink-soft: #4a4754;
+      --ink-muted: #797687;
+      --grape: #6d28d9;
+      --grape-hover: #5b21b6;
+      --grape-tint: #f5f3ff;
+      --border: #e4e3ea;
+      --border-subtle: #eeedf2;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     }
 
     body {
-      font-family: -apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
       color: var(--ink);
-      background: #fff;
+      background: var(--bg);
       -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
     }
 
-    /* ── NAV ── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      height: 52px;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 max(24px, calc((100vw - 1000px) / 2));
-      background: rgba(255,255,255,0.7);
-      backdrop-filter: saturate(180%) blur(20px);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      border-bottom: 1px solid rgba(140,120,200,0.12);
+    a { color: inherit; text-decoration: none; }
+
+    /* ── HEADER / NAV ── */
+    header.site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
     }
-    .nav-brand { display: flex; align-items: center; gap: 9px; text-decoration: none; }
-    .nav-brand img { width: 26px; height: 26px; border-radius: 7px; }
-    .nav-brand span { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
-    .nav-right { display: flex; align-items: center; gap: 18px; }
-    .nav-lang { font-size: 0.8rem; color: var(--ink-soft); text-decoration: none; transition: color 120ms; }
-    .nav-lang:hover { color: var(--grape); }
-    .nav-dl {
-      padding: 7px 17px;
-      background: var(--grape-deep);
-      color: #fff; font-size: 0.8rem; font-weight: 600;
-      border-radius: 980px; text-decoration: none;
+    .nav-container {
+      max-width: 1200px; margin: 0 auto;
+      height: 58px; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.96rem;
+      letter-spacing: -0.01em; color: var(--ink);
+    }
+    .brand img { width: 24px; height: 24px; border-radius: 5px; }
+    .nav-links {
+      display: flex; align-items: center; gap: 20px; font-size: 0.86rem; font-weight: 500;
+    }
+    .nav-links a.nav-item { color: var(--ink-soft); transition: color 120ms; }
+    .nav-links a.nav-item:hover { color: var(--grape); }
+    .nav-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 7px 14px; background: var(--ink); color: #ffffff !important;
+      border-radius: var(--radius-md); font-weight: 600; font-size: 0.82rem;
       transition: background 120ms;
     }
-    .nav-dl:hover { background: #6d28d9; }
+    .nav-btn:hover { background: var(--grape); }
 
-    /* ── HERO ── */
-    .hero {
-      position: relative;
-      min-height: 100svh;
+    /* ── HERO (2-COLUMN ASYMMETRIC) ── */
+    .hero-section {
+      padding: 64px 24px 72px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .hero-container {
+      max-width: 1200px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 56px;
+      align-items: center;
+    }
+    .hero-left {
+      display: flex; flex-direction: column; align-items: flex-start;
+    }
+    .hero-left h1 {
+      font-size: clamp(2.2rem, 3.8vw, 3.3rem);
+      font-weight: 700; letter-spacing: -0.035em; line-height: 1.12;
+      color: var(--ink); margin-bottom: 18px;
+    }
+    .hero-desc {
+      font-size: 1.05rem; color: var(--ink-soft); line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .hero-desc > span {
+      display: block;
+    }
+    .hero-desc code {
+      font-family: var(--font-mono); font-size: 0.88em;
+      background: var(--bg-muted); padding: 2px 5px; border-radius: var(--radius-sm);
+      color: var(--ink);
+    }
+    .hero-actions {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 22px; background: var(--grape); color: #ffffff;
+      font-size: 0.92rem; font-weight: 600; border-radius: var(--radius-md);
+      transition: background 120ms;
+    }
+    .btn-primary:hover { background: var(--grape-hover); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 18px; background: #ffffff; color: var(--ink);
+      font-size: 0.92rem; font-weight: 600; border-radius: var(--radius-md);
+      border: 1px solid var(--border); transition: border-color 120ms, background 120ms;
+    }
+    .btn-secondary:hover { background: var(--bg-subtle); border-color: var(--ink-muted); }
+    .hero-meta {
+      font-size: 0.78rem; color: var(--ink-muted); margin-bottom: 20px;
+    }
+    .hero-bullets {
+      list-style: none; display: flex; flex-direction: column; gap: 8px;
+      border-top: 1px solid var(--border-subtle); padding-top: 18px; width: 100%;
+    }
+    .hero-bullets li {
+      font-size: 0.84rem; color: var(--ink-soft); display: flex; align-items: center; gap: 8px;
+    }
+    .hero-bullets li svg { color: var(--grape); flex-shrink: 0; }
+
+    .hero-figure {
+      margin: 0;
+    }
+    .hero-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .hero-credit {
+      margin-top: 0;
+      padding-right: 5.4%;
+      box-sizing: border-box;
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+      text-align: right;
+    }
+    .hero-credit a {
+      color: var(--grape);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .hero-credit a:hover {
+      color: var(--grape-hover);
+    }
+
+    /* ── FEATURES (EDITORIAL ROWS / NUMBERED LIST) ── */
+    .section-wrap {
+      max-width: 1200px; margin: 0 auto; padding: 80px 24px;
+    }
+    .section-header {
+      margin-bottom: 48px; max-width: 680px;
+    }
+    .section-eyebrow {
+      font-size: 0.74rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--grape); margin-bottom: 8px;
+    }
+    .section-header h2 {
+      font-size: clamp(1.7rem, 2.8vw, 2.2rem);
+      font-weight: 700; letter-spacing: -0.025em; color: var(--ink); line-height: 1.2;
+    }
+    .feature-list {
       display: flex; flex-direction: column;
-      align-items: center; text-align: center;
-      padding: 132px max(24px, calc((100vw - 820px) / 2)) 0;
-      background: linear-gradient(180deg, #f7f3fb 0%, #fff 72%);
-      overflow: hidden;
+      border-top: 1px solid var(--border);
     }
-    .hero > * { position: relative; z-index: 1; }
+    .feature-row {
+      display: grid;
+      grid-template-columns: 80px 280px 1fr;
+      gap: 24px;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      align-items: baseline;
+    }
+    .feature-num {
+      font-family: var(--font-mono); font-size: 0.95rem; font-weight: 600;
+      color: var(--grape);
+    }
+    .feature-name {
+      font-size: 1.05rem; font-weight: 600; color: var(--ink);
+    }
+    .feature-desc {
+      font-size: 0.92rem; color: var(--ink-soft); line-height: 1.6;
+    }
+    .guide-banner {
+      margin-top: 40px; padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      flex-wrap: wrap;
+    }
+    .guide-banner-text { font-size: 0.92rem; color: var(--ink-soft); }
+    .guide-banner-link {
+      font-size: 0.92rem; font-weight: 600; color: var(--grape);
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .guide-banner-link:hover { text-decoration: underline; }
 
-    .hero-icon {
-      width: 112px; height: 112px; border-radius: 26px;
-      margin-bottom: 32px;
-      box-shadow: 0 12px 32px rgba(72,52,112,0.16);
+    /* ── FAQ ── */
+    .faq-section {
+      max-width: 1200px; margin: 0 auto; padding: 80px 24px;
+      border-top: 1px solid var(--border);
     }
-
-    .hero h1 {
-      font-size: clamp(3rem, 7vw, 6rem);
-      font-weight: 800; letter-spacing: -0.04em; line-height: 1.04;
-      margin-bottom: 22px;
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 48px;
     }
-    .hero h1 .grad {
-      color: var(--grape-deep);
+    .faq-intro h2 {
+      font-size: clamp(1.7rem, 2.8vw, 2.2rem);
+      font-weight: 700; letter-spacing: -0.025em; color: var(--ink); line-height: 1.2;
     }
-    .hero-sub {
-      font-size: clamp(1rem, 1.7vw, 1.25rem);
-      color: var(--ink-soft); line-height: 1.6; max-width: 480px; margin-bottom: 40px;
+    .faq-intro p {
+      font-size: 0.92rem; color: var(--ink-muted); margin-top: 10px; line-height: 1.6;
     }
-    .hero-sub code {
-      font-family: "SF Mono", "Menlo", monospace; font-size: 0.86em;
-      background: rgba(124,58,237,0.1); padding: 1px 7px; border-radius: 6px;
-      color: var(--grape-deep);
+    .faq-accordion {
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column;
     }
-    .hero-cta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center; margin-bottom: 72px; }
-    .btn-gh {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 15px 28px;
-      background: rgba(255,255,255,0.7);
-      border: 1.5px solid rgba(140,120,200,0.28);
-      color: var(--ink); font-size: 1.02rem; font-weight: 600;
-      border-radius: 980px; text-decoration: none;
-      backdrop-filter: blur(8px);
-      transition: background 130ms, border-color 130ms;
+    .faq-item {
+      border-bottom: 1px solid var(--border-subtle);
     }
-    .btn-gh:hover { background: rgba(255,255,255,0.92); border-color: rgba(140,120,200,0.5); }
-    .btn-dl {
-      display: inline-block; padding: 15px 34px;
-      background: var(--grape-deep);
-      color: #fff; font-size: 1.02rem; font-weight: 600;
-      border-radius: 980px; text-decoration: none;
-      transition: background 130ms;
+    .faq-item summary {
+      padding: 20px 0;
+      font-size: 1.02rem; font-weight: 600; color: var(--ink);
+      cursor: pointer;
+      list-style: none;
+      display: flex; justify-content: space-between; align-items: center; gap: 16px;
     }
-    .btn-dl:hover { background: #6d28d9; }
-    .hero-fine { font-size: 0.74rem; color: var(--ink-soft); opacity: 0.85; }
-
-    .hero-shot {
-      width: 100%; max-width: 860px; position: relative;
+    .faq-item summary::-webkit-details-marker {
+      display: none;
     }
-    .hero-shot img {
-      display: block; width: 100%;
-      border-radius: 18px 18px 0 0;
-      box-shadow: 0 -2px 0 rgba(255,255,255,0.6) inset, 0 24px 60px rgba(120,90,180,0.22);
+    .faq-item summary::after {
+      content: "+";
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--ink-muted);
+      flex-shrink: 0;
     }
-
-    /* ── FEATURES ── */
-    .features {
-      background: #fff;
-      padding: 110px max(24px, calc((100vw - 960px) / 2));
+    .faq-item[open] summary::after {
+      content: "−";
     }
-    .feat-head { max-width: 680px; margin-bottom: 52px; }
-    .feat-eyebrow {
-      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--grape); margin-bottom: 14px;
+    .faq-answer {
+      padding: 0 0 20px;
+      font-size: 0.92rem; color: var(--ink-soft); line-height: 1.6;
     }
-    .feat-head h2 {
-      font-size: clamp(1.9rem, 3.4vw, 2.9rem);
-      font-weight: 800; letter-spacing: -0.035em; color: var(--ink);
+    .faq-answer p > span {
+      display: block;
     }
-    .feat-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+    .faq-answer code {
+      font-family: var(--font-mono); font-size: 0.88em;
+      background: var(--bg-muted); padding: 2px 5px; border-radius: var(--radius-sm);
+      color: var(--ink);
     }
-    .feat-card {
-      background: #fff;
-      border-top: 1px solid rgba(58,53,80,0.16);
-      padding: 28px 8px 24px 0;
-    }
-    .feat-card h3 {
-      font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em;
-      color: var(--ink); margin-bottom: 9px;
-    }
-    .feat-card p { font-size: 0.96rem; color: var(--ink-soft); line-height: 1.7; }
-    .guide-link { margin-top: 26px; }
-    .guide-link a { color: var(--grape-deep); font-size: 0.92rem; font-weight: 700; text-decoration: none; }
-    .guide-link a:hover { text-decoration: underline; }
 
     /* ── CREDITS ── */
-    .credits {
-      background: #faf6ff;
-      padding: 72px max(24px, calc((100vw - 600px) / 2));
-      text-align: center;
+    .credits-section {
+      background: var(--bg-subtle);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 32px 24px;
     }
-    .credits p { font-size: 0.97rem; line-height: 1.85; color: var(--ink-soft); }
-    .credits a { color: var(--grape); text-decoration: none; font-weight: 600; }
-    .credits a:hover { text-decoration: underline; }
-    .credits code {
-      font-family: "SF Mono", monospace; font-size: 0.88em;
-      background: rgba(124,58,237,0.09); padding: 1px 6px; border-radius: 6px; color: var(--grape-deep);
+    .credits-container {
+      max-width: 1200px; margin: 0 auto;
+      font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6;
     }
+    .credits-block strong { color: var(--ink); }
+    .credits-block a { color: var(--grape); text-decoration: underline; text-underline-offset: 2px; }
 
     /* ── CHANGELOG ── */
-    .changelog {
-      background: linear-gradient(180deg, #faf6ff 0%, #f3ecfb 100%);
-      padding: 80px max(24px, calc((100vw - 600px) / 2));
+    .changelog-section {
+      max-width: 1200px; margin: 0 auto; padding: 80px 24px;
     }
-    .changelog h2 {
-      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--grape); margin-bottom: 36px; text-align: center;
+    .cl-table {
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column;
     }
-    .cl-row {
-      display: grid; grid-template-columns: 76px 1fr; gap: 0 26px;
-      padding: 22px 0; border-top: 1px solid rgba(140,120,200,0.16);
+    .cl-item {
+      display: grid;
+      grid-template-columns: 120px 220px 1fr;
+      gap: 24px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      align-items: baseline;
     }
-    .cl-row:first-child { border-top: none; padding-top: 0; }
-    .cl-v { font-size: 0.8rem; font-weight: 700; color: var(--grape); }
-    .cl-d { font-size: 0.68rem; color: var(--ink-soft); opacity: 0.8; margin-top: 4px; }
-    .cl-t { font-weight: 700; font-size: 0.9rem; color: var(--ink); margin-bottom: 5px; }
-    .cl-b { font-size: 0.83rem; color: var(--ink-soft); line-height: 1.65; }
+    .cl-ver {
+      font-family: var(--font-mono); font-size: 0.88rem; font-weight: 600; color: var(--ink);
+    }
+    .cl-date {
+      font-size: 0.76rem; color: var(--ink-muted); margin-top: 2px;
+    }
+    .cl-title {
+      font-size: 0.92rem; font-weight: 600; color: var(--ink);
+    }
+    .cl-body {
+      font-size: 0.86rem; color: var(--ink-soft); line-height: 1.55;
+    }
 
     /* ── FOOTER ── */
-    footer {
-      background: #f3ecfb;
-      padding: 30px max(24px, calc((100vw - 600px) / 2));
-      font-size: 0.74rem; color: var(--ink-soft);
-      text-align: center;
+    footer.site-footer {
+      border-top: 1px solid var(--border);
+      background: var(--bg-subtle);
+      padding: 32px 24px;
+      font-size: 0.82rem; color: var(--ink-muted);
     }
-    footer a { color: var(--ink-soft); text-decoration: none; }
-    footer a:hover { color: var(--grape); }
+    .footer-container {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-links {
+      display: flex; gap: 18px; flex-wrap: wrap;
+    }
+    .footer-links a { color: var(--ink-soft); }
+    .footer-links a:hover { color: var(--grape); }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 680px) {
-      .hero { padding-top: 110px; padding-left: 22px; padding-right: 22px; }
-      .hero-icon { width: 104px; height: 104px; }
-      .hero h1 { font-size: 2.7rem; }
-      .hero-cta { flex-direction: column; gap: 14px; }
-      .feat-grid { grid-template-columns: 1fr; }
-      .feat-card { padding: 32px 28px; }
+    @media (max-width: 900px) {
+      .hero-container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .feature-row {
+        grid-template-columns: 50px 1fr;
+        gap: 8px 16px;
+      }
+      .feature-desc {
+        grid-column: 2 / -1;
+      }
+      .faq-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      .cl-item {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <nav>
-    <a class="nav-brand" href="#"><img src="./assets/app-icon.png" alt="Cursie icon"><span>Cursie</span></a>
-    <div class="nav-right">
-      <a class="nav-lang" href="./ko/index.html">한국어</a>
-      <a class="nav-dl" href="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.8/Cursie.dmg">Download</a>
+  <header class="site-header">
+    <div class="nav-container">
+      <a class="brand" href="./index.html">
+        <img src="./assets/app-icon.png" alt="Cursie icon">
+        <span>Cursie</span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-item" href="./guides/custom-cursor-mac.html">Guide</a>
+        <a class="nav-item" href="#changelog">Changelog</a>
+        <a class="nav-item" href="./ko/index.html">한국어</a>
+        <a class="nav-btn" href="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.8/Cursie.dmg">Download DMG</a>
+      </div>
     </div>
-  </nav>
+  </header>
 
   <!-- HERO -->
-  <section class="hero">
-    <img class="hero-icon" src="./assets/app-icon.png" alt="Cursie app icon">
-    <h1>Windows cursor packs,<br><span class="grad">now on your Mac.</span></h1>
-    <p class="hero-sub">
-      Bring in the <code>.cur</code> and <code>.ani</code> files you already have, check the mappings, and apply them to macOS.
-    </p>
-    <div class="hero-cta">
-      <a class="btn-dl" href="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.8/Cursie.dmg">Download Cursie</a>
-      <a class="btn-gh" href="https://github.com/kwd421/macOS_Cursie" target="_blank" rel="noopener">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
-        GitHub
-      </a>
-      <span class="hero-fine">macOS 15 Sequoia or later recommended · Apple Silicon &amp; Intel · Free</span>
-    </div>
-    <div class="hero-shot">
-      <img src="./assets/cursie-preview.png" alt="Cursie app showing cursor roles mapped from a Windows cursor pack">
+  <section class="hero-section">
+    <div class="hero-container">
+      <div class="hero-left">
+        <h1>Apply Windows cursor packs directly to macOS.</h1>
+        <p class="hero-desc">
+          <span>Import and preview Windows <code>.cur</code> and <code>.ani</code> cursor packs.</span>
+          <span>Apply your chosen cursors directly to macOS system cursors.</span>
+        </p>
+        <div class="hero-actions">
+          <a class="btn-primary" href="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.8/Cursie.dmg">Download Cursie</a>
+          <a class="btn-secondary" href="https://github.com/kwd421/macOS_Cursie" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
+            GitHub
+          </a>
+        </div>
+        <p class="hero-meta">macOS 15 Sequoia or later recommended · Apple Silicon &amp; Intel Mac · Free</p>
+        <ul class="hero-bullets">
+          <li>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Apply directly to macOS system cursors
+          </li>
+          <li>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Preview animated .ani cursors in motion
+          </li>
+          <li>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Quit Cursie after applying—your cursor stays active
+          </li>
+        </ul>
+      </div>
+
+      <figure class="hero-figure">
+        <img src="./assets/cursie-preview.png" alt="Cursie macOS app preview showing Windows cursor pack roles and custom cursor previews">
+        <figcaption class="hero-credit">
+          Cursor artwork: <a href="https://x.com/BLZ_pixel/status/1873630058981835066" target="_blank" rel="noopener">BLZ_pixel</a>
+        </figcaption>
+      </figure>
     </div>
   </section>
 
   <!-- FEATURES -->
-  <section class="features">
-    <div class="feat-head">
-      <p class="feat-eyebrow">Features</p>
-      <h2>Import, check, and apply.</h2>
+  <section class="section-wrap" id="features">
+    <div class="section-header">
+      <h2>Features</h2>
     </div>
-    <div class="feat-grid">
-      <div class="feat-card">
-        <h3>Preview before applying</h3>
-        <p>Check the arrow, text, link, and other cursor roles at actual size and zoomed in.</p>
+    <div class="feature-list">
+      <div class="feature-row">
+        <span class="feature-num">01</span>
+        <h3 class="feature-name">Import cursor packs</h3>
+        <p class="feature-desc">Drop in a cursor pack folder, or choose only the <code>.cur</code> and <code>.ani</code> files you want.</p>
       </div>
-      <div class="feat-card">
-        <h3>Automatic role mapping</h3>
-        <p>Cursie matches files to cursor roles by name. If it gets one wrong, you can replace that role yourself.</p>
+      <div class="feature-row">
+        <span class="feature-num">02</span>
+        <h3 class="feature-name">Sort files automatically</h3>
+        <p class="feature-desc">Cursie uses names like Normal, Text, and Link to match files with arrow, text, and link cursors.</p>
       </div>
-      <div class="feat-card">
-        <h3>Import a whole folder</h3>
-        <p>Choose a cursor-pack folder or drop it onto the app. Individual files work too.</p>
+      <div class="feature-row">
+        <span class="feature-num">03</span>
+        <h3 class="feature-name">Preview cursors</h3>
+        <p class="feature-desc">See how each cursor looks and moves before applying it. You can replace only the cursors you want to change.</p>
       </div>
-      <div class="feat-card">
-        <h3>Updates inside the app</h3>
-        <p>When a new version is available, Cursie can download and install it for you.</p>
+      <div class="feature-row">
+        <span class="feature-num">04</span>
+        <h3 class="feature-name">Apply to your Mac</h3>
+        <p class="feature-desc">Click Apply to change cursors across your Mac. You can quit Cursie afterward—the new cursors stay active.</p>
       </div>
     </div>
-    <p class="guide-link"><a href="/guides/custom-cursor-mac">New to Cursie? Read the setup guide →</a></p>
+    <div class="guide-banner">
+      <span class="guide-banner-text">Looking for step-by-step setup and pointer recovery instructions?</span>
+      <a class="guide-banner-link" href="./guides/custom-cursor-mac.html">Mac cursor setup guide →</a>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-section" id="faq">
+    <div class="faq-grid">
+      <div class="faq-intro">
+        <h2>Frequently Asked Questions</h2>
+      </div>
+      <div class="faq-accordion">
+        <details class="faq-item">
+          <summary>Do I need to keep Cursie open?</summary>
+          <div class="faq-answer">
+            <p>
+              <span>No. You can quit Cursie after applying your cursors.</span>
+              <span>When you restart your Mac, the last cursor pack you chose is applied again at sign-in.</span>
+            </p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary>Can macOS use Windows .cur and .ani cursor packs?</summary>
+          <div class="faq-answer">
+            <p>
+              <span>Yes. You can import Windows <code>.cur</code> and <code>.ani</code> files, review their intended cursor use, and apply them directly.</span>
+            </p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary>Can Cursie preview animated .ani cursors?</summary>
+          <div class="faq-answer">
+            <p>
+              <span>Yes. You can preview animated <code>.ani</code> cursors in motion before applying them to macOS.</span>
+            </p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary>How do I return to the default Mac cursor?</summary>
+          <div class="faq-answer">
+            <p>
+              <span>Cursie's “Open Pointer Reset” button only opens macOS Pointer settings.</span>
+              <span>When the settings window opens, click “Reset Colors” yourself to return to the default cursor.</span>
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
   </section>
 
   <!-- CREDITS -->
-  <section class="credits">
-    <p>
-      Cursie wouldn't exist without <a href="https://github.com/alexzielenski/Mousecape" target="_blank" rel="noopener">Mousecape</a> by Alex Zielenski —
-      the open‑source cursor manager that pioneered <code>.cape</code> themes on macOS.
-    </p>
-    <p style="margin-top:18px;">
-      The cursor pack shown in the screenshot is by <a href="https://x.com/BLZ_pixel/status/1873630058981835066" target="_blank" rel="noopener">BLZ_pixel</a> —
-      beautiful pixel art cursors shared freely on X. Thank you!
-    </p>
+  <section class="credits-section">
+    <div class="credits-container">
+      <div class="credits-block">
+        Cursie is built on <a href="https://github.com/alexzielenski/Mousecape" target="_blank" rel="noopener">Mousecape</a>, the open-source cursor tool by Alex Zielenski.
+      </div>
+    </div>
   </section>
 
   <!-- CHANGELOG -->
-  <section class="changelog">
-    <h2>What's changed</h2>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.8</div><div class="cl-d">Jun 2026</div></div>
-      <div><div class="cl-t">Release readiness fixes</div><p class="cl-b">Improved animated cursor timing for ANI files with sequence/rate tables, completed Sparkle notices, and cleaned public release documentation.</p></div>
+  <section class="changelog-section" id="changelog">
+    <div class="section-header">
+      <h2>Changelog</h2>
     </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.7</div><div class="cl-d">Jun 2026</div></div>
-      <div><div class="cl-t">Third-party notices</div><p class="cl-b">Added Mousecape and Sparkle license notices, bundled them with the app, and refreshed Cursie release documentation.</p></div>
-    </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.6</div><div class="cl-d">Jun 2026</div></div>
-      <div><div class="cl-t">Localized software update dialog</div><p class="cl-b">The update dialog now follows your system language (Korean supported) instead of always appearing in English.</p></div>
-    </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.5</div><div class="cl-d">Jun 2026</div></div>
-      <div><div class="cl-t">No more background Dock icon after applying</div><p class="cl-b">Fixed a background process lingering in the Dock after applying cursors. The system cursor is set directly; the login agent now only runs at the next sign-in to restore your theme.</p></div>
-    </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.4</div><div class="cl-d">Jun 2026</div></div>
-      <div><div class="cl-t">Redesigned window layout</div><p class="cl-b">Sidebar is now a floating rounded card. Native titlebar removed — traffic lights sit inside the sidebar. Apply button area redesigned as a matching card. Dark mode titlebar color fixed.</p></div>
-    </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.3</div><div class="cl-d">Jun 2026</div></div>
-      <div><div class="cl-t">App renamed to Cursie · Auto-update · New icon</div><p class="cl-b">Applies cursor themes directly to macOS system cursors. Added Sparkle auto-update. New app icon and improved cursor preview.</p></div>
-    </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.2</div><div class="cl-d">May 2026</div></div>
-      <div><div class="cl-t">Default cursor preview fix</div><p class="cl-b">Recentered the bundled default arrow cursor. Fixed preview appearing slightly shifted.</p></div>
-    </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.1</div><div class="cl-d">Apr 2026</div></div>
-      <div><div class="cl-t">Animated cursor compatibility</div><p class="cl-b">Fixed a legacy .cape export red dot issue. Improved 24+ frame animation downsampling.</p></div>
-    </div>
-    <div class="cl-row">
-      <div><div class="cl-v">v1.0.0</div><div class="cl-d">Mar 2026</div></div>
-      <div><div class="cl-t">Initial release</div><p class="cl-b">Legacy first release: load Windows cursor packs, preview roles, and create .cape files for Mousecape.</p></div>
+    <div class="cl-table">
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.8</div>
+          <div class="cl-date">Jun 2026</div>
+        </div>
+        <div class="cl-title">Improved animated cursor timing</div>
+        <p class="cl-body">Animated cursors now play at the speed specified by the file. License information was cleaned up as well.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.7</div>
+          <div class="cl-date">Jun 2026</div>
+        </div>
+        <div class="cl-title">Added open-source license information</div>
+        <p class="cl-body">License information for the open-source software used by Cursie is now included in the app.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.6</div>
+          <div class="cl-date">Jun 2026</div>
+        </div>
+        <div class="cl-title">Update window now supports Korean</div>
+        <p class="cl-body">The update window follows the language selected in macOS.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.5</div>
+          <div class="cl-date">Jun 2026</div>
+        </div>
+        <div class="cl-title">Dock and restart behavior</div>
+        <p class="cl-body">Fixed an issue that left Cursie in the Dock after changing cursors. Your last cursor pack now returns when you restart your Mac.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.4</div>
+          <div class="cl-date">Jun 2026</div>
+        </div>
+        <div class="cl-title">Layout and dark mode fixes</div>
+        <p class="cl-body">Made the window easier to scan and fixed colors that looked out of place in dark mode.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.3</div>
+          <div class="cl-date">Jun 2026</div>
+        </div>
+        <div class="cl-title">Renamed to Cursie and added in-app updates</div>
+        <p class="cl-body">Changed the app name and icon, added direct cursor changes, and made new versions available from within the app.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.2</div>
+          <div class="cl-date">May 2026</div>
+        </div>
+        <div class="cl-title">Default cursor preview fix</div>
+        <p class="cl-body">Recentered the bundled default arrow cursor. Fixed preview appearing slightly shifted.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.1</div>
+          <div class="cl-date">Apr 2026</div>
+        </div>
+        <div class="cl-title">Improved animated cursor playback</div>
+        <p class="cl-body">Fixed a red dot that appeared in some <code>.cape</code> files and made longer <code>.ani</code> animations play more smoothly.</p>
+      </div>
+      <div class="cl-item">
+        <div>
+          <div class="cl-ver">v1.0.0</div>
+          <div class="cl-date">Mar 2026</div>
+        </div>
+        <div class="cl-title">First release</div>
+        <p class="cl-body">Added Windows cursor pack import and cursor previews.</p>
+      </div>
     </div>
   </section>
 
-  <footer>
-    <a href="./privacy.html">Privacy Policy</a> · <a href="./license.html">License</a> · <a href="./third-party-notices.html">Third-Party Notices</a> · © 2026 Cursie
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div>© 2026 Cursie. Free and open source software.</div>
+      <div class="footer-links">
+        <a href="./privacy.html">Privacy Policy</a>
+        <a href="./license.html">License</a>
+        <a href="./third-party-notices.html">Third-Party Notices</a>
+        <a href="https://github.com/kwd421/macOS_Cursie" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
   </footer>
 
 </body>

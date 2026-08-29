@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>How to Change Your Mac Cursor | Custom .cur and .ani Cursors on macOS — Cursie</title>
-  <meta name="description" content="Learn how to use custom cursors on a Mac. Cursie imports Windows .cur and .ani cursor packs, previews every role, and applies them to macOS system cursors.">
+  <title>How to Change Your Cursor on Mac | Custom .cur and .ani Cursors on macOS — Cursie</title>
+  <meta name="description" content="Learn how to change your cursor on Mac. Cursie imports Windows .cur and .ani cursor packs, previews every role, and applies them to macOS system cursors.">
   <link rel="canonical" href="https://cursie-appcast.pages.dev/guides/custom-cursor-mac">
   <link rel="alternate" hreflang="en" href="https://cursie-appcast.pages.dev/guides/custom-cursor-mac">
   <link rel="alternate" hreflang="ko" href="https://cursie-appcast.pages.dev/ko/mac-custom-cursor">
   <link rel="alternate" hreflang="x-default" href="https://cursie-appcast.pages.dev/guides/custom-cursor-mac">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="How to change your Mac cursor — Cursie">
+  <meta property="og:title" content="How to Change Your Cursor on Mac — Cursie">
   <meta property="og:description" content="Use Windows .cur and .ani cursor packs as custom macOS system cursors.">
   <meta property="og:url" content="https://cursie-appcast.pages.dev/guides/custom-cursor-mac">
   <meta property="og:image" content="https://cursie-appcast.pages.dev/assets/cursie-preview.png">
@@ -19,7 +19,7 @@
   {
     "@context": "https://schema.org",
     "@type": "HowTo",
-    "name": "How to change your Mac cursor with custom .cur and .ani files",
+    "name": "How to Change Your Cursor on Mac",
     "description": "Use Cursie to apply Windows cursor packs to macOS system cursors.",
     "image": "https://cursie-appcast.pages.dev/assets/cursie-preview.png",
     "tool": [{"@type": "HowToTool", "name": "Cursie"}],
@@ -32,87 +32,347 @@
   }
   </script>
   <style>
-    :root { --ink:#3a3550; --soft:#6f6890; --grape:#7c3aed; --paper:#fff; --line:rgba(124,58,237,.16); }
-    * { box-sizing:border-box; }
-    body { margin:0; color:var(--ink); background:linear-gradient(180deg,#f8effa 0,#fff 320px); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif; }
-    a { color:var(--grape); }
-    .wrap { width:min(820px,calc(100% - 40px)); margin:0 auto; }
-    nav { display:flex; align-items:center; justify-content:space-between; padding:22px 0; font-size:.9rem; }
-    .brand { display:flex; align-items:center; gap:9px; color:var(--ink); font-weight:800; text-decoration:none; }
-    .brand img { width:30px; height:30px; border-radius:8px; }
-    nav a:not(.brand) { text-decoration:none; font-weight:700; }
-    header { padding:68px 0 44px; text-align:center; }
-    .eyebrow { margin:0 0 14px; color:var(--grape); font-size:.78rem; font-weight:800; letter-spacing:.12em; }
-    h1 { max-width:760px; margin:0 auto 20px; font-size:clamp(2.2rem,6vw,4.3rem); line-height:1.08; letter-spacing:-.045em; }
-    .lede { max-width:660px; margin:0 auto; color:var(--soft); font-size:1.1rem; line-height:1.75; }
-    .actions { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin:30px 0 42px; }
-    .button { display:inline-block; padding:13px 20px; border-radius:999px; text-decoration:none; font-weight:800; }
-    .primary { color:#fff; background:linear-gradient(135deg,var(--grape),#b06ff0); box-shadow:0 8px 24px rgba(124,58,237,.25); }
-    .secondary { color:var(--grape); border:1px solid rgba(124,58,237,.25); background:rgba(255,255,255,.74); }
-    .shot { display:block; width:100%; border-radius:22px; box-shadow:0 20px 55px rgba(71,48,112,.18); }
-    main { padding:52px 0 76px; }
-    section { margin:0 0 52px; }
-    h2 { margin:0 0 16px; font-size:clamp(1.55rem,3vw,2.15rem); letter-spacing:-.035em; }
-    h3 { margin:0 0 8px; font-size:1.1rem; }
-    p, li { color:var(--soft); font-size:1rem; line-height:1.8; }
-    .intro { font-size:1.06rem; }
-    .steps { display:grid; gap:14px; padding:0; list-style:none; counter-reset:steps; }
-    .steps li { position:relative; padding:23px 24px 22px 74px; border:1px solid var(--line); border-radius:18px; background:var(--paper); }
-    .steps li::before { counter-increment:steps; content:counter(steps); position:absolute; left:23px; top:22px; display:grid; place-items:center; width:31px; height:31px; border-radius:50%; color:#fff; background:var(--grape); font-size:.88rem; font-weight:800; }
-    .steps p { margin:0; }
-    .note { padding:21px 24px; border-radius:17px; background:#f4edff; color:var(--ink); }
-    .faq { border-top:1px solid var(--line); }
-    .faq div { padding:20px 0; border-bottom:1px solid var(--line); }
-    .faq p { margin:0; }
-    footer { padding:28px 0 42px; border-top:1px solid var(--line); color:var(--soft); font-size:.85rem; text-align:center; }
-    @media (max-width:600px) { header { padding-top:42px; } .wrap { width:min(100% - 32px,820px); } .steps li { padding-left:68px; } }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-subtle: #f9f9fb;
+      --bg-muted: #f3f3f6;
+      --ink: #111114;
+      --ink-soft: #4a4754;
+      --ink-muted: #797687;
+      --grape: #6d28d9;
+      --grape-hover: #5b21b6;
+      --grape-tint: #f5f3ff;
+      --border: #e4e3ea;
+      --border-subtle: #eeedf2;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── HEADER ── */
+    header.site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      max-width: 1200px; margin: 0 auto;
+      height: 56px; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand-group {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.94rem;
+      color: var(--ink);
+    }
+    .brand img { width: 22px; height: 22px; border-radius: 5px; }
+    .breadcrumb-sep { color: var(--ink-muted); font-size: 0.8rem; }
+    .doc-tag { font-size: 0.84rem; color: var(--ink-soft); font-weight: 500; }
+    .header-links {
+      display: flex; align-items: center; gap: 16px; font-size: 0.84rem; font-weight: 500;
+    }
+    .header-links a.nav-item { color: var(--ink-soft); transition: color 120ms; }
+    .header-links a.nav-item:hover { color: var(--grape); }
+    .header-btn {
+      padding: 6px 12px; background: var(--grape); color: #ffffff !important;
+      border-radius: var(--radius-md); font-weight: 600; font-size: 0.8rem;
+      transition: background 120ms;
+    }
+    .header-btn:hover { background: var(--grape-hover); }
+
+    /* ── DOC LAYOUT (SIDEBAR + CONTENT) ── */
+    .doc-layout {
+      max-width: 1200px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 56px;
+      padding: 48px 24px 80px;
+    }
+
+    /* ── LEFT TOC SIDEBAR ── */
+    aside.doc-sidebar {
+      position: sticky; top: 88px; height: fit-content;
+    }
+    .toc-box {
+      border-left: 1px solid var(--border);
+      padding-left: 16px;
+    }
+    .toc-title {
+      font-size: 0.74rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--ink-muted); margin-bottom: 12px;
+    }
+    .toc-list {
+      list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 0.84rem;
+    }
+    .toc-list a {
+      color: var(--ink-soft); transition: color 120ms; display: block;
+    }
+    .toc-list a:hover { color: var(--grape); }
+
+
+    /* ── MAIN DOC BODY ── */
+    article.doc-body {
+      max-width: 780px;
+    }
+    .doc-header {
+      margin-bottom: 36px; padding-bottom: 24px; border-bottom: 1px solid var(--border);
+    }
+    .doc-eyebrow {
+      font-size: 0.74rem; font-weight: 600;
+      letter-spacing: 0.08em; color: var(--grape); margin-bottom: 10px;
+    }
+    .doc-header h1 {
+      font-size: clamp(2rem, 3.5vw, 2.7rem);
+      font-weight: 700; letter-spacing: -0.03em; line-height: 1.15;
+      color: var(--ink); margin-bottom: 12px;
+    }
+    .doc-meta {
+      font-size: 0.82rem; color: var(--ink-muted); font-family: var(--font-mono);
+    }
+    .doc-lead {
+      font-size: 1.05rem; color: var(--ink-soft); line-height: 1.65;
+      margin-bottom: 28px;
+    }
+    .doc-lead > span {
+      display: block;
+    }
+    .doc-lead code, .doc-body code {
+      font-family: var(--font-mono); font-size: 0.88em;
+      background: var(--bg-muted); padding: 2px 5px; border-radius: var(--radius-sm);
+      color: var(--ink);
+    }
+
+    .doc-figure {
+      margin: 32px 0 44px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--bg-subtle);
+      overflow: hidden;
+    }
+    .doc-figure img {
+      display: block; width: 100%; height: auto;
+    }
+    .doc-figure figcaption {
+      padding: 10px 16px; font-size: 0.78rem; color: var(--ink-muted);
+      border-top: 1px solid var(--border); background: #ffffff;
+    }
+
+    .doc-section {
+      margin-bottom: 48px;
+    }
+    .doc-section h2 {
+      font-size: 1.45rem; font-weight: 700; letter-spacing: -0.02em;
+      color: var(--ink); margin-bottom: 16px;
+    }
+    .doc-section p {
+      font-size: 0.95rem; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px;
+    }
+
+    /* ── STEPPED TIMELINE RAIL ── */
+    .timeline {
+      position: relative;
+      margin: 28px 0;
+      padding-left: 36px;
+    }
+    .timeline::before {
+      content: "";
+      position: absolute; top: 12px; bottom: 12px; left: 13px;
+      width: 2px; background: var(--border);
+    }
+    .step-item {
+      position: relative;
+      margin-bottom: 32px;
+    }
+    .step-item:last-child { margin-bottom: 0; }
+    .step-badge {
+      position: absolute; left: -36px; top: 2px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #ffffff; border: 2px solid var(--grape);
+      color: var(--grape); font-family: var(--font-mono);
+      font-size: 0.8rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step-item h3 {
+      font-size: 1.05rem; font-weight: 600; color: var(--ink);
+      margin-bottom: 6px;
+    }
+    .step-item p {
+      font-size: 0.92rem; color: var(--ink-soft); line-height: 1.6; margin: 0;
+    }
+
+    /* ── FAQ LIST ── */
+    .faq-list {
+      border-top: 1px solid var(--border);
+      margin-top: 16px;
+    }
+    .faq-row {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .faq-row h3 {
+      font-size: 0.98rem; font-weight: 600; color: var(--ink);
+      margin-bottom: 6px;
+    }
+    .faq-row p {
+      font-size: 0.9rem; color: var(--ink-soft); line-height: 1.6; margin: 0;
+    }
+
+    /* ── DOC FOOTER ── */
+    footer.doc-footer {
+      margin-top: 56px; padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px; font-size: 0.82rem; color: var(--ink-muted);
+    }
+    .doc-footer a { color: var(--ink-soft); }
+    .doc-footer a:hover { color: var(--grape); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .doc-layout {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        padding-top: 24px;
+      }
+      aside.doc-sidebar {
+        position: static;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 20px;
+      }
+      .toc-box {
+        border-left: none; padding-left: 0;
+      }
+      .toc-list {
+        flex-direction: row; flex-wrap: wrap; gap: 12px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <nav>
-      <a class="brand" href="/"><img src="../assets/app-icon.png" alt="Cursie"> Cursie</a>
-      <a href="/ko/mac-custom-cursor">한국어 가이드</a>
-    </nav>
-    <header>
-      <p class="eyebrow">MACOS CUSTOM CURSOR GUIDE</p>
-      <h1>How to change your<br>Mac cursor.</h1>
-      <p class="lede">Import Windows <code>.cur</code> and <code>.ani</code> cursor packs, preview every role, and apply a custom system cursor set to macOS with Cursie.</p>
-      <div class="actions">
-        <a class="button primary" href="https://github.com/kwd421/macOS_Cursie/releases/latest">Download Cursie free</a>
-        <a class="button secondary" href="/">Meet Cursie</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <a class="brand" href="../index.html">
+          <img src="../assets/app-icon.png" alt="Cursie icon">
+          <span>Cursie</span>
+        </a>
+        <span class="breadcrumb-sep">/</span>
+        <span class="doc-tag">Setup Guide</span>
       </div>
-      <img class="shot" src="../assets/cursie-preview.png" alt="Cursie previewing a Windows cursor pack before it is applied to macOS">
-    </header>
-    <main>
-      <section>
-        <h2>Use custom cursors on macOS</h2>
-        <p class="intro">macOS lets you adjust the pointer size and color, but applying a full custom cursor theme needs a cursor manager. Cursie imports the Windows <code>.cur</code> and animated <code>.ani</code> formats so you can use an existing cursor pack on your Mac.</p>
-      </section>
-      <section>
-        <h2>Change your Mac cursor in four steps</h2>
-        <ol class="steps">
-          <li><h3>Install Cursie</h3><p>Download the latest Cursie DMG and move the app to Applications. It supports Apple Silicon and Intel Macs.</p></li>
-          <li><h3>Import your cursor files</h3><p>Choose a folder containing <code>.cur</code> or <code>.ani</code> files, or drag a folder or single file onto Cursie.</p></li>
-          <li><h3>Preview the cursor roles</h3><p>Check the arrow, text, link, busy, and resize cursor mappings before you make any system-wide change. Animated cursors can be previewed too.</p></li>
-          <li><h3>Apply the custom cursor set</h3><p>Apply the reviewed set to macOS. You can replace individual roles manually when a pack uses unusual file names.</p></li>
-        </ol>
-      </section>
-      <section>
-        <h2>Restore the default Mac cursor</h2>
-        <p>When you want the standard pointer back, open Cursie’s pointer-reset guidance and use the macOS Pointer settings to reset the pointer colors. Preview a new pack before applying it so the arrow and text cursor are always the ones you expect.</p>
-        <p class="note"><strong>Compatibility tip:</strong> Packs with role names such as Normal, Text, Link, and Busy map most reliably. Very long animated cursors are balanced for dependable system registration.</p>
-      </section>
-      <section>
-        <h2>Custom Mac cursor FAQ</h2>
-        <div class="faq">
-          <div><h3>Can a Mac use Windows cursor files?</h3><p>Yes. Cursie imports Windows <code>.cur</code> and <code>.ani</code> files, maps them to macOS cursor roles, and lets you apply the result system-wide.</p></div>
-          <div><h3>Does this work with a MacBook trackpad?</h3><p>Yes. It changes the macOS system pointer shown when you use either a trackpad or an external mouse.</p></div>
-          <div><h3>Can I use animated custom cursors on a Mac?</h3><p>Yes. Cursie previews animated <code>.ani</code> files and supports applying them as part of a cursor set.</p></div>
+      <div class="header-links">
+        <a class="nav-item" href="../index.html">Overview</a>
+        <a class="nav-item" href="../ko/mac-custom-cursor.html">한국어</a>
+        <a class="header-btn" href="https://github.com/kwd421/macOS_Cursie/releases/latest">Download</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+    <!-- LEFT SIDEBAR TOC -->
+    <aside class="doc-sidebar">
+      <div class="toc-box">
+        <div class="toc-title">On this page</div>
+        <ul class="toc-list">
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#procedure">4-Step Setup</a></li>
+          <li><a href="#restoring">Restoring Defaults</a></li>
+          <li><a href="#faq">Frequently Asked Questions</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <article class="doc-body">
+      <div class="doc-header" id="overview">
+        <div class="doc-eyebrow">macOS Custom Cursor Manual</div>
+        <h1>How to Change Your Cursor on Mac</h1>
+        <div class="doc-meta">Updated Jun 2026 · macOS 15+ · Apple Silicon and Intel Mac</div>
+      </div>
+
+      <p class="doc-lead">
+        <span>macOS allows basic pointer size and color adjustments in Accessibility settings.</span>
+        <span>Cursie lets you import Windows <code>.cur</code> and animated <code>.ani</code> cursor packs, preview them, and use them across your Mac.</span>
+      </p>
+
+      <figure class="doc-figure">
+        <img src="../assets/cursie-preview.png" alt="Cursie previewing a Windows cursor pack before it is applied to macOS">
+        <figcaption>A Windows cursor pack open in Cursie, ready to preview and apply.</figcaption>
+      </figure>
+
+      <section class="doc-section" id="procedure">
+        <h2>Change your cursor in four steps</h2>
+        <div class="timeline">
+          <div class="step-item" id="step-1">
+            <div class="step-badge">1</div>
+            <h3>Download and install Cursie</h3>
+            <p>Open the downloaded DMG, then move Cursie to your Applications folder. It works on both Apple Silicon and Intel Macs.</p>
+          </div>
+          <div class="step-item" id="step-2">
+            <div class="step-badge">2</div>
+            <h3>Import a cursor pack</h3>
+            <p>Drop a folder containing <code>.cur</code> and <code>.ani</code> files into Cursie, or choose individual cursor files.</p>
+          </div>
+          <div class="step-item" id="step-3">
+            <div class="step-badge">3</div>
+            <h3>Preview the cursors</h3>
+            <p>Check how the arrow, text, link, busy, and resize cursors look. Cursie uses names like Normal, Text, Link, and Busy to sort files automatically. You can replace any cursor you want, and preview animated <code>.ani</code> files in motion.</p>
+          </div>
+          <div class="step-item" id="step-4">
+            <div class="step-badge">4</div>
+            <h3>Apply the cursor pack</h3>
+            <p>Click Apply to change cursors across your Mac. You can quit Cursie afterward—the new cursors stay active.</p>
+          </div>
         </div>
       </section>
-    </main>
-    <footer>© Cursie · <a href="/">Official website</a> · <a href="https://github.com/kwd421/macOS_Cursie">GitHub</a></footer>
+
+      <section class="doc-section" id="restoring">
+        <h2>Return to the default Mac cursor</h2>
+        <p>Cursie's <strong>Open Pointer Reset</strong> button does not reset the cursor by itself; it opens macOS Pointer settings.<br>When the settings window opens, click <strong>Reset Colors</strong> yourself to return to the default cursor.</p>
+      </section>
+
+      <section class="doc-section" id="faq">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-list">
+          <div class="faq-row">
+            <h3>Can macOS use Windows .cur and .ani files?</h3>
+            <p>macOS does not support Windows cursor formats by default. Cursie loads <code>.cur</code> and <code>.ani</code> files and applies them directly to macOS system cursors.</p>
+          </div>
+          <div class="faq-row">
+            <h3>Does the cursor change apply to trackpads and external mice?</h3>
+            <p>Yes. It applies across macOS, so MacBook built-in trackpads, Magic Mice, and USB or Bluetooth mice all use the new cursor.</p>
+          </div>
+          <div class="faq-row">
+            <h3>Are animated (.ani) cursors supported?</h3>
+            <p>Yes. Cursie previews animated <code>.ani</code> files and applies them to macOS system cursors.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer class="doc-footer">
+        <div>© 2026 Cursie. Open source under MIT/BSD.</div>
+        <div>
+          <a href="../index.html">Home</a> · <a href="../license.html">License</a> · <a href="https://github.com/kwd421/macOS_Cursie" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </footer>
+    </article>
   </div>
+
 </body>
 </html>
