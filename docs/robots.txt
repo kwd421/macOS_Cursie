@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://cursie-appcast.pages.dev/sitemap.xml
+Sitemap: https://cursie.pages.dev/sitemap.xml

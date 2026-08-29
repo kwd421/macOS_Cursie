@@ -2,55 +2,55 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://cursie-appcast.pages.dev/</loc>
+    <loc>https://cursie.pages.dev/</loc>
     <lastmod>2026-08-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://cursie-appcast.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://cursie-appcast.pages.dev/ko/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://cursie-appcast.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cursie.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cursie.pages.dev/ko/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cursie.pages.dev/"/>
   </url>
   <url>
-    <loc>https://cursie-appcast.pages.dev/ko/</loc>
+    <loc>https://cursie.pages.dev/ko/</loc>
     <lastmod>2026-08-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://cursie-appcast.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://cursie-appcast.pages.dev/ko/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://cursie-appcast.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cursie.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cursie.pages.dev/ko/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cursie.pages.dev/"/>
   </url>
   <url>
-    <loc>https://cursie-appcast.pages.dev/guides/custom-cursor-mac</loc>
+    <loc>https://cursie.pages.dev/guides/custom-cursor-mac</loc>
     <lastmod>2026-08-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://cursie-appcast.pages.dev/guides/custom-cursor-mac"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://cursie-appcast.pages.dev/ko/mac-custom-cursor"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://cursie-appcast.pages.dev/guides/custom-cursor-mac"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cursie.pages.dev/guides/custom-cursor-mac"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cursie.pages.dev/ko/mac-custom-cursor"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cursie.pages.dev/guides/custom-cursor-mac"/>
   </url>
   <url>
-    <loc>https://cursie-appcast.pages.dev/ko/mac-custom-cursor</loc>
+    <loc>https://cursie.pages.dev/ko/mac-custom-cursor</loc>
     <lastmod>2026-08-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://cursie-appcast.pages.dev/guides/custom-cursor-mac"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://cursie-appcast.pages.dev/ko/mac-custom-cursor"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://cursie-appcast.pages.dev/guides/custom-cursor-mac"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cursie.pages.dev/guides/custom-cursor-mac"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cursie.pages.dev/ko/mac-custom-cursor"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cursie.pages.dev/guides/custom-cursor-mac"/>
   </url>
   <url>
-    <loc>https://cursie-appcast.pages.dev/privacy.html</loc>
+    <loc>https://cursie.pages.dev/privacy.html</loc>
     <lastmod>2026-07-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://cursie-appcast.pages.dev/license.html</loc>
+    <loc>https://cursie.pages.dev/license.html</loc>
     <lastmod>2026-07-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://cursie-appcast.pages.dev/third-party-notices.html</loc>
+    <loc>https://cursie.pages.dev/third-party-notices.html</loc>
     <lastmod>2026-07-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>

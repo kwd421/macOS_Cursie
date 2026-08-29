@@ -45,7 +45,7 @@
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://cursie-appcast.pages.dev/appcast.xml</string>
+	<string>https://cursie.pages.dev/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>qaATX1ws3KQtaqG+zkOC/nq2N891lCwFFq8Zqb0vC/0=</string>
 </dict>

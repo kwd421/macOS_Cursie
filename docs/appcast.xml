@@ -4,7 +4,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
     <title>Cursie Updates</title>
-    <link>https://cursie-appcast.pages.dev/appcast.xml</link>
+    <link>https://cursie.pages.dev/appcast.xml</link>
     <description>Updates for Cursie</description>
     <language>en</language>
     <item>
@@ -12,7 +12,7 @@
       <sparkle:version>8</sparkle:version>
       <sparkle:shortVersionString>1.0.8</sparkle:shortVersionString>
       <pubDate>Sun, 21 Jun 2026 21:10:00 +0900</pubDate>
-      <sparkle:releaseNotesLink>https://cursie-appcast.pages.dev/releases/1.0.8.html</sparkle:releaseNotesLink>
+      <sparkle:releaseNotesLink>https://cursie.pages.dev/releases/1.0.8.html</sparkle:releaseNotesLink>
       <enclosure
         url="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.8/Cursie.zip"
         sparkle:edSignature="e8WFMeSc6d1/C/s92puf54fXyYwFprTGNXuL3t4lEgglN+NZnRaUrf+jVbuAVF7+ReEA1zp3agsbQoSW/A2TDA=="
@@ -24,7 +24,7 @@
       <sparkle:version>7</sparkle:version>
       <sparkle:shortVersionString>1.0.7</sparkle:shortVersionString>
       <pubDate>Sat, 20 Jun 2026 23:22:18 +0900</pubDate>
-      <sparkle:releaseNotesLink>https://cursie-appcast.pages.dev/releases/1.0.7.html</sparkle:releaseNotesLink>
+      <sparkle:releaseNotesLink>https://cursie.pages.dev/releases/1.0.7.html</sparkle:releaseNotesLink>
       <enclosure
         url="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.7/Cursie.zip"
         sparkle:edSignature="qX3Cu8KVdY474ctHeeh01X375BNZ0CdDkm425aMNr0m5PSto8kT2wxKq+DHx68+X34xINFvuSjz5KGf+4TE3Ag=="
@@ -36,7 +36,7 @@
       <sparkle:version>6</sparkle:version>
       <sparkle:shortVersionString>1.0.6</sparkle:shortVersionString>
       <pubDate>Wed, 11 Jun 2026 19:10:00 +0900</pubDate>
-      <sparkle:releaseNotesLink>https://cursie-appcast.pages.dev/releases/1.0.6.html</sparkle:releaseNotesLink>
+      <sparkle:releaseNotesLink>https://cursie.pages.dev/releases/1.0.6.html</sparkle:releaseNotesLink>
       <enclosure
         url="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.6/Cursie.zip"
         sparkle:edSignature="DBu1WWmIOcf/cvq6WjtcFImBy7QDHEOfyFyakYwY0PsZgeUWLTq3Kyvul7ImGo0Ocf/uGKAM9+jOJVc8vKbMCQ=="
@@ -48,7 +48,7 @@
       <sparkle:version>5</sparkle:version>
       <sparkle:shortVersionString>1.0.5</sparkle:shortVersionString>
       <pubDate>Wed, 11 Jun 2026 18:50:00 +0900</pubDate>
-      <sparkle:releaseNotesLink>https://cursie-appcast.pages.dev/releases/1.0.5.html</sparkle:releaseNotesLink>
+      <sparkle:releaseNotesLink>https://cursie.pages.dev/releases/1.0.5.html</sparkle:releaseNotesLink>
       <enclosure
         url="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.5/Cursie.zip"
         sparkle:edSignature="HOHiAJ/KHdV8mMrW0Fd00bSZNST8tb0UPV31hMpuuC5KaEEqvTfxHK3ObFG9mNtWukfRc1jYHv0ugMyxqrxeCQ=="
@@ -60,7 +60,7 @@
       <sparkle:version>4</sparkle:version>
       <sparkle:shortVersionString>1.0.4</sparkle:shortVersionString>
       <pubDate>Wed, 11 Jun 2026 18:30:00 +0900</pubDate>
-      <sparkle:releaseNotesLink>https://cursie-appcast.pages.dev/releases/1.0.4.html</sparkle:releaseNotesLink>
+      <sparkle:releaseNotesLink>https://cursie.pages.dev/releases/1.0.4.html</sparkle:releaseNotesLink>
       <enclosure
         url="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.4/Cursie.zip"
         sparkle:edSignature="LMjPRqvm6lkyJWInkjTo7TBdvY10uSXQna7/+vXmEfMlNtb3Q9AIJvO0rBlD5kc+Pouoqt5ttFWei6iBFD/zDg=="
@@ -72,7 +72,7 @@
       <sparkle:version>3</sparkle:version>
       <sparkle:shortVersionString>1.0.3</sparkle:shortVersionString>
       <pubDate>Tue, 09 Jun 2026 01:24:00 +0900</pubDate>
-      <sparkle:releaseNotesLink>https://cursie-appcast.pages.dev/releases/1.0.3.html</sparkle:releaseNotesLink>
+      <sparkle:releaseNotesLink>https://cursie.pages.dev/releases/1.0.3.html</sparkle:releaseNotesLink>
       <enclosure
         url="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.3/Cursie.zip"
         sparkle:edSignature="Ifs1VdJ1tOsNsfB8C0nkNUcl45SZUfrC+sDPQYNHXNHO0rca48/Za99uEmORr7zitPR8izX+3bRmAq6O7YRkCA=="
