@@ -141,30 +141,17 @@ struct SettingsView: View {
             .padding(8)
             .background(Color(nsColor: .windowBackgroundColor))
 
-            if controller.isApplyingSystemCursors {
-                ApplyingOverlay(progress: controller.systemApplyProgress)
-            }
-
-            if let notice = controller.systemCompletionNotice {
-                VStack {
-                    SystemCompletionBanner(notice: notice)
-                        .padding(.top, 28)
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .transition(
-                    .asymmetric(
-                        insertion: .move(edge: .top)
-                            .combined(with: .opacity)
-                            .combined(with: .scale(scale: 0.96, anchor: .top)),
-                        removal: .opacity.combined(with: .scale(scale: 0.98, anchor: .top))
-                    )
+            if controller.isApplyingSystemCursors || controller.systemCompletionNotice != nil {
+                ApplyingOverlay(
+                    progress: controller.systemApplyProgress,
+                    completionNotice: controller.systemCompletionNotice,
+                    onDismissCompletion: controller.dismissSystemCompletionNotice
                 )
-                .allowsHitTesting(false)
-                .zIndex(2)
+                .transition(.opacity)
             }
         }
-        .animation(.spring(response: 0.38, dampingFraction: 0.82), value: controller.systemCompletionNotice?.id)
+        .animation(.easeInOut(duration: 0.18), value: controller.isApplyingSystemCursors)
+        .animation(.spring(response: 0.36, dampingFraction: 0.84), value: controller.systemCompletionNotice?.id)
         .ignoresSafeArea()
         .frame(minWidth: 860, minHeight: 620)
         .alert(item: $controller.activeAlert) { alert in
@@ -377,6 +364,8 @@ struct EmptySelectionView: View {
 
 struct ApplyingOverlay: View {
     let progress: SystemApplyProgress
+    let completionNotice: SystemCompletionNotice?
+    let onDismissCompletion: () -> Void
     @ObservedObject private var localization = LocalizationController.shared
 
     var body: some View {
@@ -384,22 +373,20 @@ struct ApplyingOverlay: View {
         ZStack {
             Color.black.opacity(0.16)
                 .ignoresSafeArea()
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    guard completionNotice != nil else { return }
+                    onDismissCompletion()
+                }
 
-            VStack(spacing: 14) {
-                ProgressView()
-                    .controlSize(.large)
-                Text(Localized.string(progress.titleKey))
-                    .font(.headline)
-                Text(Localized.string(progress.detailKey))
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                ProgressView(value: progress.fraction)
-                    .progressViewStyle(.linear)
-                    .frame(width: 240)
-                Text("\(Int((progress.fraction * 100).rounded()))%")
-                    .font(.footnote.monospacedDigit())
-                    .foregroundStyle(.secondary)
+            Group {
+                if let completionNotice {
+                    CompletionStatusView(noticeID: completionNotice.id)
+                        .transition(.opacity.combined(with: .scale(scale: 0.94)))
+                } else {
+                    progressContent
+                        .transition(.opacity)
+                }
             }
             .padding(.horizontal, 28)
             .padding(.vertical, 24)
@@ -407,63 +394,74 @@ struct ApplyingOverlay: View {
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
             .shadow(radius: 20, y: 10)
         }
+        .animation(.spring(response: 0.36, dampingFraction: 0.82), value: completionNotice?.id)
     }
+
+    private var progressContent: some View {
+        VStack(spacing: 14) {
+            ProgressView()
+                .controlSize(.large)
+            Text(Localized.string(progress.titleKey))
+                .font(.headline)
+            Text(Localized.string(progress.detailKey))
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+            ProgressView(value: progress.fraction)
+                .progressViewStyle(.linear)
+                .frame(width: 240)
+            Text("\(Int((progress.fraction * 100).rounded()))%")
+                .font(.footnote.monospacedDigit())
+                .foregroundStyle(.secondary)
+        }
+    }
+
 }
 
-struct SystemCompletionBanner: View {
-    let notice: SystemCompletionNotice
-    @ObservedObject private var localization = LocalizationController.shared
+private struct CompletionStatusView: View {
+    let noticeID: UUID
+    @State private var checkmarkProgress = 0.0
 
     var body: some View {
-        let _ = localization.selectedLanguage
-        HStack(spacing: 13) {
+        VStack(spacing: 13) {
             ZStack {
                 Circle()
                     .fill(Color.green)
-                Image(systemName: "checkmark")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(.white)
+                CompletionCheckmarkShape()
+                    .trim(from: 0, to: checkmarkProgress)
+                    .stroke(
+                        Color.white,
+                        style: StrokeStyle(lineWidth: 3.2, lineCap: .round, lineJoin: .round)
+                    )
+                    .frame(width: 23, height: 17)
             }
-            .frame(width: 32, height: 32)
+            .frame(width: 44, height: 44)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.headline)
-                Text(message)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
+            Text(Localized.string("systemApply.successTitle"))
+                .font(.headline)
+            Text(Localized.string("status.systemApplySuccess"))
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .task(id: noticeID) {
+            checkmarkProgress = 0
+            try? await Task.sleep(for: .milliseconds(80))
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: 0.48)) {
+                checkmarkProgress = 1
             }
-
-            Spacer(minLength: 4)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 13)
-        .frame(width: 410)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
-        }
-        .shadow(color: .black.opacity(0.18), radius: 18, y: 9)
-    }
-
-    private var title: String {
-        switch notice.kind {
-        case .applied:
-            return Localized.string("systemApply.successTitle")
-        case .restored:
-            return Localized.string("systemApply.restoreSuccessTitle")
         }
     }
+}
 
-    private var message: String {
-        switch notice.kind {
-        case .applied:
-            return Localized.string("status.systemApplySuccess")
-        case .restored:
-            return Localized.string("status.systemRestoreSuccess")
-        }
+private struct CompletionCheckmarkShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.midY))
+        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.38, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        return path
     }
 }
 
@@ -476,15 +474,15 @@ struct SystemApplySection: View {
         HStack(alignment: .center, spacing: 12) {
                 VStack(alignment: .leading, spacing: 10) {
                     Button {
-                        controller.restoreSystemCursors()
+                        controller.openPointerSettings()
                     } label: {
-                        Label(Localized.string("systemApply.restore"), systemImage: "arrow.counterclockwise")
+                        Label(Localized.string("systemApply.openPointerSettings"), systemImage: "gearshape")
                     }
                     .buttonStyle(.bordered)
                     .focusable(false)
                     .disabled(controller.isApplyingSystemCursors)
 
-                    Text(Localized.string("systemApply.restoreHint"))
+                    Text(Localized.string("systemApply.pointerSettingsHint"))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -666,8 +664,10 @@ struct CursorRoleDetailView: View {
                         exportSizeMultiplier: controller.exportSizeMultiplier,
                         largePreviewScale: largePreviewScale
                     ) {
-                        Button(Localized.string("app.changeCursorFile")) {
+                        Button {
                             controller.chooseOverride(for: assignment.role)
+                        } label: {
+                            Label(Localized.string("app.changeCursorFile"), systemImage: "cursorarrow")
                         }
                         .buttonStyle(.bordered)
                         .focusable(false)
@@ -676,8 +676,10 @@ struct CursorRoleDetailView: View {
                     EmptyPreviewGroup(
                         subtitle: assignment.sourceURL?.lastPathComponent ?? Localized.string("app.noCursorLoaded")
                     ) {
-                        Button(Localized.string("app.changeCursorFile")) {
+                        Button {
                             controller.chooseOverride(for: assignment.role)
+                        } label: {
+                            Label(Localized.string("app.changeCursorFile"), systemImage: "cursorarrow")
                         }
                         .buttonStyle(.bordered)
                         .focusable(false)
@@ -748,8 +750,10 @@ struct SupplementalCursorRoleDetailView: View {
                         exportSizeMultiplier: controller.exportSizeMultiplier,
                         largePreviewScale: 1.0
                     ) {
-                        Button(Localized.string("app.changeCursorFile")) {
+                        Button {
                             controller.chooseOverride(for: assignment.role)
+                        } label: {
+                            Label(Localized.string("app.changeCursorFile"), systemImage: "cursorarrow")
                         }
                         .buttonStyle(.bordered)
                         .focusable(false)
@@ -758,8 +762,10 @@ struct SupplementalCursorRoleDetailView: View {
                     EmptyPreviewGroup(
                         subtitle: assignment.sourceURL?.lastPathComponent ?? Localized.string("app.noCursorLoaded")
                     ) {
-                        Button(Localized.string("app.changeCursorFile")) {
+                        Button {
                             controller.chooseOverride(for: assignment.role)
+                        } label: {
+                            Label(Localized.string("app.changeCursorFile"), systemImage: "cursorarrow")
                         }
                         .buttonStyle(.bordered)
                         .focusable(false)
@@ -818,8 +824,10 @@ struct SettingsHeader: View {
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
-                    Button(Localized.string("app.chooseFolder")) {
+                    Button {
                         controller.chooseThemeFolder()
+                    } label: {
+                        Label(Localized.string("app.chooseFolder"), systemImage: "folder")
                     }
                     .buttonStyle(.bordered)
                     .focusable(false)

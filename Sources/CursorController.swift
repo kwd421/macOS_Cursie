@@ -393,21 +393,10 @@ struct SystemApplyProgress: Sendable {
         detailKey: "systemApply.progressAgent",
         fraction: 0.90
     )
-    static let restoring = SystemApplyProgress(
-        titleKey: "systemApply.restoreProgressTitle",
-        detailKey: "systemApply.restoreProgressDetail",
-        fraction: 0.65
-    )
 }
 
 struct SystemCompletionNotice: Identifiable, Equatable {
-    enum Kind: Equatable {
-        case applied
-        case restored
-    }
-
     let id = UUID()
-    let kind: Kind
 }
 
 @MainActor
@@ -423,8 +412,6 @@ final class CursorController: ObservableObject {
         case systemApplySuccess
         case systemApplyWarning(String)
         case systemApplyFailure(String)
-        case systemRestoreSuccess
-        case systemRestoreFailure(String)
         case loaded(folderName: String, resolvedRoleCount: Int, totalRoleCount: Int)
         case loadFailure(String)
     }
@@ -633,7 +620,7 @@ final class CursorController: ObservableObject {
                         self.setStatus(.systemApplyWarning(warning))
                     } else {
                         self.setStatus(.systemApplySuccess)
-                        self.showSystemCompletionNotice(.applied)
+                        self.showSystemCompletionNotice()
                     }
                 }
             } catch {
@@ -646,29 +633,18 @@ final class CursorController: ObservableObject {
         }
     }
 
-    func restoreSystemCursors() {
-        guard !isApplyingSystemCursors else { return }
-        dismissSystemCompletionNotice()
-        isApplyingSystemCursors = true
-        systemApplyProgress = .restoring
-        let service = cursorSystemApplyService
-
-        Task.detached {
-            do {
-                try service.restoreDefaults()
-                await MainActor.run {
-                    self.isApplyingSystemCursors = false
-                    self.setStatus(.systemRestoreSuccess)
-                    self.showSystemCompletionNotice(.restored)
-                }
-            } catch {
-                await MainActor.run {
-                    self.isApplyingSystemCursors = false
-                    self.setStatus(.systemRestoreFailure(error.localizedDescription))
-                    self.presentError(error.localizedDescription)
-                }
+    func openPointerSettings() {
+        let candidates = [
+            "x-apple.systempreferences:com.apple.Accessibility-Settings.extension?Seeing_Cursor",
+            "x-apple.systempreferences:com.apple.preference.universalaccess?Seeing_Cursor"
+        ]
+        for candidate in candidates {
+            guard let url = URL(string: candidate), NSWorkspace.shared.open(url) else {
+                continue
             }
+            return
         }
+        NSWorkspace.shared.open(URL(fileURLWithPath: "/System/Applications/System Settings.app"))
     }
 
     func reload() {
@@ -894,9 +870,9 @@ final class CursorController: ObservableObject {
         statusText = localizedStatusText(for: state)
     }
 
-    private func showSystemCompletionNotice(_ kind: SystemCompletionNotice.Kind) {
+    private func showSystemCompletionNotice() {
         completionDismissTask?.cancel()
-        let notice = SystemCompletionNotice(kind: kind)
+        let notice = SystemCompletionNotice()
         systemCompletionNotice = notice
         completionDismissTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(2.5))
@@ -905,7 +881,7 @@ final class CursorController: ObservableObject {
         }
     }
 
-    private func dismissSystemCompletionNotice() {
+    func dismissSystemCompletionNotice() {
         completionDismissTask?.cancel()
         completionDismissTask = nil
         systemCompletionNotice = nil
@@ -925,10 +901,6 @@ final class CursorController: ObservableObject {
             return Localized.string("status.systemApplyWarning", message)
         case .systemApplyFailure(let message):
             return Localized.string("status.systemApplyFailure", message)
-        case .systemRestoreSuccess:
-            return Localized.string("status.systemRestoreSuccess")
-        case .systemRestoreFailure(let message):
-            return Localized.string("status.systemRestoreFailure", message)
         case .loaded(let folderName, let resolvedRoleCount, let totalRoleCount):
             let displayFolder = folderName.isEmpty ? Localized.string("app.noFolderSelected") : folderName
             return Localized.string("status.loaded", displayFolder, resolvedRoleCount, totalRoleCount)
