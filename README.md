@@ -3,6 +3,8 @@
 
 [Official website](https://cursie.pages.dev/)
 
+[Custom cursor setup for Mac](https://cursie.pages.dev/guides/custom-cursor-mac) · [Use Windows .cur and .ani cursors on Mac](https://cursie.pages.dev/guides/windows-cursor-on-mac)
+
 <img width="300" height="300" alt="ChatGPT Image 2026년 6월 10일 오전 12_39_21" src="https://github.com/user-attachments/assets/5f1290f0-b92a-4a16-a381-ef8ec06036f4" />
 
 Cursie is a macOS app that loads Windows cursor files and cursor packs (`.cur`, `.ani`), previews them, and applies them directly as a macOS system cursor theme.
@@ -15,7 +17,7 @@ The screenshot above is an example of Cursie with a custom cursor pack loaded. S
 
 Cursie applies the selected cursor set directly to macOS system cursors. This build is intended for direct distribution outside the Mac App Store.
 
-If your pointer colors look wrong, use `Open Pointer Reset` in the app and press `Reset Colors` in macOS Pointer settings.
+To return to the default cursor, use `Reset Default Cursor in macOS Settings` in Cursie, then press `Reset Colors` in the Pointer settings that open.
 
 ## What It Does
 
@@ -38,7 +40,7 @@ If your pointer colors look wrong, use `Open Pointer Reset` in the app and press
 4. If needed, select a role and click `Change Cursor File...` to replace it manually.
 5. Optionally adjust the cursor size.
 6. Click `Apply to System Cursors`.
-7. If pointer colors look wrong, open pointer reset from the app and use macOS `Reset Colors`.
+7. To return to the default cursor, open the macOS reset controls from Cursie and press `Reset Colors`.
 
 ## Tips
 

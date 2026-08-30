@@ -3,31 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>맥북 마우스 커서 바꾸기 | Windows .cur·.ani 커서팩 적용 가이드 — Cursie</title>
-  <meta name="description" content="맥북 마우스 커서 바꾸기 방법을 안내합니다. Cursie로 Windows .cur·.ani 커서팩을 불러와 macOS 시스템 마우스 포인터에 적용하고 원래 커서로 되돌리는 방법까지 확인하세요.">
+  <title>맥 커스텀 커서 적용 방법 | 맥북 마우스 커서 바꾸기</title>
+  <meta name="description" content="맥북 마우스 커서 모양을 바꾸는 방법을 알아보세요. macOS 기본 포인터 설정과 Windows .cur·.ani 커서팩을 Mac 시스템 커서로 적용하는 방법을 함께 설명합니다.">
   <link rel="canonical" href="https://cursie.pages.dev/ko/mac-custom-cursor">
   <link rel="alternate" hreflang="en" href="https://cursie.pages.dev/guides/custom-cursor-mac">
   <link rel="alternate" hreflang="ko" href="https://cursie.pages.dev/ko/mac-custom-cursor">
   <link rel="alternate" hreflang="x-default" href="https://cursie.pages.dev/guides/custom-cursor-mac">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="맥북 마우스 커서 바꾸기 — Cursie">
-  <meta property="og:description" content="Windows .cur·.ani 커서팩을 macOS 시스템 커서에 적용하는 방법입니다.">
+  <meta property="og:title" content="맥 커스텀 커서 적용 방법 | 맥북 마우스 커서 바꾸기">
+  <meta property="og:description" content="macOS 포인터 설정부터 Windows .cur·.ani 커서팩 적용까지 한 번에 정리했습니다.">
   <meta property="og:url" content="https://cursie.pages.dev/ko/mac-custom-cursor">
   <meta property="og:image" content="https://cursie.pages.dev/assets/ko-preview.png">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "HowTo",
-    "name": "맥북 마우스 커서 바꾸기",
-    "description": "Cursie로 Windows .cur 및 .ani 커서팩을 macOS 시스템 커서에 적용하는 방법",
-    "image": "https://cursie.pages.dev/assets/ko-preview.png",
-    "tool": [{"@type": "HowToTool", "name": "Cursie"}],
-    "step": [
-      {"@type": "HowToStep", "name": "Cursie 설치", "text": "다운로드한 DMG를 열고 Cursie를 응용 프로그램 폴더로 옮깁니다."},
-      {"@type": "HowToStep", "name": "커서팩 불러오기", "text": "Windows .cur 또는 .ani 파일이 있는 폴더를 선택하거나 앱에 드래그합니다."},
-      {"@type": "HowToStep", "name": "미리보기와 적용", "text": "배치된 커서를 확인하고 마우스 커서에 적용합니다."},
-      {"@type": "HowToStep", "name": "기본 커서로 되돌리기", "text": "Cursie에서 macOS 기본 커서로 복원을 누릅니다. 로그인 시 자동 적용도 함께 꺼집니다."}
+    "@graph": [
+      {
+        "@type": "HowTo",
+        "name": "맥 커스텀 커서 적용 방법",
+        "description": "Windows .cur 및 .ani 커서팩을 macOS 시스템 커서에 적용하는 방법",
+        "image": "https://cursie.pages.dev/assets/ko-preview.png",
+        "tool": [{"@type": "HowToTool", "name": "Cursie"}],
+        "step": [
+          {"@type": "HowToStep", "name": "Cursie 설치", "text": "서명 및 공증된 DMG를 내려받아 Cursie를 응용 프로그램 폴더로 옮깁니다."},
+          {"@type": "HowToStep", "name": "커서팩 불러오기", "text": "Windows .cur 또는 .ani 파일이 있는 폴더를 선택하거나 앱에 드래그합니다."},
+          {"@type": "HowToStep", "name": "미리보기와 적용", "text": "화살표, 텍스트, 링크 등 자동 배치된 커서를 확인한 뒤 macOS 시스템 커서에 적용합니다."},
+          {"@type": "HowToStep", "name": "기본 커서로 되돌리기", "text": "Cursie에서 macOS 포인터 설정을 연 뒤 색상 재설정을 눌러 기본 커서로 되돌립니다."}
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "Cursie", "item": "https://cursie.pages.dev/ko/"},
+          {"@type": "ListItem", "position": 2, "name": "맥 커스텀 커서 적용 방법", "item": "https://cursie.pages.dev/ko/mac-custom-cursor"}
+        ]
+      }
     ]
   }
   </script>
@@ -233,6 +244,21 @@
       font-size: 0.9rem; color: var(--ink-soft); line-height: 1.65; margin: 0;
     }
 
+    .choice-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
+      margin: 20px 0;
+    }
+    .choice-card, .related-card {
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 18px; background: var(--bg-subtle);
+    }
+    .choice-card h3, .related-card h3 { font-size: 1rem; margin-bottom: 7px; }
+    .choice-card p, .related-card p { font-size: 0.9rem; margin: 0; }
+    .related-card a { color: var(--grape); font-weight: 600; }
+    .related-card a:hover { color: var(--grape-hover); text-decoration: underline; }
+    .plain-list { padding-left: 20px; color: var(--ink-soft); font-size: 0.94rem; }
+    .plain-list li { margin-bottom: 9px; }
+
     /* ── DOC FOOTER ── */
     footer.doc-footer {
       margin-top: 56px; padding-top: 24px;
@@ -261,6 +287,7 @@
       .toc-list {
         flex-direction: row; flex-wrap: wrap; gap: 12px;
       }
+      .choice-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -291,8 +318,10 @@
         <div class="toc-title">목차</div>
         <ul class="toc-list">
           <li><a href="#overview">개요</a></li>
+          <li><a href="#native-or-custom">기본 설정과 커스텀 커서</a></li>
           <li><a href="#procedure">4단계 설정 방법</a></li>
           <li><a href="#restoring">기본 커서 복원</a></li>
+          <li><a href="#troubleshooting">문제 해결</a></li>
           <li><a href="#faq">자주 묻는 질문</a></li>
         </ul>
       </div>
@@ -302,19 +331,35 @@
     <article class="doc-body">
       <div class="doc-header" id="overview">
         <div class="doc-eyebrow">macOS 커스텀 커서 가이드</div>
-        <h1>맥북 마우스 커서 바꾸기</h1>
-        <div class="doc-meta">2026년 6월 갱신 · macOS 15 이상 · Apple Silicon 및 Intel Mac 지원</div>
+        <h1>맥 커스텀 커서 적용 방법</h1>
+        <div class="doc-meta">2026년 8월 갱신 · macOS 15 이상 · Apple Silicon 및 Intel Mac 지원</div>
       </div>
 
       <p class="doc-lead">
-        <span>macOS 기본 설정에서는 포인터 윤곽선·채우기 색상과 크기만 조절할 수 있습니다.</span>
-        <span>Cursie를 사용하면 Windows <code>.cur</code> 및 <code>.ani</code> 커서팩을 불러와 macOS 시스템 커서로 적용할 수 있습니다.</span>
+        <span>맥북에서 마우스 커서의 크기나 색만 바꾸려면 macOS 설정으로 충분합니다.</span>
+        <span>화살표 모양 자체를 바꾸거나 Windows <code>.cur</code>·<code>.ani</code> 커서팩을 쓰고 싶다면 별도의 커서 적용 앱이 필요합니다.</span>
       </p>
 
       <figure class="doc-figure">
         <img src="../assets/ko-preview.png" alt="Windows 커서팩을 불러와 화살표, 텍스트, 링크 등 커서별로 미리보는 Cursie 화면">
         <figcaption>Windows 커서팩의 화살표, 텍스트, 링크, 크기 조절 커서 위치에 파일이 알맞게 배치된 화면.</figcaption>
       </figure>
+
+      <section class="doc-section" id="native-or-custom">
+        <h2>크기·색상 변경과 커서 모양 변경은 다릅니다</h2>
+        <p>macOS의 <strong>시스템 설정 → 손쉬운 사용 → 디스플레이 → 포인터</strong>에서는 포인터 크기, 윤곽선 색상, 채우기 색상을 바꿀 수 있습니다. 이 방법은 별도 앱이 필요 없고 언제든 ‘색상 재설정’으로 되돌릴 수 있습니다.</p>
+        <p>다만 기본 화살표를 픽셀 커서나 캐릭터 커서처럼 전혀 다른 이미지로 바꾸는 기능은 macOS 설정에 없습니다. 이 경우 Cursie 같은 도구로 화살표, 텍스트 선택, 링크, 대기, 크기 조절 등 여러 시스템 커서 역할을 한꺼번에 적용해야 합니다.</p>
+        <div class="choice-grid">
+          <div class="choice-card">
+            <h3>크기나 색만 바꿀 때</h3>
+            <p>macOS 포인터 설정을 사용합니다. 가장 간단하고 시스템에서 공식 지원하는 방법입니다.</p>
+          </div>
+          <div class="choice-card">
+            <h3>커서 그림을 바꿀 때</h3>
+            <p><code>.cur</code>·<code>.ani</code> 커서팩을 Cursie로 불러와 각 시스템 커서 역할에 적용합니다.</p>
+          </div>
+        </div>
+      </section>
 
       <section class="doc-section" id="procedure">
         <h2>4단계로 커서 바꾸기</h2>
@@ -344,7 +389,18 @@
 
       <section class="doc-section" id="restoring">
         <h2>기본 커서로 되돌리는 방법</h2>
-        <p>Cursie에서 <strong>macOS 기본 커서로 복원</strong>을 누르면 적용한 커서가 해제됩니다.<br>로그인 시 자동 적용도 함께 꺼지고 macOS 기본 커서로 돌아갑니다.</p>
+        <p>Cursie에서 <strong>macOS 설정에서 기본 커서로 재설정</strong>을 누르면 포인터 설정 화면이 열립니다. 여기서 <strong>색상 재설정</strong>을 눌러 macOS 기본 커서로 되돌릴 수 있습니다.</p>
+        <p>버튼을 누르는 즉시 자동으로 복원되는 방식은 아닙니다. macOS 설정에서 마지막 재설정 동작을 직접 눌러야 합니다.</p>
+      </section>
+
+      <section class="doc-section" id="troubleshooting">
+        <h2>적용이 이상할 때 확인할 것</h2>
+        <ul class="plain-list">
+          <li><strong>일부 커서만 화살표로 보임:</strong> 커서팩에 해당 역할의 파일이 없으면 일반 화살표가 대신 사용될 수 있습니다.</li>
+          <li><strong>텍스트 커서가 잠깐 바뀌었다 돌아옴:</strong> 일부 앱이나 웹페이지가 자체적으로 포인터 상태를 다시 지정할 수 있습니다. 다른 앱의 텍스트 입력 영역에서도 같은지 확인해 보세요.</li>
+          <li><strong>로그인 후 원래 커서로 돌아옴:</strong> Cursie로 같은 커서팩을 다시 적용하면 로그인용 적용 정보도 함께 갱신됩니다.</li>
+          <li><strong>움직임이 너무 빠르거나 어색함:</strong> 앱 미리보기에서 <code>.ani</code> 재생을 먼저 확인하고 다른 파일로 교체하세요.</li>
+        </ul>
       </section>
 
       <section class="doc-section" id="faq">
@@ -362,6 +418,22 @@
             <h3>움직이는 애니메이션(.ani) 커서도 적용되나요?</h3>
             <p>네. <code>.ani</code> 파일의 움직임을 앱에서 미리 확인하고 Mac 커서로 적용할 수 있습니다.</p>
           </div>
+          <div class="faq-row">
+            <h3>터미널 명령을 입력해야 하나요?</h3>
+            <p>아니요. 서명 및 Apple 공증된 DMG를 설치한 뒤 커서팩 폴더를 선택하고 적용하면 됩니다.</p>
+          </div>
+          <div class="faq-row">
+            <h3>macOS Tahoe와 Sequoia에서 사용할 수 있나요?</h3>
+            <p>macOS 15 Sequoia 이상을 지원하며 Apple Silicon과 Intel Mac용 코드가 함께 들어 있습니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section">
+        <h2>Windows 커서팩을 이미 가지고 있나요?</h2>
+        <div class="related-card">
+          <h3><code>.cur</code>·<code>.ani</code> 파일 이름과 자동 배치 기준</h3>
+          <p>Normal, Text, Link, Busy 같은 파일이 Mac의 어떤 커서 역할에 들어가는지 <a href="./windows-cursor-on-mac">Windows 커서를 Mac에서 사용하는 방법</a>에서 자세히 확인할 수 있습니다.</p>
         </div>
       </section>
 

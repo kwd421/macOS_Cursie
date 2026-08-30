@@ -3,31 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>How to Change Your Cursor on Mac | Custom .cur and .ani Cursors on macOS — Cursie</title>
-  <meta name="description" content="Learn how to change your cursor on Mac. Cursie imports Windows .cur and .ani cursor packs, previews every role, and applies them to macOS system cursors.">
+  <title>Custom Cursor for Mac | How to Change Your macOS Cursor</title>
+  <meta name="description" content="Change the pointer size and color in macOS, or use a completely custom cursor on Mac. Learn how to preview and apply Windows .cur and .ani cursor packs.">
   <link rel="canonical" href="https://cursie.pages.dev/guides/custom-cursor-mac">
   <link rel="alternate" hreflang="en" href="https://cursie.pages.dev/guides/custom-cursor-mac">
   <link rel="alternate" hreflang="ko" href="https://cursie.pages.dev/ko/mac-custom-cursor">
   <link rel="alternate" hreflang="x-default" href="https://cursie.pages.dev/guides/custom-cursor-mac">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="How to Change Your Cursor on Mac — Cursie">
-  <meta property="og:description" content="Use Windows .cur and .ani cursor packs as custom macOS system cursors.">
+  <meta property="og:title" content="Custom Cursor for Mac | How to Change Your macOS Cursor">
+  <meta property="og:description" content="From built-in pointer settings to complete .cur and .ani cursor packs, here are the practical ways to change a Mac cursor.">
   <meta property="og:url" content="https://cursie.pages.dev/guides/custom-cursor-mac">
   <meta property="og:image" content="https://cursie.pages.dev/assets/cursie-preview.png">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "HowTo",
-    "name": "How to Change Your Cursor on Mac",
-    "description": "Use Cursie to apply Windows cursor packs to macOS system cursors.",
-    "image": "https://cursie.pages.dev/assets/cursie-preview.png",
-    "tool": [{"@type": "HowToTool", "name": "Cursie"}],
-    "step": [
-      {"@type": "HowToStep", "name": "Install Cursie", "text": "Download Cursie and move it to Applications."},
-      {"@type": "HowToStep", "name": "Import a cursor pack", "text": "Choose or drag in a folder containing Windows .cur or .ani files."},
-      {"@type": "HowToStep", "name": "Preview each role", "text": "Review the arrow, text, link, busy, and resize cursor mappings."},
-      {"@type": "HowToStep", "name": "Apply to macOS", "text": "Apply the approved set to your Mac system cursors."}
+    "@graph": [
+      {
+        "@type": "HowTo",
+        "name": "How to Use a Custom Cursor on Mac",
+        "description": "Apply Windows .cur and .ani cursor packs to macOS system cursors.",
+        "image": "https://cursie.pages.dev/assets/cursie-preview.png",
+        "tool": [{"@type": "HowToTool", "name": "Cursie"}],
+        "step": [
+          {"@type": "HowToStep", "name": "Install Cursie", "text": "Download the signed and notarized DMG, then move Cursie to Applications."},
+          {"@type": "HowToStep", "name": "Import a cursor pack", "text": "Choose or drag in a folder containing Windows .cur or .ani files."},
+          {"@type": "HowToStep", "name": "Preview and apply", "text": "Review the arrow, text, link, busy, and resize cursor mappings, then apply the set."},
+          {"@type": "HowToStep", "name": "Return to the default cursor", "text": "Open macOS Pointer settings from Cursie and click Reset Colors."}
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "Cursie", "item": "https://cursie.pages.dev/"},
+          {"@type": "ListItem", "position": 2, "name": "Custom Cursor for Mac", "item": "https://cursie.pages.dev/guides/custom-cursor-mac"}
+        ]
+      }
     ]
   }
   </script>
@@ -233,6 +244,21 @@
       font-size: 0.9rem; color: var(--ink-soft); line-height: 1.6; margin: 0;
     }
 
+    .choice-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
+      margin: 20px 0;
+    }
+    .choice-card, .related-card {
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 18px; background: var(--bg-subtle);
+    }
+    .choice-card h3, .related-card h3 { font-size: 1rem; margin-bottom: 7px; }
+    .choice-card p, .related-card p { font-size: 0.9rem; margin: 0; }
+    .related-card a { color: var(--grape); font-weight: 600; }
+    .related-card a:hover { color: var(--grape-hover); text-decoration: underline; }
+    .plain-list { padding-left: 20px; color: var(--ink-soft); font-size: 0.94rem; }
+    .plain-list li { margin-bottom: 9px; }
+
     /* ── DOC FOOTER ── */
     footer.doc-footer {
       margin-top: 56px; padding-top: 24px;
@@ -261,6 +287,7 @@
       .toc-list {
         flex-direction: row; flex-wrap: wrap; gap: 12px;
       }
+      .choice-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -291,8 +318,10 @@
         <div class="toc-title">On this page</div>
         <ul class="toc-list">
           <li><a href="#overview">Overview</a></li>
-          <li><a href="#procedure">4-Step Setup</a></li>
+          <li><a href="#options">Built-in or Custom?</a></li>
+          <li><a href="#procedure">Apply a Cursor Pack</a></li>
           <li><a href="#restoring">Restoring Defaults</a></li>
+          <li><a href="#troubleshooting">Troubleshooting</a></li>
           <li><a href="#faq">Frequently Asked Questions</a></li>
         </ul>
       </div>
@@ -301,15 +330,29 @@
     <!-- MAIN CONTENT -->
     <article class="doc-body">
       <div class="doc-header" id="overview">
-        <div class="doc-eyebrow">macOS Custom Cursor Manual</div>
-        <h1>How to Change Your Cursor on Mac</h1>
-        <div class="doc-meta">Updated Jun 2026 · macOS 15+ · Apple Silicon and Intel Mac</div>
+        <div class="doc-eyebrow">macOS CUSTOM CURSOR GUIDE</div>
+        <h1>How to Use a Custom Cursor on Mac</h1>
+        <div class="doc-meta">Updated Aug 2026 · macOS 15+ · Apple Silicon and Intel Mac</div>
       </div>
 
       <p class="doc-lead">
-        <span>macOS allows basic pointer size and color adjustments in Accessibility settings.</span>
-        <span>Cursie lets you import Windows <code>.cur</code> and animated <code>.ani</code> cursor packs, preview them, and use them across your Mac.</span>
+        <span>macOS can change the pointer size, outline, and fill color without another app.</span>
+        <span>To replace the arrow itself—or use a Windows <code>.cur</code> or animated <code>.ani</code> pack—you need a custom cursor app such as Cursie.</span>
       </p>
+
+      <section class="doc-section" id="options">
+        <h2>Choose the kind of change you want</h2>
+        <div class="choice-grid">
+          <div class="choice-card">
+            <h3>Change size or color</h3>
+            <p>Open System Settings → Accessibility → Display → Pointer. macOS already includes size, outline color, and fill color controls.</p>
+          </div>
+          <div class="choice-card">
+            <h3>Change the cursor artwork</h3>
+            <p>Use Cursie to replace the arrow, text, link, busy, and resize cursors with files from a complete cursor pack.</p>
+          </div>
+        </div>
+      </section>
 
       <figure class="doc-figure">
         <img src="../assets/cursie-preview.png" alt="Cursie previewing a Windows cursor pack before it is applied to macOS">
@@ -344,7 +387,18 @@
 
       <section class="doc-section" id="restoring">
         <h2>Return to the default Mac cursor</h2>
-        <p>Click <strong>Restore macOS Default Cursor</strong> in Cursie to remove the applied cursor set.<br>This also disables automatic cursor apply at login and restores the macOS default cursor.</p>
+        <p>Click <strong>Reset Default Cursor in macOS Settings</strong> in Cursie. This opens System Settings at Accessibility → Display → Pointer and turns off automatic reapply at login.</p>
+        <p>In that macOS panel, click <strong>Reset Colors</strong>. The reset is completed by macOS; opening the panel alone does not immediately replace the current cursor.</p>
+      </section>
+
+      <section class="doc-section" id="troubleshooting">
+        <h2>If a cursor does not change</h2>
+        <ul class="plain-list">
+          <li>Move Cursie to Applications before applying a pack, then approve the macOS permission prompt if one appears.</li>
+          <li>Check the mapping preview. Unrecognized filenames can be assigned to a cursor role manually.</li>
+          <li>Very large or malformed cursor files may be skipped to keep the rest of the pack usable.</li>
+          <li>Some apps briefly cache the pointer they already had. Moving between windows or reopening the app usually refreshes it.</li>
+        </ul>
       </section>
 
       <section class="doc-section" id="faq">
@@ -362,8 +416,21 @@
             <h3>Are animated (.ani) cursors supported?</h3>
             <p>Yes. Cursie previews animated <code>.ani</code> files and applies them to macOS system cursors.</p>
           </div>
+          <div class="faq-row">
+            <h3>Do I need Terminal commands?</h3>
+            <p>No. Importing, previewing, applying, and opening the macOS reset controls are all handled from the app.</p>
+          </div>
+          <div class="faq-row">
+            <h3>Does this work on macOS Sequoia and Tahoe?</h3>
+            <p>Cursie supports macOS 15 or later, including Sequoia and Tahoe, on Apple Silicon and Intel Macs.</p>
+          </div>
         </div>
       </section>
+
+      <aside class="related-card">
+        <h3>Already have a Windows cursor pack?</h3>
+        <p>See the <a href="./windows-cursor-on-mac">Windows .cur and .ani guide for Mac</a> for filename mapping and pack-specific troubleshooting.</p>
+      </aside>
 
       <footer class="doc-footer">
         <div>© 2026 Cursie. Open source under MIT/BSD.</div>

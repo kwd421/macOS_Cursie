@@ -3,7 +3,7 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://cursie.pages.dev/</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://cursie.pages.dev/"/>
@@ -12,7 +12,7 @@
   </url>
   <url>
     <loc>https://cursie.pages.dev/ko/</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://cursie.pages.dev/"/>
@@ -21,7 +21,7 @@
   </url>
   <url>
     <loc>https://cursie.pages.dev/guides/custom-cursor-mac</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://cursie.pages.dev/guides/custom-cursor-mac"/>
@@ -30,12 +30,30 @@
   </url>
   <url>
     <loc>https://cursie.pages.dev/ko/mac-custom-cursor</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://cursie.pages.dev/guides/custom-cursor-mac"/>
     <xhtml:link rel="alternate" hreflang="ko" href="https://cursie.pages.dev/ko/mac-custom-cursor"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://cursie.pages.dev/guides/custom-cursor-mac"/>
+  </url>
+  <url>
+    <loc>https://cursie.pages.dev/guides/windows-cursor-on-mac</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cursie.pages.dev/guides/windows-cursor-on-mac"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cursie.pages.dev/ko/windows-cursor-on-mac"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cursie.pages.dev/guides/windows-cursor-on-mac"/>
+  </url>
+  <url>
+    <loc>https://cursie.pages.dev/ko/windows-cursor-on-mac</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cursie.pages.dev/guides/windows-cursor-on-mac"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cursie.pages.dev/ko/windows-cursor-on-mac"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cursie.pages.dev/guides/windows-cursor-on-mac"/>
   </url>
   <url>
     <loc>https://cursie.pages.dev/privacy.html</loc>

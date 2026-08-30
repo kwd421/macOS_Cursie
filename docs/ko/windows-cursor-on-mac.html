@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>윈도우 커서를 맥에서 사용하는 방법 | .cur .ani 적용</title>
+  <meta name="description" content="Windows .cur·.ani 커서 파일을 맥에서 사용하는 방법을 알아보세요. 커서 역할 자동 배치, 움직이는 커서 미리보기, 누락된 파일 해결 방법을 설명합니다.">
+  <link rel="canonical" href="https://cursie.pages.dev/ko/windows-cursor-on-mac">
+  <link rel="alternate" hreflang="en" href="https://cursie.pages.dev/guides/windows-cursor-on-mac">
+  <link rel="alternate" hreflang="ko" href="https://cursie.pages.dev/ko/windows-cursor-on-mac">
+  <link rel="alternate" hreflang="x-default" href="https://cursie.pages.dev/guides/windows-cursor-on-mac">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="윈도우 커서를 맥에서 사용하는 방법">
+  <meta property="og:description" content="Windows .cur·.ani 커서팩을 불러오고, 역할을 확인해 macOS에 적용하는 과정을 정리했습니다.">
+  <meta property="og:url" content="https://cursie.pages.dev/ko/windows-cursor-on-mac">
+  <meta property="og:image" content="https://cursie.pages.dev/assets/ko-preview.png">
+  <link rel="stylesheet" href="../assets/guide.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "HowTo",
+        "name": "Windows .cur 및 .ani 커서를 맥에서 사용하는 방법",
+        "description": "윈도우 커서팩을 불러와 역할을 확인하고 macOS 시스템 커서에 적용하는 방법",
+        "image": "https://cursie.pages.dev/assets/ko-preview.png",
+        "tool": [{"@type": "HowToTool", "name": "Cursie"}],
+        "step": [
+          {"@type": "HowToStep", "name": "커서팩 열기", "text": ".cur 및 .ani 파일이 든 폴더를 드래그하거나 파일을 직접 선택합니다."},
+          {"@type": "HowToStep", "name": "커서 역할 확인", "text": "자동 배치된 화살표, 텍스트, 링크, 대기 및 크기 조절 커서를 확인합니다."},
+          {"@type": "HowToStep", "name": "누락된 역할 채우기", "text": "파일 이름만으로 역할을 알 수 없을 때 해당 파일을 직접 지정합니다."},
+          {"@type": "HowToStep", "name": "macOS에 적용", "text": "완성된 커서 구성을 미리 본 뒤 macOS 시스템 커서에 적용합니다."}
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "Cursie", "item": "https://cursie.pages.dev/ko/"},
+          {"@type": "ListItem", "position": 2, "name": "윈도우 커서를 맥에서 사용하기", "item": "https://cursie.pages.dev/ko/windows-cursor-on-mac"}
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body lang="ko">
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="./"><img src="../assets/app-icon.png" alt="Cursie 아이콘"><span>Cursie</span></a>
+      <nav class="nav" aria-label="주요 메뉴"><a href="./">소개</a><a href="../guides/windows-cursor-on-mac">English</a><a class="download" href="https://github.com/kwd421/macOS_Cursie/releases/latest">다운로드</a></nav>
+    </div>
+  </header>
+  <div class="page">
+    <aside class="toc">
+      <strong>이 글의 내용</strong>
+      <ul>
+        <li><a href="#formats">.cur와 .ani</a></li>
+        <li><a href="#steps">커서팩 불러오기</a></li>
+        <li><a href="#mapping">파일 이름 자동 배치</a></li>
+        <li><a href="#problems">문제 해결</a></li>
+        <li><a href="#default">기본 커서로 되돌리기</a></li>
+      </ul>
+    </aside>
+    <main>
+      <header>
+        <div class="eyebrow">WINDOWS 커서팩을 macOS에서</div>
+        <h1>윈도우 커서를 맥에서 사용하는 방법</h1>
+        <div class="meta">2026년 8월 업데이트 · macOS 15 이상 · Apple Silicon 및 Intel Mac</div>
+      </header>
+      <p class="lead"><span>Windows용 커서팩은 macOS에서 바로 열리지 않습니다.</span><span>Cursie는 <code>.cur</code>와 <code>.ani</code> 파일을 읽고, 각 파일을 Mac의 커서 역할에 맞춰 배치한 뒤 적용 전에 확인할 수 있게 해줍니다.</span></p>
+      <figure class="hero-image"><img src="../assets/ko-preview.png" alt="Windows 커서 파일을 macOS 커서 역할에 맞춰 배치한 Cursie 화면"><figcaption>화살표, 텍스트, 링크 등 각 역할에 맞게 배치된 커서팩</figcaption></figure>
+
+      <section class="section" id="formats">
+        <h2>.cur와 .ani 파일은 무엇이 다른가요?</h2>
+        <p><code>.cur</code>는 Windows에서 사용하는 정지 커서 파일입니다. 화면 배율이 달라도 또렷하게 보이도록 여러 크기의 이미지를 함께 담을 수 있습니다. <code>.ani</code>는 여러 프레임과 재생 시간을 담은 움직이는 커서 파일입니다.</p>
+        <p>macOS에는 두 형식을 직접 불러오는 기능이 없습니다. Cursie는 이미지와 클릭 기준점인 핫스팟을 읽어 macOS 커서 시스템에서 쓸 수 있게 변환합니다. <code>.ani</code> 파일은 움직임까지 미리 확인할 수 있습니다.</p>
+        <div class="note">커서팩에 모든 역할이 들어 있을 필요는 없습니다. 비워 둔 역할은 현재 macOS 커서를 그대로 사용합니다.</div>
+      </section>
+
+      <section class="section" id="steps">
+        <h2>Windows 커서팩 불러오고 적용하기</h2>
+        <ol class="steps">
+          <li><strong>Cursie 설치하기</strong>서명 및 공증된 DMG를 열고 Cursie를 응용 프로그램 폴더로 옮깁니다.</li>
+          <li><strong>커서팩 열기</strong><code>.cur</code>와 <code>.ani</code> 파일이 든 폴더를 창에 놓거나, 원하는 파일을 직접 선택합니다.</li>
+          <li><strong>자동 배치 확인하기</strong>기본 화살표, 텍스트, 링크, 대기, 크기 조절 커서가 맞는 자리에 들어갔는지 살펴봅니다.</li>
+          <li><strong>빠진 역할 채우기</strong>파일 이름이 특이해 자동으로 분류되지 않았다면 해당 역할에 파일을 직접 지정합니다.</li>
+          <li><strong>완성된 커서 적용하기</strong>미리보기가 마음에 들면 적용합니다. Cursie를 종료해도 적용된 커서는 유지됩니다.</li>
+        </ol>
+      </section>
+
+      <section class="section" id="mapping">
+        <h2>파일 이름은 이렇게 구분합니다</h2>
+        <p>Cursie는 Windows 커서팩에서 흔히 쓰이는 이름을 보고 역할을 추정합니다. 아래 이름을 반드시 써야 하는 것은 아니며, 자동 배치가 어긋나면 앱에서 바로 바꿀 수 있습니다.</p>
+        <table class="mapping">
+          <thead><tr><th>커서팩에서 흔히 쓰는 이름</th><th>macOS에서 맡는 역할</th></tr></thead>
+          <tbody>
+            <tr><td>Normal, Arrow</td><td>기본 화살표</td></tr>
+            <tr><td>Text, IBeam</td><td>텍스트 선택</td></tr>
+            <tr><td>Link, Hand</td><td>클릭할 수 있는 링크</td></tr>
+            <tr><td>Busy, Wait, Working</td><td>대기 또는 백그라운드 작업</td></tr>
+            <tr><td>Horizontal, Vertical, Diagonal</td><td>창과 열의 크기 조절</td></tr>
+            <tr><td>Move, Unavailable, Cross</td><td>이동, 사용 불가, 십자선</td></tr>
+          </tbody>
+        </table>
+        <p>엉뚱한 자리에 들어간 파일은 해당 역할에서 직접 교체하면 됩니다. 원본 커서팩의 파일 이름을 바꿀 필요는 없습니다.</p>
+      </section>
+
+      <section class="section" id="problems">
+        <h2>불러오기가 제대로 되지 않을 때</h2>
+        <h3>폴더는 열렸는데 몇몇 커서가 비어 있어요</h3>
+        <p>파일 이름만으로 용도를 알기 어렵거나, 원래부터 일부 역할이 없는 커서팩일 수 있습니다. 필요한 파일만 직접 지정하고 나머지는 기본 커서로 두어도 됩니다.</p>
+        <h3>움직이는 커서가 Windows에서 보던 것과 달라요</h3>
+        <p>일부 커서팩은 프레임 시간이 특이하거나 같은 프레임을 반복합니다. 앱의 미리보기에서 먼저 확인하세요. 지나치게 크거나 손상된 파일은 다른 커서의 적용을 방해하지 않도록 건너뛸 수 있습니다.</p>
+        <h3>앱마다 커서가 다르게 보여요</h3>
+        <p>화면에 있던 포인터를 잠시 기억하는 앱이 있습니다. 다른 창으로 포인터를 옮겼다가 돌아오거나, 해당 앱을 다시 열면 대개 새 커서가 표시됩니다.</p>
+      </section>
+
+      <section class="section" id="default">
+        <h2>macOS 기본 커서로 되돌리기</h2>
+        <p>Cursie에서 <strong>macOS 설정에서 기본 커서로 재설정</strong>을 누릅니다. 열린 포인터 설정에서 <strong>색상 재설정</strong>을 눌러야 기본 커서로 돌아갑니다. Cursie는 설정 화면을 열고 로그인 시 자동 적용을 끄며, 실제 재설정은 macOS의 버튼을 눌렀을 때 완료됩니다.</p>
+      </section>
+
+      <aside class="related"><h2>처음부터 설정하는 방법이 필요하다면</h2><p>macOS 자체 포인터 설정과 전체 적용 과정은 <a class="text-link" href="./mac-custom-cursor">맥 커스텀 커서 적용 가이드</a>에서 이어서 볼 수 있습니다.</p></aside>
+      <footer class="footer"><span>© 2026 Cursie. MIT/BSD 오픈 소스.</span><span><a href="./">홈</a> · <a href="../license.html">라이선스</a> · <a href="https://github.com/kwd421/macOS_Cursie">GitHub</a></span></footer>
+    </main>
+  </div>
+</body>
+</html>

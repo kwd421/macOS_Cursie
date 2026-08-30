@@ -3,6 +3,8 @@
 
 [공식 홈페이지](https://cursie.pages.dev/ko/)
 
+[맥 커스텀 커서 설정 방법](https://cursie.pages.dev/ko/mac-custom-cursor) · [Windows .cur·.ani 커서를 맥에서 사용하기](https://cursie.pages.dev/ko/windows-cursor-on-mac)
+
 <img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/b48fd0fc-34e6-442b-9c6b-e9f2440d2111" />
 
 Cursie는 Windows 커서 파일과 커서팩(`.cur`, `.ani`)을 불러와 미리보고, macOS 시스템 커서 테마로 직접 적용하는 앱입니다.
@@ -15,7 +17,7 @@ Cursie는 Windows 커서 파일과 커서팩(`.cur`, `.ani`)을 불러와 미리
 
 Cursie는 선택한 커서 세트를 macOS 시스템 커서에 직접 적용합니다. 이 빌드는 Mac App Store가 아닌 직접 배포용입니다.
 
-포인터 색상이 이상해 보이면 앱의 `포인터 기본값 복구 열기`를 누른 뒤 macOS 포인터 설정에서 `Reset Colors`를 사용하세요.
+기본 커서로 되돌리려면 Cursie에서 `macOS 설정에서 기본 커서로 재설정`을 누른 뒤, 열린 포인터 설정에서 `색상 재설정`을 누르세요.
 
 ## 주요 기능
 
@@ -38,7 +40,7 @@ Cursie는 선택한 커서 세트를 macOS 시스템 커서에 직접 적용합�
 4. 필요하면 역할을 선택한 뒤 `커서 파일 변경...`으로 직접 교체합니다.
 5. 필요하면 커서 크기를 조정합니다.
 6. `시스템 커서에 적용`을 누릅니다.
-7. 포인터 색상이 이상해 보이면 앱에서 포인터 기본값 복구를 열고 macOS의 `Reset Colors`를 사용합니다.
+7. 기본 커서로 되돌릴 때는 Cursie에서 macOS 포인터 설정을 열고 `색상 재설정`을 누릅니다.
 
 ## 팁
 

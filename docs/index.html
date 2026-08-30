@@ -248,6 +248,7 @@
       display: inline-flex; align-items: center; gap: 4px;
     }
     .guide-banner-link:hover { text-decoration: underline; }
+    .guide-banner-links { display: flex; flex-wrap: wrap; gap: 10px 18px; }
 
     /* ── FAQ ── */
     .faq-section {
@@ -479,8 +480,11 @@
       </div>
     </div>
     <div class="guide-banner">
-      <span class="guide-banner-text">Looking for step-by-step setup and pointer recovery instructions?</span>
-      <a class="guide-banner-link" href="./guides/custom-cursor-mac">Mac cursor setup guide →</a>
+      <span class="guide-banner-text">Setup instructions, cursor-pack mapping, and recovery notes.</span>
+      <span class="guide-banner-links">
+        <a class="guide-banner-link" href="./guides/custom-cursor-mac">Custom cursor setup →</a>
+        <a class="guide-banner-link" href="./guides/windows-cursor-on-mac">Use Windows cursors on Mac →</a>
+      </span>
     </div>
   </section>
 
@@ -520,8 +524,8 @@
           <summary>How do I return to the default Mac cursor?</summary>
           <div class="faq-answer">
             <p>
-              <span>Use “Restore macOS Default Cursor” in Cursie to remove the applied cursor set.</span>
-              <span>It also disables automatic cursor apply at login and restores the macOS default cursor.</span>
+              <span>Choose “Reset Default Cursor in macOS Settings” in Cursie, then click “Reset Colors” in the Pointer settings that open.</span>
+              <span>Cursie disables automatic reapply at login; macOS completes the reset when you click its button.</span>
             </p>
           </div>
         </details>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Use Windows .cur and .ani Cursors on Mac | Cursie</title>
+  <meta name="description" content="Use Windows .cur and animated .ani cursor files on macOS. Learn which files work, how cursor roles are mapped, and how to fix an incomplete cursor pack.">
+  <link rel="canonical" href="https://cursie.pages.dev/guides/windows-cursor-on-mac">
+  <link rel="alternate" hreflang="en" href="https://cursie.pages.dev/guides/windows-cursor-on-mac">
+  <link rel="alternate" hreflang="ko" href="https://cursie.pages.dev/ko/windows-cursor-on-mac">
+  <link rel="alternate" hreflang="x-default" href="https://cursie.pages.dev/guides/windows-cursor-on-mac">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Use Windows .cur and .ani Cursors on Mac">
+  <meta property="og:description" content="Import a Windows cursor pack, check its roles, and apply it to macOS without Terminal commands.">
+  <meta property="og:url" content="https://cursie.pages.dev/guides/windows-cursor-on-mac">
+  <meta property="og:image" content="https://cursie.pages.dev/assets/cursie-preview.png">
+  <link rel="stylesheet" href="../assets/guide.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "HowTo",
+        "name": "How to Use Windows .cur and .ani Cursors on Mac",
+        "description": "Import, map, preview, and apply a Windows cursor pack to macOS.",
+        "image": "https://cursie.pages.dev/assets/cursie-preview.png",
+        "tool": [{"@type": "HowToTool", "name": "Cursie"}],
+        "step": [
+          {"@type": "HowToStep", "name": "Open the cursor pack", "text": "Drag in a folder containing .cur and .ani files or choose the files individually."},
+          {"@type": "HowToStep", "name": "Check cursor roles", "text": "Review the automatically mapped arrow, text, link, busy, and resize cursors."},
+          {"@type": "HowToStep", "name": "Fill missing roles", "text": "Assign files manually when their names do not identify a cursor role."},
+          {"@type": "HowToStep", "name": "Apply the pack", "text": "Preview the finished set, then apply it to the macOS system cursor."}
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "Cursie", "item": "https://cursie.pages.dev/"},
+          {"@type": "ListItem", "position": 2, "name": "Windows Cursors on Mac", "item": "https://cursie.pages.dev/guides/windows-cursor-on-mac"}
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../"><img src="../assets/app-icon.png" alt="Cursie icon"><span>Cursie</span></a>
+      <nav class="nav" aria-label="Main navigation"><a href="../">Overview</a><a href="../ko/windows-cursor-on-mac">한국어</a><a class="download" href="https://github.com/kwd421/macOS_Cursie/releases/latest">Download</a></nav>
+    </div>
+  </header>
+  <div class="page">
+    <aside class="toc">
+      <strong>On this page</strong>
+      <ul>
+        <li><a href="#formats">.cur and .ani</a></li>
+        <li><a href="#steps">Import the pack</a></li>
+        <li><a href="#mapping">Filename mapping</a></li>
+        <li><a href="#problems">Common problems</a></li>
+        <li><a href="#default">Return to default</a></li>
+      </ul>
+    </aside>
+    <main>
+      <header>
+        <div class="eyebrow">WINDOWS CURSOR PACKS ON macOS</div>
+        <h1>Use Windows .cur and .ani Cursors on Mac</h1>
+        <div class="meta">Updated Aug 2026 · macOS 15+ · Apple Silicon and Intel Mac</div>
+      </header>
+      <p class="lead"><span>A Windows cursor pack does not work on macOS by itself.</span><span>Cursie reads <code>.cur</code> and <code>.ani</code> files, matches them to Mac cursor roles, and lets you check the result before applying it.</span></p>
+      <figure class="hero-image"><img src="../assets/cursie-preview.png" alt="Windows cursor files mapped to macOS cursor roles in Cursie"><figcaption>A cursor pack after its arrow, text, link, and other roles have been mapped.</figcaption></figure>
+
+      <section class="section" id="formats">
+        <h2>What .cur and .ani files contain</h2>
+        <p>A <code>.cur</code> file is a static Windows cursor. It can contain several image sizes so the pointer stays sharp at different display scales. An <code>.ani</code> file contains an animated cursor with multiple frames and timing information.</p>
+        <p>macOS does not offer a built-in importer for either format. Cursie converts their images and hotspot—the exact pixel used for clicking—into a form the macOS cursor system can use. Animated <code>.ani</code> files can be previewed in motion before they are applied.</p>
+        <div class="note">A pack does not have to include every possible cursor. Any role you leave empty continues to use the current macOS cursor.</div>
+      </section>
+
+      <section class="section" id="steps">
+        <h2>Import and apply a Windows cursor pack</h2>
+        <ol class="steps">
+          <li><strong>Download and install Cursie</strong>Open the signed and notarized DMG, then move Cursie to Applications.</li>
+          <li><strong>Open the cursor pack</strong>Drag the folder into the window, or select individual <code>.cur</code> and <code>.ani</code> files.</li>
+          <li><strong>Review the automatic mapping</strong>Move through the preview list and check the normal arrow, text, link, busy, and resize roles.</li>
+          <li><strong>Correct anything that is missing</strong>Select a role and choose the right file manually. This is useful when a pack uses unusual filenames.</li>
+          <li><strong>Apply the finished set</strong>Apply once you are happy with the preview. The cursor stays active after Cursie quits.</li>
+        </ol>
+      </section>
+
+      <section class="section" id="mapping">
+        <h2>How cursor filenames are matched</h2>
+        <p>Cursie recognizes common names used by Windows cursor packs. The exact filename can vary; these are typical examples rather than a required naming scheme.</p>
+        <table class="mapping">
+          <thead><tr><th>Names often found in a pack</th><th>macOS cursor role</th></tr></thead>
+          <tbody>
+            <tr><td>Normal, Arrow</td><td>Default arrow</td></tr>
+            <tr><td>Text, IBeam</td><td>Text selection</td></tr>
+            <tr><td>Link, Hand</td><td>Clickable link</td></tr>
+            <tr><td>Busy, Wait, Working</td><td>Busy or background activity</td></tr>
+            <tr><td>Horizontal, Vertical, Diagonal</td><td>Window and column resizing</td></tr>
+            <tr><td>Move, Unavailable, Cross</td><td>Move, forbidden, or crosshair</td></tr>
+          </tbody>
+        </table>
+        <p>If a file lands in the wrong place, replace that role manually. Renaming the original pack is not necessary.</p>
+      </section>
+
+      <section class="section" id="problems">
+        <h2>Common import problems</h2>
+        <h3>The folder opens, but some roles are empty</h3>
+        <p>The pack may use filenames that do not describe their purpose, or it may simply be incomplete. Assign the files manually and leave any unwanted role unchanged.</p>
+        <h3>An animated cursor looks different from Windows</h3>
+        <p>Windows packs can include unusual frame timing or repeated frames. Check the in-app preview; malformed or excessively large files may be skipped so they do not block the rest of the pack.</p>
+        <h3>The cursor changes in one app but not another</h3>
+        <p>Some apps cache the pointer already on screen. Move the pointer into another window, switch apps, or reopen the affected app to force a refresh.</p>
+      </section>
+
+      <section class="section" id="default">
+        <h2>Return to the default Mac cursor</h2>
+        <p>Choose <strong>Reset Default Cursor in macOS Settings</strong> in Cursie. In the Pointer settings that open, click <strong>Reset Colors</strong>. Cursie opens the correct macOS panel and disables automatic reapply; macOS performs the actual reset when you click its button.</p>
+      </section>
+
+      <aside class="related"><h2>Need the general setup guide?</h2><p>Start with <a class="text-link" href="./custom-cursor-mac">How to use a custom cursor on Mac</a> for the built-in macOS pointer options and the full Cursie setup.</p></aside>
+      <footer class="footer"><span>© 2026 Cursie. Open source under MIT/BSD.</span><span><a href="../">Home</a> · <a href="../license.html">License</a> · <a href="https://github.com/kwd421/macOS_Cursie">GitHub</a></span></footer>
+    </main>
+  </div>
+</body>
+</html>
