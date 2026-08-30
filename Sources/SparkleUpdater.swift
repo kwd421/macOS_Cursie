@@ -130,7 +130,7 @@ struct CheckForUpdatesView: View {
     }
 
     var body: some View {
-        Button("Check for Updates...") {
+        Button(Localized.string("menu.checkForUpdates")) {
             updater.checkForUpdates()
         }
         .disabled(!viewModel.canCheckForUpdates)

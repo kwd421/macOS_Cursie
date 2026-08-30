@@ -15,6 +15,22 @@ enum AppLanguage: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    var bundleLanguageIdentifier: String {
+        switch self {
+        case .korean: return "ko"
+        case .english: return "en"
+        case .japanese: return "ja"
+        case .simplifiedChinese: return "zh-Hans"
+        case .traditionalChinese: return "zh-Hant"
+        case .german: return "de"
+        case .french: return "fr"
+        case .spanish: return "es"
+        case .portugueseBrazil: return "pt-BR"
+        case .italian: return "it"
+        case .russian: return "ru"
+        }
+    }
+
     var titleKey: String {
         switch self {
         case .korean: return "menu.language.korean"
@@ -38,16 +54,31 @@ final class LocalizationController: ObservableObject {
     @Published private(set) var selectedLanguage: AppLanguage?
 
     private let defaultsKey = "appLanguageOverride"
+    private let defaults: UserDefaults
 
-    private init() {
-        let storedValue = UserDefaults.standard.string(forKey: defaultsKey)
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        let storedValue = defaults.string(forKey: defaultsKey)
         selectedLanguage = AppLanguage(rawValue: storedValue ?? "")
+        if let selectedLanguage {
+            synchronizeBundleLanguage(with: selectedLanguage)
+        }
     }
 
     func setLanguage(_ language: AppLanguage) {
-        guard selectedLanguage != language else { return }
+        guard selectedLanguage != language else {
+            synchronizeBundleLanguage(with: language)
+            return
+        }
         selectedLanguage = language
-        UserDefaults.standard.set(language.rawValue, forKey: defaultsKey)
+        defaults.set(language.rawValue, forKey: defaultsKey)
+        synchronizeBundleLanguage(with: language)
+    }
+
+    private func synchronizeBundleLanguage(with language: AppLanguage) {
+        let preferredLanguages = [language.bundleLanguageIdentifier]
+        guard defaults.stringArray(forKey: "AppleLanguages") != preferredLanguages else { return }
+        defaults.set(preferredLanguages, forKey: "AppleLanguages")
     }
 }
 
@@ -120,6 +151,7 @@ enum Localized {
 
     private static let english: [String: String] = [
         "update.available": "Update",
+        "menu.checkForUpdates": "Check for Updates…",
         "app.additionalCursors": "Additional Cursors",
         "app.additionalCursorHint": "Default: Use the macOS default cursor.\nUnless you have a specific reason, it's best to leave these as they are.",
         "app.noCursorLoaded": "No cursor loaded",
@@ -237,6 +269,7 @@ enum Localized {
 
     private static let korean: [String: String] = [
         "update.available": "업데이트",
+        "menu.checkForUpdates": "업데이트 확인…",
         "app.additionalCursors": "추가커서",
         "app.additionalCursorHint": "기본값: macOS 기본 커서 사용\n특별한 경우가 아니라면 그대로 두세요.",
         "app.noCursorLoaded": "불러온 커서가 없습니다",
@@ -354,6 +387,7 @@ enum Localized {
 
     private static let japanese: [String: String] = [
         "update.available": "アップデート",
+        "menu.checkForUpdates": "アップデートを確認…",
         "app.additionalCursors": "追加カーソル",
         "app.additionalCursorHint": "初期値: macOS標準カーソルを使用\n特別な理由がない限り、そのままにしておくことをおすすめします。",
         "app.noCursorLoaded": "読み込まれたカーソルがありません",
@@ -471,6 +505,7 @@ enum Localized {
 
     private static let simplifiedChinese: [String: String] = [
         "update.available": "更新",
+        "menu.checkForUpdates": "检查更新…",
         "app.additionalCursors": "附加光标",
         "app.additionalCursorHint": "默认值：使用 macOS 默认光标\n除非有特殊情况，否则建议保持原样。",
         "app.noCursorLoaded": "没有已加载的光标",
@@ -588,6 +623,7 @@ enum Localized {
 
     private static let traditionalChinese: [String: String] = [
         "update.available": "更新",
+        "menu.checkForUpdates": "檢查更新…",
         "app.additionalCursors": "附加游標",
         "app.additionalCursorHint": "預設值：使用 macOS 預設游標\n除非有特殊情況，否則建議維持原樣。",
         "app.noCursorLoaded": "沒有已載入的游標",
@@ -705,6 +741,7 @@ enum Localized {
 
     private static let german: [String: String] = [
         "update.available": "Update",
+        "menu.checkForUpdates": "Nach Updates suchen…",
         "app.additionalCursors": "Zusätzliche Cursor",
         "app.additionalCursorHint": "Standard: den macOS-Standardcursor verwenden.\nLassen Sie diese am besten unverändert, außer in besonderen Fällen.",
         "app.noCursorLoaded": "Kein Cursor geladen",
@@ -822,6 +859,7 @@ enum Localized {
 
     private static let french: [String: String] = [
         "update.available": "Mise à jour",
+        "menu.checkForUpdates": "Rechercher les mises à jour…",
         "app.additionalCursors": "Curseurs supplémentaires",
         "app.additionalCursorHint": "Par défaut : utiliser le curseur par défaut de macOS.\nSauf cas particulier, il vaut mieux les laisser tels quels.",
         "app.noCursorLoaded": "Aucun curseur chargé",
@@ -939,6 +977,7 @@ enum Localized {
 
     private static let spanish: [String: String] = [
         "update.available": "Actualizar",
+        "menu.checkForUpdates": "Buscar actualizaciones…",
         "app.additionalCursors": "Cursores adicionales",
         "app.additionalCursorHint": "Valor predeterminado: usar el cursor predeterminado de macOS.\nSalvo en casos especiales, es mejor dejarlos tal como están.",
         "app.noCursorLoaded": "No hay cursores cargados",
@@ -1056,6 +1095,7 @@ enum Localized {
 
     private static let portugueseBrazil: [String: String] = [
         "update.available": "Atualizar",
+        "menu.checkForUpdates": "Verificar atualizações…",
         "app.additionalCursors": "Cursores adicionais",
         "app.additionalCursorHint": "Padrão: usar o cursor padrão do macOS.\nA menos que haja um motivo especial, é melhor deixar como está.",
         "app.noCursorLoaded": "Nenhum cursor carregado",
@@ -1173,6 +1213,7 @@ enum Localized {
 
     private static let italian: [String: String] = [
         "update.available": "Aggiorna",
+        "menu.checkForUpdates": "Controlla aggiornamenti…",
         "app.additionalCursors": "Cursori aggiuntivi",
         "app.additionalCursorHint": "Predefinito: usa il cursore predefinito di macOS.\nA meno che non ci sia un caso particolare, è meglio lasciarli così come sono.",
         "app.noCursorLoaded": "Nessun cursore caricato",
@@ -1290,6 +1331,7 @@ enum Localized {
 
     private static let russian: [String: String] = [
         "update.available": "Обновить",
+        "menu.checkForUpdates": "Проверить наличие обновлений…",
         "app.additionalCursors": "Дополнительные курсоры",
         "app.additionalCursorHint": "По умолчанию: использовать стандартный курсор macOS.\nЕсли нет особой причины, лучше оставить всё как есть.",
         "app.noCursorLoaded": "Нет загруженных курсоров",
