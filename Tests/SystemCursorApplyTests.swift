@@ -143,29 +143,6 @@ struct CursorPayloadRendererTests {
 
     @MainActor
     @Test
-    func currentCursorPreviewDecodeUsesLargestRepresentationAndSplitsStackedFrames() throws {
-        let smallRepresentation = try stackedPNG(width: 2, height: 2, frameColors: [.red])
-        let largeRepresentation = try stackedPNG(width: 4, height: 4, frameColors: [.blue, .green])
-        let payload = RenderedCursorPayload(
-            frameCount: 2,
-            frameDuration: 0.125,
-            hotSpot: CGPoint(x: 2, y: 3),
-            pointSize: CGSize(width: 16, height: 16),
-            representations: [smallRepresentation, largeRepresentation]
-        )
-
-        let animation = try #require(LiveCurrentCursorPreviewLoader.animation(from: payload))
-
-        #expect(animation.frames.count == 2)
-        #expect(animation.frames.allSatisfy { $0.delay == 0.125 })
-        #expect(animation.hotspot == CGPoint(x: 2, y: 3))
-        #expect(animation.canvasSize == CGSize(width: 16, height: 16))
-        #expect(isMostlyBlue(dominantColor(in: animation.frames[0].image)))
-        #expect(isMostlyGreen(dominantColor(in: animation.frames[1].image)))
-    }
-
-    @MainActor
-    @Test
     func animatedPayloadKeepsTwentyFourFrameCursorUnchanged() throws {
         let image = solidImage(.red)
         let frames = (0..<24).map { _ in

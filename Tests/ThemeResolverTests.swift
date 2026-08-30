@@ -66,28 +66,6 @@ struct ThemeResolverTests {
 
     @MainActor
     @Test
-    func startIgnoresCurrentSystemCursorPreviewsForPlaceholderState() throws {
-        let animation = CursorAnimation(
-            frames: [CursorFrame(image: solidImage(.yellow), delay: 0.1)],
-            hotspot: CGPoint(x: 1, y: 1),
-            canvasSize: CGSize(width: 16, height: 16)
-        )
-        let controller = CursorController(
-            currentCursorPreviewLoader: StubCurrentCursorPreviewLoader(
-                previews: CurrentCursorPreviews(primary: [.arrow: animation], supplemental: [:])
-            ),
-            defaults: try makeIsolatedDefaults()
-        )
-
-        controller.start()
-
-        #expect(controller.selectedFolderURL == nil)
-        #expect(!controller.selectedFolderIsValid)
-        #expect(controller.assignment(for: .arrow)?.appliedPreview == nil)
-    }
-
-    @MainActor
-    @Test
     func droppedCursorFileImmediatelyUpdatesPreviewForSelectedRole() async throws {
         let tempDirectory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: tempDirectory) }
@@ -1524,12 +1502,4 @@ private func isMostlyGreen(_ color: NSColor?) -> Bool {
 private func isMostlyBlue(_ color: NSColor?) -> Bool {
     guard let color else { return false }
     return color.blueComponent > 0.8 && color.blueComponent > color.redComponent && color.blueComponent > color.greenComponent
-}
-
-private struct StubCurrentCursorPreviewLoader: CurrentCursorPreviewLoading {
-    let previews: CurrentCursorPreviews
-
-    func loadCurrentCursorPreviews() -> CurrentCursorPreviews {
-        previews
-    }
 }

@@ -11,52 +11,6 @@ private enum LayoutMetrics {
     static let itemVerticalPadding: CGFloat = 4
 }
 
-struct ContentView: View {
-    @ObservedObject var controller: CursorController
-    @ObservedObject private var localization = LocalizationController.shared
-
-    var body: some View {
-        let _ = localization.selectedLanguage
-        VStack(alignment: .leading, spacing: 14) {
-            Text("Cursie")
-                .font(.headline)
-
-            Text(controller.selectedFolderURL?.lastPathComponent ?? Localized.string("app.chooseCursorFolder"))
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-
-            Label(
-                controller.menuStatusLabel,
-                systemImage: controller.menuStatusSystemImage
-            )
-            .font(.footnote)
-            .foregroundStyle(controller.hasMenuStatusWarning ? AnyShapeStyle(Color.orange) : AnyShapeStyle(.secondary))
-
-            HStack(spacing: 8) {
-                Button(Localized.string("app.openSettings")) {
-                    (NSApp.delegate as? AppDelegate)?.openSettingsWindow()
-                }
-                .buttonStyle(.borderedProminent)
-            }
-
-            Divider()
-
-            Text(controller.statusText)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Button(Localized.string("app.quit")) {
-                NSApp.terminate(nil)
-            }
-            .buttonStyle(.bordered)
-        }
-        .padding(14)
-        .frame(width: 280)
-    }
-}
-
 struct SettingsView: View {
     @ObservedObject var controller: CursorController
     @ObservedObject private var sparkleUpdateState: SparkleUpdateState
@@ -190,7 +144,27 @@ struct SettingsView: View {
             if controller.isApplyingSystemCursors {
                 ApplyingOverlay(progress: controller.systemApplyProgress)
             }
+
+            if let notice = controller.systemCompletionNotice {
+                VStack {
+                    SystemCompletionBanner(notice: notice)
+                        .padding(.top, 28)
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .transition(
+                    .asymmetric(
+                        insertion: .move(edge: .top)
+                            .combined(with: .opacity)
+                            .combined(with: .scale(scale: 0.96, anchor: .top)),
+                        removal: .opacity.combined(with: .scale(scale: 0.98, anchor: .top))
+                    )
+                )
+                .allowsHitTesting(false)
+                .zIndex(2)
+            }
         }
+        .animation(.spring(response: 0.38, dampingFraction: 0.82), value: controller.systemCompletionNotice?.id)
         .ignoresSafeArea()
         .frame(minWidth: 860, minHeight: 620)
         .alert(item: $controller.activeAlert) { alert in
@@ -432,6 +406,63 @@ struct ApplyingOverlay: View {
             .frame(width: 320)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
             .shadow(radius: 20, y: 10)
+        }
+    }
+}
+
+struct SystemCompletionBanner: View {
+    let notice: SystemCompletionNotice
+    @ObservedObject private var localization = LocalizationController.shared
+
+    var body: some View {
+        let _ = localization.selectedLanguage
+        HStack(spacing: 13) {
+            ZStack {
+                Circle()
+                    .fill(Color.green)
+                Image(systemName: "checkmark")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(.white)
+            }
+            .frame(width: 32, height: 32)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.headline)
+                Text(message)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+
+            Spacer(minLength: 4)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 13)
+        .frame(width: 410)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+        }
+        .shadow(color: .black.opacity(0.18), radius: 18, y: 9)
+    }
+
+    private var title: String {
+        switch notice.kind {
+        case .applied:
+            return Localized.string("systemApply.successTitle")
+        case .restored:
+            return Localized.string("systemApply.restoreSuccessTitle")
+        }
+    }
+
+    private var message: String {
+        switch notice.kind {
+        case .applied:
+            return Localized.string("status.systemApplySuccess")
+        case .restored:
+            return Localized.string("status.systemRestoreSuccess")
         }
     }
 }

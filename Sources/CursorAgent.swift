@@ -132,11 +132,6 @@ struct CursorAgentManager {
         throw CursorError.systemCursorApplyFailed("LaunchAgent did not become ready within \(timeout)s.\(suffix)")
     }
 
-    func uninstallLaunchAgent() throws {
-        try stopLaunchAgent()
-        try removePersistedState()
-    }
-
     func stopLaunchAgent() throws {
         guard isLaunchAgentLoaded() else {
             return

@@ -400,92 +400,19 @@ struct SystemApplyProgress: Sendable {
     )
 }
 
-struct CurrentCursorPreviews {
-    let primary: [CursorRole: CursorAnimation]
-    let supplemental: [SupplementalCursorRole: CursorAnimation]
-
-    static let empty = CurrentCursorPreviews(primary: [:], supplemental: [:])
-}
-
-protocol CurrentCursorPreviewLoading {
-    func loadCurrentCursorPreviews() -> CurrentCursorPreviews
-}
-
-struct LiveCurrentCursorPreviewLoader: CurrentCursorPreviewLoading {
-    func loadCurrentCursorPreviews() -> CurrentCursorPreviews {
-        guard let bridge = try? PrivateSystemCursorBridge() else {
-            return .empty
-        }
-
-        var primary: [CursorRole: CursorAnimation] = [:]
-        for role in CursorRole.allCases {
-            guard let payload = firstPayload(from: CursorSlotCatalog.identifiers(for: role), bridge: bridge) else { continue }
-            primary[role] = Self.animation(from: payload)
-        }
-
-        var supplemental: [SupplementalCursorRole: CursorAnimation] = [:]
-        for role in SupplementalCursorRole.allCases {
-            guard let payload = firstPayload(from: CursorSlotCatalog.identifiers(for: role), bridge: bridge) else { continue }
-            supplemental[role] = Self.animation(from: payload)
-        }
-
-        return CurrentCursorPreviews(primary: primary, supplemental: supplemental)
+struct SystemCompletionNotice: Identifiable, Equatable {
+    enum Kind: Equatable {
+        case applied
+        case restored
     }
 
-    private func firstPayload(from identifiers: [String], bridge: PrivateSystemCursorBridge) -> RenderedCursorPayload? {
-        for identifier in identifiers {
-            if let payload = bridge.registeredPayload(for: identifier) {
-                return payload
-            }
-        }
-        return nil
-    }
-
-    static func animation(from payload: RenderedCursorPayload) -> CursorAnimation? {
-        guard let representation = payload.representations.max(by: { lhs, rhs in
-            pixelCount(for: lhs) < pixelCount(for: rhs)
-        }) else {
-            return nil
-        }
-        guard let bitmap = NSBitmapImageRep(data: representation), let image = bitmap.cgImage else {
-            return nil
-        }
-
-        let frameCount = max(payload.frameCount, 1)
-        let frameHeight = max(image.height / frameCount, 1)
-        let frameWidth = image.width
-        var frames: [CursorFrame] = []
-        frames.reserveCapacity(frameCount)
-
-        for index in 0..<frameCount {
-            let y = index * frameHeight
-            guard let cropped = image.cropping(to: CGRect(x: 0, y: y, width: frameWidth, height: frameHeight)) else {
-                continue
-            }
-            frames.append(
-                CursorFrame(
-                    image: NSImage(cgImage: cropped, size: payload.pointSize),
-                    delay: payload.frameDuration
-                )
-            )
-        }
-
-        guard !frames.isEmpty else {
-            return nil
-        }
-        return CursorAnimation(frames: frames, hotspot: payload.hotSpot, canvasSize: payload.pointSize)
-    }
-
-    private static func pixelCount(for data: Data) -> Int {
-        guard let bitmap = NSBitmapImageRep(data: data) else { return 0 }
-        return bitmap.pixelsWide * bitmap.pixelsHigh
-    }
+    let id = UUID()
+    let kind: Kind
 }
 
 @MainActor
 final class CursorController: ObservableObject {
     private enum DefaultsKey {
-        static let exportAuthorName = "exportAuthorName"
         static let selectedThemeFolderPath = "selectedThemeFolderPath"
     }
 
@@ -493,8 +420,6 @@ final class CursorController: ObservableObject {
         case startingUp
         case chooseCursorFolder
         case supportedFiles
-        case exportSuccess(String)
-        case exportFailure(String)
         case systemApplySuccess
         case systemApplyWarning(String)
         case systemApplyFailure(String)
@@ -512,17 +437,8 @@ final class CursorController: ObservableObject {
     @Published private(set) var isApplyingSystemCursors = false
     @Published private(set) var isLoadingTheme = false
     @Published private(set) var systemApplyProgress = SystemApplyProgress.preparing
+    @Published private(set) var systemCompletionNotice: SystemCompletionNotice?
     @Published var activeAlert: UserFacingAlert?
-    @Published var exportAuthorName: String {
-        didSet {
-            let trimmed = exportAuthorName.trimmingCharacters(in: .whitespacesAndNewlines)
-            if trimmed.isEmpty {
-                defaults.removeObject(forKey: DefaultsKey.exportAuthorName)
-            } else {
-                defaults.set(exportAuthorName, forKey: DefaultsKey.exportAuthorName)
-            }
-        }
-    }
     @Published var exportSizeMultiplier: Double {
         didSet {
             let clamped = Self.clampExportSizeMultiplier(exportSizeMultiplier)
@@ -532,61 +448,29 @@ final class CursorController: ObservableObject {
         }
     }
 
-    private let capeExporter = CapeExporter()
     private let cursorSystemApplyService: CursorSystemApplyService
-    private let currentCursorPreviewLoader: CurrentCursorPreviewLoading
     private let defaults: UserDefaults
     private var overrideURLs: [CursorRole: URL] = [:]
     private var supplementalOverrideURLs: [SupplementalCursorRole: URL] = [:]
     private var currentTheme = CursorTheme(animations: [:], supplementalAnimations: [:])
-    private var currentPrimaryPreviews: [CursorRole: CursorAnimation] = [:]
-    private var currentSupplementalPreviews: [SupplementalCursorRole: CursorAnimation] = [:]
     private var statusState: StatusState = .startingUp
     private var securityScopedURLs: [URL: URL] = [:]
     private var reloadGeneration: UInt = 0
     private var reloadTask: Task<Void, Never>?
-
-    var hasMenuStatusWarning: Bool {
-        if case .loadFailure = statusState {
-            return true
-        }
-        return false
-    }
-
-    var menuStatusLabel: String {
-        if selectedFolderIsValid {
-            return Localized.string("app.rolesReady", resolvedRoleCount)
-        }
-        if hasMenuStatusWarning {
-            return Localized.string("app.folderRequired")
-        }
-        return Localized.string("app.currentSystemCursor")
-    }
-
-    var menuStatusSystemImage: String {
-        if selectedFolderIsValid {
-            return "checkmark.circle.fill"
-        }
-        if hasMenuStatusWarning {
-            return "exclamationmark.triangle.fill"
-        }
-        return "cursorarrow"
-    }
+    private var completionDismissTask: Task<Void, Never>?
 
     init(
         cursorSystemApplyService: CursorSystemApplyService = CursorSystemApplyService(),
-        currentCursorPreviewLoader: CurrentCursorPreviewLoading = LiveCurrentCursorPreviewLoader(),
         defaults: UserDefaults = .standard
     ) {
         self.cursorSystemApplyService = cursorSystemApplyService
-        self.currentCursorPreviewLoader = currentCursorPreviewLoader
         self.defaults = defaults
-        exportAuthorName = defaults.string(forKey: DefaultsKey.exportAuthorName) ?? ""
         exportSizeMultiplier = 1.0
     }
 
     deinit {
         reloadTask?.cancel()
+        completionDismissTask?.cancel()
         for url in securityScopedURLs.values {
             url.stopAccessingSecurityScopedResource()
         }
@@ -689,57 +573,9 @@ final class CursorController: ObservableObject {
         applyOverride(at: url, for: role)
     }
 
-    func exportMousecapeCape(authorName: String) {
-        do {
-            guard !isLoadingTheme, !currentTheme.animations.isEmpty || !currentTheme.supplementalAnimations.isEmpty else {
-                throw CursorError.missingTheme(Localized.string("error.noThemeFolderSelected"))
-            }
-            let trimmedAuthor = authorName.trimmingCharacters(in: .whitespacesAndNewlines)
-            let author: String
-            if trimmedAuthor.isEmpty {
-                let fallbackAuthor = defaultAuthorName()
-                let alert = NSAlert()
-                alert.messageText = Localized.string("export.emptyAuthorTitle")
-                alert.informativeText = Localized.string("export.emptyAuthorMessage", fallbackAuthor)
-                alert.alertStyle = .warning
-                alert.addButton(withTitle: Localized.string("export.useMacUserName"))
-                alert.addButton(withTitle: Localized.string("export.cancel"))
-                guard alert.runModal() == .alertFirstButtonReturn else { return }
-                author = fallbackAuthor
-            } else {
-                author = trimmedAuthor
-            }
-            let panel = NSSavePanel()
-            panel.allowedContentTypes = [.data]
-            panel.nameFieldStringValue = sanitizedCapeFileName()
-            panel.canCreateDirectories = true
-            panel.prompt = Localized.string("panel.export")
-
-            guard panel.runModal() == .OK, var url = panel.url else { return }
-            if url.pathExtension.lowercased() != "cape" {
-                url.deletePathExtension()
-                url.appendPathExtension("cape")
-            }
-
-            let exportName = exportCapeDisplayName(for: url)
-
-            try capeExporter.exportCape(
-                name: exportName,
-                author: author,
-                identifier: "local.\(Bundle.main.bundleIdentifier ?? "capeforge").\(UUID().uuidString.lowercased())",
-                theme: currentTheme,
-                sizeMultiplier: exportSizeMultiplier,
-                to: url
-            )
-            setStatus(.exportSuccess(url.lastPathComponent))
-        } catch {
-            setStatus(.exportFailure(error.localizedDescription))
-            presentError(error.localizedDescription)
-        }
-    }
-
     func applyToSystemCursors() {
         guard !isApplyingSystemCursors, !isLoadingTheme else { return }
+        dismissSystemCompletionNotice()
         isApplyingSystemCursors = true
         systemApplyProgress = .preparing
 
@@ -797,6 +633,7 @@ final class CursorController: ObservableObject {
                         self.setStatus(.systemApplyWarning(warning))
                     } else {
                         self.setStatus(.systemApplySuccess)
+                        self.showSystemCompletionNotice(.applied)
                     }
                 }
             } catch {
@@ -811,6 +648,7 @@ final class CursorController: ObservableObject {
 
     func restoreSystemCursors() {
         guard !isApplyingSystemCursors else { return }
+        dismissSystemCompletionNotice()
         isApplyingSystemCursors = true
         systemApplyProgress = .restoring
         let service = cursorSystemApplyService
@@ -821,6 +659,7 @@ final class CursorController: ObservableObject {
                 await MainActor.run {
                     self.isApplyingSystemCursors = false
                     self.setStatus(.systemRestoreSuccess)
+                    self.showSystemCompletionNotice(.restored)
                 }
             } catch {
                 await MainActor.run {
@@ -962,8 +801,6 @@ final class CursorController: ObservableObject {
         overrideURLs = [:]
         supplementalOverrideURLs = [:]
         currentTheme = CursorTheme(animations: [:], supplementalAnimations: [:])
-        currentPrimaryPreviews = [:]
-        currentSupplementalPreviews = [:]
         assignments = unresolvedAssignments()
     }
 
@@ -974,27 +811,6 @@ final class CursorController: ObservableObject {
             "selectedBorder",
             "selectedStyle"
         ].forEach { defaults.removeObject(forKey: $0) }
-    }
-
-    private func savedThemeFolderURL() -> URL? {
-        guard
-            let path = defaults.string(forKey: DefaultsKey.selectedThemeFolderPath),
-            !path.isEmpty
-        else {
-            return nil
-        }
-        let url = URL(fileURLWithPath: path, isDirectory: true)
-        guard isDirectory(at: url) else {
-            defaults.removeObject(forKey: DefaultsKey.selectedThemeFolderPath)
-            return nil
-        }
-        return url
-    }
-
-    private func reloadCurrentCursorPreviews() {
-        let previews = currentCursorPreviewLoader.loadCurrentCursorPreviews()
-        currentPrimaryPreviews = previews.primary
-        currentSupplementalPreviews = previews.supplemental
     }
 
     private func applyOverride(at url: URL, for role: CursorRole) {
@@ -1052,25 +868,6 @@ final class CursorController: ObservableObject {
         [UTType(filenameExtension: "ani"), UTType(filenameExtension: "cur")].compactMap { $0 }
     }
 
-    private func capeDisplayName() -> String {
-        selectedFolderURL?.lastPathComponent.isEmpty == false ? selectedFolderURL!.lastPathComponent : "Cursie Export"
-    }
-
-    private func sanitizedCapeFileName() -> String {
-        let raw = capeDisplayName()
-        let invalid = CharacterSet(charactersIn: "/:\\")
-        let cleaned = raw.components(separatedBy: invalid).joined(separator: "-")
-        return cleaned.isEmpty ? "Cursie.cape" : "\(cleaned).cape"
-    }
-
-    private func exportCapeDisplayName(for url: URL) -> String {
-        let candidate = url.deletingPathExtension().lastPathComponent.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !candidate.isEmpty {
-            return candidate
-        }
-        return capeDisplayName()
-    }
-
     func defaultAuthorName() -> String {
         let fullName = NSFullUserName().trimmingCharacters(in: .whitespacesAndNewlines)
         if !fullName.isEmpty {
@@ -1097,6 +894,23 @@ final class CursorController: ObservableObject {
         statusText = localizedStatusText(for: state)
     }
 
+    private func showSystemCompletionNotice(_ kind: SystemCompletionNotice.Kind) {
+        completionDismissTask?.cancel()
+        let notice = SystemCompletionNotice(kind: kind)
+        systemCompletionNotice = notice
+        completionDismissTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(2.5))
+            guard !Task.isCancelled, self?.systemCompletionNotice?.id == notice.id else { return }
+            self?.systemCompletionNotice = nil
+        }
+    }
+
+    private func dismissSystemCompletionNotice() {
+        completionDismissTask?.cancel()
+        completionDismissTask = nil
+        systemCompletionNotice = nil
+    }
+
     private func localizedStatusText(for state: StatusState) -> String {
         switch state {
         case .startingUp:
@@ -1105,10 +919,6 @@ final class CursorController: ObservableObject {
             return Localized.string("status.chooseCursorFolder")
         case .supportedFiles:
             return Localized.string("status.supportedFiles")
-        case .exportSuccess(let fileName):
-            return Localized.string("status.exportSuccess", fileName)
-        case .exportFailure(let message):
-            return Localized.string("status.exportFailure", message)
         case .systemApplySuccess:
             return Localized.string("status.systemApplySuccess")
         case .systemApplyWarning(let message):
@@ -1125,303 +935,6 @@ final class CursorController: ObservableObject {
         case .loadFailure(let message):
             return Localized.string("status.loadFailure", message)
         }
-    }
-
-    private func bundledDefaultCursorAnimation(for role: CursorRole) -> CursorAnimation? {
-        switch role {
-        case .arrow:
-            return bundledCursorAnimation(
-                named: "arrow",
-                logicalCanvasSize: CGSize(width: 28, height: 40),
-                hotSpot: CGPoint(x: 4.5, y: 4)
-            )
-        case .text:
-            return bundledCursorAnimation(
-                named: "text",
-                logicalCanvasSize: CGSize(width: 22, height: 23),
-                hotSpot: CGPoint(x: 11.5, y: 11)
-            )
-        case .link:
-            return bundledCursorAnimation(
-                named: "link",
-                logicalCanvasSize: CGSize(width: 32, height: 32),
-                hotSpot: CGPoint(x: 13, y: 8)
-            )
-        case .location:
-            return bundledCursorAnimation(
-                named: "drag-copy",
-                logicalCanvasSize: CGSize(width: 28, height: 40),
-                hotSpot: CGPoint(x: 5, y: 5)
-            )
-        case .precision:
-            return bundledCursorAnimation(
-                named: "precision",
-                logicalCanvasSize: CGSize(width: 24, height: 24),
-                hotSpot: CGPoint(x: 11, y: 11)
-            )
-        case .move:
-            return bundledCursorAnimation(
-                named: "move-open",
-                logicalCanvasSize: CGSize(width: 32, height: 32),
-                hotSpot: CGPoint(x: 16, y: 17)
-            )
-        case .unavailable:
-            return bundledCursorAnimation(
-                named: "unavailable",
-                logicalCanvasSize: CGSize(width: 28, height: 40),
-                hotSpot: CGPoint(x: 5, y: 5)
-            )
-        case .busy, .working:
-            return bundledCursorAnimation(
-                named: "wait",
-                logicalCanvasSize: CGSize(width: 16, height: 16),
-                hotSpot: CGPoint(x: 8, y: 8)
-            )
-        case .help:
-            return bundledCursorAnimation(
-                named: "arrow",
-                logicalCanvasSize: CGSize(width: 28, height: 40),
-                hotSpot: CGPoint(x: 4.5, y: 4)
-            )
-        case .handwriting:
-            return bundledCursorAnimation(
-                named: "arrow",
-                logicalCanvasSize: CGSize(width: 28, height: 40),
-                hotSpot: CGPoint(x: 4.5, y: 4)
-            )
-        case .person, .alternate:
-            return bundledCursorAnimation(
-                named: "arrow",
-                logicalCanvasSize: CGSize(width: 28, height: 40),
-                hotSpot: CGPoint(x: 4.5, y: 4)
-            )
-        case .verticalResize:
-            return bundledCursorAnimation(
-                named: "resize-vertical",
-                logicalCanvasSize: CGSize(width: 24, height: 28),
-                hotSpot: CGPoint(x: 12, y: 14)
-            )
-        case .horizontalResize:
-            return bundledCursorAnimation(
-                named: "resize-horizontal",
-                logicalCanvasSize: CGSize(width: 30, height: 24),
-                hotSpot: CGPoint(x: 15, y: 12)
-            )
-        case .diagonalResizeNWSE, .diagonalResizeNESW:
-            return nil
-        }
-    }
-
-    private func bundledCursorAnimation(
-        named name: String,
-        logicalCanvasSize: CGSize,
-        hotSpot: CGPoint
-    ) -> CursorAnimation? {
-        #if SWIFT_PACKAGE
-        let imageURL = Bundle.module.url(forResource: name, withExtension: "png", subdirectory: "DefaultCursors")
-            ?? Bundle.main.url(forResource: name, withExtension: "png", subdirectory: "DefaultCursors")
-            ?? Bundle.main.url(forResource: name, withExtension: "png")
-        #else
-        let imageURL = Bundle.main.url(forResource: name, withExtension: "png", subdirectory: "DefaultCursors")
-            ?? Bundle.main.url(forResource: name, withExtension: "png")
-        #endif
-
-        guard let imageURL,
-              let image = NSImage(contentsOf: imageURL),
-              image.size.width > 0,
-              image.size.height > 0 else {
-            return nil
-        }
-
-        return CursorAnimation(
-            frames: [CursorFrame(image: image, delay: 0.1)],
-            hotspot: hotSpot,
-            canvasSize: logicalCanvasSize
-        )
-    }
-
-    private func bundledDiagonalResizeAnimation(degrees: CGFloat) -> CursorAnimation? {
-        guard let baseAnimation = bundledCursorAnimation(
-            named: "resize-vertical",
-            logicalCanvasSize: CGSize(width: 24, height: 28),
-            hotSpot: CGPoint(x: 12, y: 14)
-        ),
-        let baseFrame = baseAnimation.frames.first else {
-            return nil
-        }
-
-        let rotatedImage = rotateImage(baseFrame.image, byDegrees: degrees)
-        let rotatedHotSpot = rotateHotspot(
-            baseAnimation.hotspot,
-            in: baseAnimation.canvasSize,
-            byDegrees: degrees
-        )
-        let rotatedLogicalSize = rotatedBoundingSize(for: baseAnimation.canvasSize, byDegrees: degrees)
-
-        return CursorAnimation(
-            frames: [CursorFrame(image: rotatedImage, delay: baseFrame.delay)],
-            hotspot: rotatedHotSpot,
-            canvasSize: rotatedLogicalSize
-        )
-    }
-
-    private func rotateImage(_ image: NSImage, byDegrees degrees: CGFloat) -> NSImage {
-        let radians = degrees * .pi / 180
-        let newSize = NSSize(
-            width: abs(cos(radians)) * image.size.width + abs(sin(radians)) * image.size.height,
-            height: abs(sin(radians)) * image.size.width + abs(cos(radians)) * image.size.height
-        )
-
-        let canvas = NSImage(size: newSize)
-        canvas.lockFocus()
-        NSGraphicsContext.current?.imageInterpolation = .none
-
-        let transform = NSAffineTransform()
-        transform.translateX(by: newSize.width / 2, yBy: newSize.height / 2)
-        transform.rotate(byDegrees: degrees)
-        transform.translateX(by: -image.size.width / 2, yBy: -image.size.height / 2)
-        transform.concat()
-
-        image.draw(at: .zero, from: .zero, operation: .sourceOver, fraction: 1.0)
-        canvas.unlockFocus()
-        return canvas
-    }
-
-    private func rotateHotspot(_ hotspot: CGPoint, in size: CGSize, byDegrees degrees: CGFloat) -> CGPoint {
-        let radians = degrees * .pi / 180
-        let newSize = rotatedBoundingSize(for: size, byDegrees: degrees)
-
-        let translated = CGPoint(
-            x: hotspot.x - size.width / 2,
-            y: hotspot.y - size.height / 2
-        )
-        let rotated = CGPoint(
-            x: translated.x * cos(radians) - translated.y * sin(radians),
-            y: translated.x * sin(radians) + translated.y * cos(radians)
-        )
-
-        return CGPoint(
-            x: rotated.x + newSize.width / 2,
-            y: rotated.y + newSize.height / 2
-        )
-    }
-
-    private func rotatedBoundingSize(for size: CGSize, byDegrees degrees: CGFloat) -> CGSize {
-        let radians = degrees * .pi / 180
-        return CGSize(
-            width: abs(cos(radians)) * size.width + abs(sin(radians)) * size.height,
-            height: abs(sin(radians)) * size.width + abs(cos(radians)) * size.height
-        )
-    }
-
-    private func officialCursor(for role: SupplementalCursorRole) -> NSCursor? {
-        switch role {
-        case .dragCopy:
-            return .dragCopy
-        case .dragLink:
-            return .dragLink
-        case .contextualMenu, .contextMenuLegacy:
-            return .contextualMenu
-        case .disappearingItem:
-            return .disappearingItem
-        case .closeHand:
-            return .closedHand
-        case .openHand:
-            return .openHand
-        case .resizeLeft:
-            return .resizeLeft
-        case .resizeRight:
-            return .resizeRight
-        case .resizeUp:
-            return .resizeUp
-        case .resizeDown:
-            return .resizeDown
-        case .verticalIBeam:
-            return .iBeamCursorForVerticalLayout
-        case .zoomIn:
-            if #available(macOS 15.0, *) {
-                return .zoomIn
-            }
-            return .crosshair
-        case .zoomOut:
-            if #available(macOS 15.0, *) {
-                return .zoomOut
-            }
-            return .crosshair
-        case .iBeamHorizontal:
-            return .iBeam
-        case .empty, .poof:
-            return .operationNotAllowed
-        case .camera, .camera2, .countingUp, .countingDown, .countingUpDown, .resizeSquare:
-            return nil
-        }
-    }
-
-    private func cursorAnimation(for cursor: NSCursor) -> CursorAnimation? {
-        let image = cursor.image
-        guard image.size.width > 0, image.size.height > 0 else { return nil }
-        return CursorAnimation(
-            frames: [CursorFrame(image: image, delay: 0.2)],
-            hotspot: cursor.hotSpot,
-            canvasSize: image.size
-        )
-    }
-
-    private func rotatedCursorAnimation(for cursor: NSCursor, degrees: CGFloat) -> CursorAnimation? {
-        let image = cursor.image
-        guard image.size.width > 0, image.size.height > 0,
-              let rotatedImage = rotatedImage(image, degrees: degrees) else {
-            return nil
-        }
-
-        let originalCenter = CGPoint(x: image.size.width / 2, y: image.size.height / 2)
-        let rotatedCenter = CGPoint(x: rotatedImage.size.width / 2, y: rotatedImage.size.height / 2)
-        let translatedHotspot = CGPoint(
-            x: cursor.hotSpot.x - originalCenter.x,
-            y: cursor.hotSpot.y - originalCenter.y
-        )
-        let radians = degrees * .pi / 180
-        let rotatedHotspot = CGPoint(
-            x: translatedHotspot.x * cos(radians) - translatedHotspot.y * sin(radians) + rotatedCenter.x,
-            y: translatedHotspot.x * sin(radians) + translatedHotspot.y * cos(radians) + rotatedCenter.y
-        )
-
-        return CursorAnimation(
-            frames: [CursorFrame(image: rotatedImage, delay: 0.2)],
-            hotspot: rotatedHotspot,
-            canvasSize: rotatedImage.size
-        )
-    }
-
-    private func rotatedImage(_ image: NSImage, degrees: CGFloat) -> NSImage? {
-        let radians = degrees * .pi / 180
-        let srcRect = NSRect(origin: .zero, size: image.size)
-        let rotatedBounds = srcRect.applying(CGAffineTransform(rotationAngle: radians)).integral
-        let outputSize = NSSize(width: abs(rotatedBounds.width), height: abs(rotatedBounds.height))
-
-        let rotated = NSImage(size: outputSize)
-        rotated.lockFocus()
-        guard let context = NSGraphicsContext.current?.cgContext else {
-            rotated.unlockFocus()
-            return nil
-        }
-
-        context.interpolationQuality = .none
-        context.translateBy(x: outputSize.width / 2, y: outputSize.height / 2)
-        context.rotate(by: radians)
-        image.draw(
-            in: NSRect(
-                x: -image.size.width / 2,
-                y: -image.size.height / 2,
-                width: image.size.width,
-                height: image.size.height
-            ),
-            from: srcRect,
-            operation: .sourceOver,
-            fraction: 1.0
-        )
-        rotated.unlockFocus()
-        return rotated
     }
 
 }
