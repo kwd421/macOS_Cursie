@@ -9,15 +9,15 @@
     <language>en</language>
     <item>
       <title>Cursie 1.0.10</title>
-      <sparkle:version>12</sparkle:version>
+      <sparkle:version>13</sparkle:version>
       <sparkle:shortVersionString>1.0.10</sparkle:shortVersionString>
       <pubDate>Sun, 30 Aug 2026 16:13:35 +0900</pubDate>
       <sparkle:releaseNotesLink xml:lang="en">https://cursie.pages.dev/releases/1.0.10.html</sparkle:releaseNotesLink>
       <sparkle:releaseNotesLink xml:lang="ko">https://cursie.pages.dev/releases/1.0.10.ko.html</sparkle:releaseNotesLink>
       <enclosure
         url="https://github.com/kwd421/macOS_Cursie/releases/download/v1.0.10/Cursie.zip"
-        sparkle:edSignature="QAHXI/9EjTK6e1q1m8/z+Y301gR4Ihg2DFre8EqUIbH/ymtLPNCQ2wXiGSJCAhUg6qegCGJOdsOUWpN18bEZAg=="
-        length="4972514"
+        sparkle:edSignature="Ew5u0LF/PTQcjhBLBiGhIFTCYnhAWw93ZlFaiRWgRi16zj1fVz9fXX3NswXxeZmVt71RpRRUqPSfbyCBT3O1BA=="
+        length="4972542"
         type="application/octet-stream" />
     </item>
     <item>
