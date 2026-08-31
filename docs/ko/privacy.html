@@ -1,139 +1,20 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <link rel="icon" type="image/png" href="../assets/app-icon.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cursie 개인정보 처리방침</title>
-  <meta name="description" content="Cursie가 커서 파일을 기기 안에서 처리하고 개인정보를 보호하는 방식을 안내합니다.">
-  <link rel="canonical" href="https://cursie.pages.dev/ko/privacy.html">
-  <link rel="alternate" hreflang="en" href="https://cursie.pages.dev/privacy.html">
-  <link rel="alternate" hreflang="ko" href="https://cursie.pages.dev/ko/privacy.html">
-  <link rel="alternate" hreflang="ja" href="https://cursie.pages.dev/ja/privacy.html">
-  <link rel="alternate" hreflang="zh-Hans" href="https://cursie.pages.dev/zh-cn/privacy.html">
-  <link rel="alternate" hreflang="zh-Hant" href="https://cursie.pages.dev/zh-tw/privacy.html">
-  <link rel="alternate" hreflang="x-default" href="https://cursie.pages.dev/privacy.html">
-  <link rel="stylesheet" href="../assets/language-menu.css">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --ink: #3a3550;
-      --ink-soft: #6f6890;
-      --grape: #8b5cf6;
-      --grape-deep: #7c3aed;
-    }
-
-    body {
-      font-family: "Apple SD Gothic Neo", -apple-system, "Helvetica Neue", Arial, sans-serif;
-      color: var(--ink);
-      background: radial-gradient(120% 80% at 50% 0%, #fbe6f3 0%, #e9ddfb 38%, #dcecfd 70%, #ffffff 100%);
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-      word-break: keep-all;
-    }
-
-    nav {
-      height: 52px;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 max(24px, calc((100vw - 1000px) / 2));
-      background: rgba(255,255,255,0.7);
-      backdrop-filter: saturate(180%) blur(20px);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      border-bottom: 1px solid rgba(140,120,200,0.12);
-    }
-    .nav-brand { display: flex; align-items: center; gap: 9px; text-decoration: none; }
-    .nav-brand img { width: 26px; height: 26px; border-radius: 7px; }
-    .nav-brand span { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
-
-    main {
-      width: min(720px, calc(100vw - 48px));
-      margin: 0 auto;
-      padding: 56px 0 80px;
-    }
-
-    .updated { font-size: 0.78rem; color: var(--ink-soft); margin-bottom: 12px; }
-
-    h1 {
-      font-size: clamp(1.8rem, 4vw, 2.6rem);
-      font-weight: 800; letter-spacing: -0.04em; line-height: 1.1;
-      margin-bottom: 20px; color: var(--ink);
-    }
-
-    h2 { font-size: 1rem; font-weight: 700; color: var(--ink); margin: 36px 0 10px; }
-
-    p { font-size: 0.97rem; line-height: 1.75; color: var(--ink-soft); margin-bottom: 12px; }
-
-    ul { padding-left: 20px; margin: 0; }
-    li { font-size: 0.97rem; line-height: 1.75; color: var(--ink-soft); margin-bottom: 4px; }
-
-    a { color: var(--grape); text-decoration: none; font-weight: 600; }
-    a:hover { text-decoration: underline; }
-
-    .back { display: inline-block; margin-top: 44px; font-size: 0.9rem; }
-
-    hr { border: none; border-top: 1px solid rgba(140,120,200,0.18); margin: 36px 0; }
-
-    code {
-      font-family: monospace; font-size: 0.88em;
-      background: rgba(124,58,237,0.09); padding: 1px 6px;
-      border-radius: 5px; color: var(--grape-deep);
-    }
-  </style>
+  <meta charset="utf-8"><link rel="icon" type="image/png" href="../assets/app-icon.png"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cursie 개인정보 처리방침</title><meta name="description" content="Cursie가 커서 파일을 기기 안에서 처리하고 개인정보를 보호하는 방식을 안내합니다.">
+  <link rel="canonical" href="https://cursie.pages.dev/ko/privacy.html"><link rel="alternate" hreflang="en" href="https://cursie.pages.dev/privacy.html"><link rel="alternate" hreflang="ko" href="https://cursie.pages.dev/ko/privacy.html"><link rel="alternate" hreflang="ja" href="https://cursie.pages.dev/ja/privacy.html"><link rel="alternate" hreflang="zh-Hans" href="https://cursie.pages.dev/zh-cn/privacy.html"><link rel="alternate" hreflang="zh-Hant" href="https://cursie.pages.dev/zh-tw/privacy.html"><link rel="alternate" hreflang="x-default" href="https://cursie.pages.dev/privacy.html">
+  <link rel="stylesheet" href="../assets/guide.css"><link rel="stylesheet" href="../assets/language-menu.css">
 </head>
-<body>
-
-  <nav>
-    <a class="nav-brand" href="../index.html">
-      <img src="../assets/app-icon.png" alt="Cursie 아이콘">
-      <span>Cursie</span>
-    </a>
-    <details class="language-menu"><summary>한국어</summary><div class="language-options"><a href="../privacy.html">English</a><a href="./privacy.html" aria-current="page">한국어</a><a href="../ja/privacy.html">日本語</a><a href="../zh-cn/privacy.html">简体中文</a><a href="../zh-tw/privacy.html">繁體中文</a></div></details>
-  </nav>
-
-  <main>
-    <p class="updated">최종 업데이트: 2026년 6월 10일</p>
-    <h1>개인정보 처리방침</h1>
-    <p>
-      Cursie는 모든 처리를 사용자의 기기 내에서만 수행합니다.
-      계정을 생성하지 않으며, 외부 서버로 파일을 전송하거나
-      분석·광고 목적으로 개인정보를 수집하지 않습니다.
-    </p>
-
-    <hr>
-
-    <h2>Cursie가 접근하는 정보</h2>
-    <ul>
-      <li>사용자가 직접 선택한 커서 파일 폴더</li>
-      <li>시스템 커서 적용 후 Application Support 폴더에 저장되는 로컬 테마 파일</li>
-      <li>재부팅 후에도 커서 테마를 유지하기 위해 LaunchAgents 폴더에 저장되는 LaunchAgent plist 파일</li>
-    </ul>
-
-    <h2>해당 정보의 사용 목적</h2>
-    <ul>
-      <li>사용자가 선택한 <code>.ani</code>, <code>.cur</code> 파일 읽기</li>
-      <li>앱 내 커서 미리보기 표시</li>
-      <li>사용자가 적용 버튼을 누를 때 macOS 시스템 커서에 테마 적용</li>
-      <li>기본값 복구 선택 시 커서 에이전트 제거 및 macOS 기본 커서 복원</li>
-    </ul>
-
-    <h2>Cursie가 하지 않는 것</h2>
-    <ul>
-      <li>개인정보를 수집하지 않습니다</li>
-      <li>앱 또는 웹사이트 간 사용자 추적을 하지 않습니다</li>
-      <li>커서 파일이나 기타 데이터를 외부 서버로 전송하지 않습니다</li>
-      <li>사용자의 명시적인 동작 없이 시스템 커서를 변경하지 않습니다</li>
-    </ul>
-
-    <h2>소프트웨어 업데이트</h2>
-    <p>
-      Cursie는 Sparkle 프레임워크를 사용해 새 버전을 확인합니다. 업데이트 확인 시
-      현재 앱 버전만 업데이트 서버로 전송되며, 개인정보·시스템 정보·사용 통계는 전송하지 않습니다.
-    </p>
-
-    <a class="back" href="../index.html">← Cursie로 돌아가기</a>
-    <p class="back" aria-label="언어"><a href="../privacy.html">English</a> · <a href="./privacy.html">한국어</a> · <a href="../ja/privacy.html">日本語</a> · <a href="../zh-cn/privacy.html">简体中文</a> · <a href="../zh-tw/privacy.html">繁體中文</a></p>
-  </main>
-
+<body lang="ko">
+  <header class="site-header"><div class="header-inner"><a class="brand" href="./"><img src="../assets/app-icon.png" alt="Cursie 아이콘"><span>Cursie</span></a><nav class="nav"><a href="./">홈</a><details class="language-menu"><summary>한국어</summary><div class="language-options"><a href="../privacy.html">English</a><a href="./privacy.html" aria-current="page">한국어</a><a href="../ja/privacy.html">日本語</a><a href="../zh-cn/privacy.html">简体中文</a><a href="../zh-tw/privacy.html">繁體中文</a></div></details></nav></div></header>
+  <div class="page"><aside class="toc"><strong>개인정보</strong><ul><li><a href="#access">접근하는 정보</a></li><li><a href="#not">하지 않는 것</a></li><li><a href="#updates">소프트웨어 업데이트</a></li></ul></aside><main>
+    <header><div class="eyebrow">마지막 업데이트: 2026년 6월 10일</div><h1>개인정보 처리방침</h1></header>
+    <p class="lead">Cursie의 모든 처리는 사용자의 Mac 안에서 이루어집니다. 계정을 만들 필요가 없으며, 커서 파일을 업로드하거나 분석·광고를 위해 개인정보를 수집하지 않습니다.</p>
+    <section class="section" id="access"><h2>Cursie가 접근하는 정보</h2><ul class="plain-list"><li>사용자가 직접 선택한 커서 파일과 폴더</li><li>시스템 커서 적용 후 Application Support에 저장되는 로컬 테마 파일</li><li>Mac을 다시 시작한 뒤 커서를 복원하기 위해 LaunchAgents에 저장되는 설정 파일</li></ul></section>
+    <section class="section" id="not"><h2>Cursie가 하지 않는 것</h2><ul class="plain-list"><li>개인정보나 사용 통계 수집</li><li>앱 또는 웹사이트 간 사용자 추적</li><li>커서 파일이나 기타 데이터의 외부 서버 전송</li><li>사용자의 동작 없는 시스템 커서 변경</li></ul></section>
+    <section class="section" id="updates"><h2>소프트웨어 업데이트</h2><p>Cursie는 Sparkle로 새 버전을 확인합니다. 업데이트를 확인할 때 현재 앱 버전만 업데이트 서버로 전송되며, 개인정보·시스템 정보·사용 통계는 전송하지 않습니다.</p></section>
+    <footer class="footer"><span>© 2026 Cursie.</span><span><a href="./">Cursie로 돌아가기</a></span><div class="locale-links"><a href="../privacy.html">English</a><a href="./privacy.html">한국어</a><a href="../ja/privacy.html">日本語</a><a href="../zh-cn/privacy.html">简体中文</a><a href="../zh-tw/privacy.html">繁體中文</a></div></footer>
+  </main></div>
 </body>
 </html>
