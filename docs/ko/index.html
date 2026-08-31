@@ -3,6 +3,7 @@
 <head>
   <meta name="google-site-verification" content="B84zyhR8mBpoTXXEQhKrqr-21rbON545NBfdx398MsY" />
   <meta charset="utf-8">
+  <link rel="icon" type="image/png" href="../assets/app-icon.png">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cursie — 맥 커서 변경 앱, Windows .cur .ani 커서팩을 macOS에서</title>
   <meta name="description" content="Cursie는 Windows .cur, .ani 커서팩을 불러와 미리보기하고 macOS 시스템 커서에 직접 적용하는 무료 맥 커서 변경 앱입니다.">
@@ -395,6 +396,12 @@
         grid-template-columns: 1fr;
         gap: 6px;
       }
+    }
+    @media (max-width: 620px) {
+      .nav-container { padding-inline: 14px; }
+      .nav-links { gap: 8px; }
+      .nav-links > a.nav-item { display: none; }
+      .nav-btn { padding-inline: 10px; }
     }
   </style>
 </head>

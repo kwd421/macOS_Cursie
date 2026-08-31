@@ -1,17 +1,19 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <link rel="icon" type="image/png" href="../assets/app-icon.png"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Windowsの.cur・.aniカーソルをMacで使う方法</title>
   <meta name="description" content="Windows用の.cur・.aniカーソルをMacに読み込み、役割を確認してmacOSへ適用する方法を紹介します。">
   <link rel="canonical" href="https://cursie.pages.dev/ja/windows-cursor-on-mac">
   <link rel="alternate" hreflang="en" href="https://cursie.pages.dev/guides/windows-cursor-on-mac"><link rel="alternate" hreflang="ko" href="https://cursie.pages.dev/ko/windows-cursor-on-mac"><link rel="alternate" hreflang="ja" href="https://cursie.pages.dev/ja/windows-cursor-on-mac"><link rel="alternate" hreflang="zh-Hans" href="https://cursie.pages.dev/zh-cn/windows-cursor-on-mac"><link rel="alternate" hreflang="zh-Hant" href="https://cursie.pages.dev/zh-tw/windows-cursor-on-mac"><link rel="alternate" hreflang="x-default" href="https://cursie.pages.dev/guides/windows-cursor-on-mac">
   <meta name="robots" content="index, follow, max-image-preview:large"><meta property="og:type" content="article"><meta property="og:title" content="Windowsの.cur・.aniカーソルをMacで使う方法"><meta property="og:description" content="カーソルパックを読み込み、割り当てを確認してMacに適用します。"><meta property="og:url" content="https://cursie.pages.dev/ja/windows-cursor-on-mac"><meta property="og:image" content="https://cursie.pages.dev/assets/cursie-preview.png">
   <link rel="stylesheet" href="../assets/guide.css">
+  <link rel="stylesheet" href="../assets/language-menu.css">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"HowTo","name":"Windowsの.cur・.aniカーソルをMacで使う方法","description":"CursieでWindowsのカーソルパックをMacに適用する手順です。","image":"https://cursie.pages.dev/assets/cursie-preview.png","tool":[{"@type":"HowToTool","name":"Cursie"}],"step":[{"@type":"HowToStep","name":"カーソルパックを開く","text":".cur・.aniファイルが入ったフォルダをCursieへドラッグします。"},{"@type":"HowToStep","name":"役割を確認する","text":"矢印、文字選択、リンク、待機中などの割り当てを確認します。"},{"@type":"HowToStep","name":"不足を補う","text":"認識されなかったファイルは手動で役割を指定します。"},{"@type":"HowToStep","name":"Macに適用する","text":"プレビューを確認してmacOSへ適用します。"}]}</script>
 </head>
 <body lang="ja">
-  <header class="site-header"><div class="header-inner"><a class="brand" href="./"><img src="../assets/app-icon.png" alt="Cursieのアイコン"><span>Cursie</span></a><nav class="nav" aria-label="メインメニュー"><a href="./">概要</a><a href="../guides/windows-cursor-on-mac.html">English</a><a class="download" href="https://github.com/kwd421/macOS_Cursie/releases/latest">ダウンロード</a></nav></div></header>
+  <header class="site-header"><div class="header-inner"><a class="brand" href="./"><img src="../assets/app-icon.png" alt="Cursieのアイコン"><span>Cursie</span></a><nav class="nav" aria-label="メインメニュー"><a href="./">概要</a><details class="language-menu"><summary>日本語</summary><div class="language-options"><a href="../guides/windows-cursor-on-mac.html">English</a><a href="../ko/windows-cursor-on-mac.html">한국어</a><a href="./windows-cursor-on-mac.html" aria-current="page">日本語</a><a href="../zh-cn/windows-cursor-on-mac.html">简体中文</a><a href="../zh-tw/windows-cursor-on-mac.html">繁體中文</a></div></details><a class="download" href="https://github.com/kwd421/macOS_Cursie/releases/latest">ダウンロード</a></nav></div></header>
   <div class="page"><aside class="toc"><strong>目次</strong><ul><li><a href="#formats">.curと.ani</a></li><li><a href="#steps">読み込み手順</a></li><li><a href="#mapping">ファイル名の対応</a></li><li><a href="#problems">よくある問題</a></li></ul></aside><main>
     <header><div class="eyebrow">Windows カーソルパックをMacへ</div><h1>Windowsの.cur・.aniカーソルをMacで使う方法</h1><div class="meta">2026年8月更新 · macOS 15以降 · Apple Silicon / Intel Mac</div></header>
     <p class="lead"><span>Windowsのカーソルパックは、そのままではmacOSに読み込めません。</span><span>Cursieを使うと、<code>.cur</code>と<code>.ani</code>を役割ごとに確認してからMacへ適用できます。</span></p>

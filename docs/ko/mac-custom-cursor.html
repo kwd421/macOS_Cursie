@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
+  <link rel="icon" type="image/png" href="../assets/app-icon.png">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>맥 커스텀 커서 적용 방법 | 맥북 마우스 커서 바꾸기</title>
   <meta name="description" content="맥북 마우스 커서 모양을 바꾸는 방법을 알아보세요. macOS 기본 포인터 설정과 Windows .cur·.ani 커서팩을 Mac 시스템 커서로 적용하는 방법을 함께 설명합니다.">
@@ -292,7 +293,14 @@
       }
       .choice-grid { grid-template-columns: 1fr; }
     }
+    @media (max-width: 620px) {
+      .header-inner { padding-inline: 14px; }
+      .breadcrumb-sep, .doc-tag, .header-links > a.nav-item { display: none; }
+      .header-links { gap: 8px; }
+      .header-btn { padding-inline: 10px; }
+    }
   </style>
+  <link rel="stylesheet" href="../assets/language-menu.css">
 </head>
 <body>
 
@@ -308,7 +316,7 @@
       </div>
       <div class="header-links">
         <a class="nav-item" href="./index.html">소개</a>
-        <a class="nav-item" href="../guides/custom-cursor-mac.html">English</a>
+        <details class="language-menu"><summary>한국어</summary><div class="language-options"><a href="../guides/custom-cursor-mac.html">English</a><a href="./mac-custom-cursor.html" aria-current="page">한국어</a><a href="../ja/mac-custom-cursor.html">日本語</a><a href="../zh-cn/mac-custom-cursor.html">简体中文</a><a href="../zh-tw/mac-custom-cursor.html">繁體中文</a></div></details>
         <a class="header-btn" href="https://github.com/kwd421/macOS_Cursie/releases/latest">다운로드</a>
       </div>
     </div>
