@@ -9,7 +9,9 @@ const KEEP_ON_OLD_HOST = /^\/google[0-9a-f]+\.html$/;
 
 export async function onRequest(context) {
   const url = new URL(context.request.url);
-  if (url.hostname === OLD_HOST && !KEEP_ON_OLD_HOST.test(url.pathname)) {
+  // Normalize so "cursie.pages.dev." (fully qualified) and mixed case also redirect.
+  const host = url.hostname.replace(/\.$/, '').toLowerCase();
+  if (host === OLD_HOST && !KEEP_ON_OLD_HOST.test(url.pathname)) {
     url.hostname = NEW_HOST;
     url.protocol = 'https:';
     return Response.redirect(url.toString(), 301);
