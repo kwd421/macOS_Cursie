@@ -1,9 +1,9 @@
 # Cursie
 [English README](README.md)
 
-[공식 홈페이지](https://cursie.pages.dev/ko/)
+[공식 홈페이지](https://cursie.90wish.com/ko/)
 
-[맥 커스텀 커서 설정 방법](https://cursie.pages.dev/ko/mac-custom-cursor) · [Windows .cur·.ani 커서를 맥에서 사용하기](https://cursie.pages.dev/ko/windows-cursor-on-mac)
+[맥 커스텀 커서 설정 방법](https://cursie.90wish.com/ko/mac-custom-cursor) · [Windows .cur·.ani 커서를 맥에서 사용하기](https://cursie.90wish.com/ko/windows-cursor-on-mac)
 
 <img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/b48fd0fc-34e6-442b-9c6b-e9f2440d2111" />
 

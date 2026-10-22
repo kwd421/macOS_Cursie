@@ -1,9 +1,9 @@
 # Cursie
 [한국어 README](README.ko.md)
 
-[Official website](https://cursie.pages.dev/)
+[Official website](https://cursie.90wish.com/)
 
-[Custom cursor setup for Mac](https://cursie.pages.dev/guides/custom-cursor-mac) · [Use Windows .cur and .ani cursors on Mac](https://cursie.pages.dev/guides/windows-cursor-on-mac)
+[Custom cursor setup for Mac](https://cursie.90wish.com/guides/custom-cursor-mac) · [Use Windows .cur and .ani cursors on Mac](https://cursie.90wish.com/guides/windows-cursor-on-mac)
 
 <img width="300" height="300" alt="ChatGPT Image 2026년 6월 10일 오전 12_39_21" src="https://github.com/user-attachments/assets/5f1290f0-b92a-4a16-a381-ef8ec06036f4" />
 

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://cursie.pages.dev/sitemap.xml
+Sitemap: https://cursie.90wish.com/sitemap.xml
