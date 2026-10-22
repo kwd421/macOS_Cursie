@@ -16,4 +16,4 @@ __pycache__/
 # Tooling state
 .wrangler/
 .claude/
-
+analytics/worker-configuration.d.ts
