@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" type="image/png" href="./assets/app-icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page not found — Cursie</title>
+  <meta name="description" content="This page does not exist on the Cursie site.">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="./assets/guide.css">
+  <link rel="stylesheet" href="./assets/language-menu.css">
+  <style>
+    .not-found { max-width: 640px; margin: 0 auto; padding: 72px 24px 96px; }
+    .not-found h1 { font-size: clamp(2rem, 4vw, 2.6rem); letter-spacing: -.04em; line-height: 1.15; }
+    .not-found p { margin: 18px 0 28px; color: var(--soft); font-size: 1.05rem; }
+    .not-found .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+    .not-found .actions a {
+      display: inline-block; padding: 10px 16px; border-radius: 10px;
+      border: 1px solid var(--border); font-weight: 650; font-size: .92rem;
+    }
+    .not-found .actions a.primary { background: var(--grape); color: #fff; border-color: var(--grape); }
+    .not-found .actions a.primary:hover { background: var(--grape-dark); }
+    .not-found .actions a:hover { color: var(--grape); }
+    .not-found .locale-links { border-top: 1px solid var(--border); padding-top: 18px; }
+  </style>
+</head>
+<body lang="en">
+  <header class="site-header"><div class="header-inner">
+    <a class="brand" href="./"><img src="./assets/app-icon.png" alt="Cursie icon"><span>Cursie</span></a>
+    <nav class="nav"><a href="./">Home</a></nav>
+  </div></header>
+  <main class="not-found">
+    <div class="eyebrow">404</div>
+    <h1>Page not found</h1>
+    <p>This URL is not part of the Cursie site. The page may have moved, or the link may be incorrect.</p>
+    <div class="actions">
+      <a class="primary" href="./">Back to home</a>
+      <a href="./guides/custom-cursor-mac">Cursor guide</a>
+    </div>
+    <div class="locale-links">
+      <a href="./">English</a>
+      <a href="./ko/">한국어</a>
+      <a href="./ja/">日本語</a>
+      <a href="./zh-cn/">简体中文</a>
+      <a href="./zh-tw/">繁體中文</a>
+    </div>
+  </main>
+</body>
+</html>
